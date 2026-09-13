@@ -199,12 +199,13 @@ export function buildProductList(sel: DesignSelection): AmazonProduct[] {
   const items = slotsFor(sel);
   const allocation = budgetAllocationFor(sel);
   const percent = sel.discountPercent;
-  const rate =
-    percent && percent > 0 && percent < 100
-      ? percent / 100
-      : sel.discountFilter
-        ? (DISCOUNT_RATE[sel.discountFilter] ?? 0.2)
-        : 0.2;
+  const rate = (() => {
+    if (sel.discountFilter === "On Sale & Deals") return 0.35;
+    if (sel.discountFilter === "Regular Price") return 0;
+    if (percent && percent > 0 && percent < 100) return percent / 100;
+    if (sel.discountFilter) return DISCOUNT_RATE[sel.discountFilter] ?? 0.2;
+    return 0.2;
+  })();
 
   return items.map((entry, i) => {
     const price = Math.round((allocation[i] ?? 0) * 100) / 100;
@@ -216,6 +217,7 @@ export function buildProductList(sel: DesignSelection): AmazonProduct[] {
       price,
       listPrice,
       discountLabel: sel.discountFilter ?? "20% OFF",
+      discountPercent: Math.round(rate * 100),
       rating: Math.round((4.2 + ((i * 13) % 7) / 10) * 10) / 10,
       url: amazonSearchUrl(`${sel.designStyle} ${entry.item} ${sel.roomType}`),
     };
