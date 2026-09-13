@@ -7,6 +7,7 @@ import type { Database } from "@/integrations/supabase/types";
 import {
   buildProductList,
   buildPrompt,
+  DEFAULT_IMAGE_PROMPT,
   type AmazonProduct,
   type DesignSelection,
 } from "./decor";
