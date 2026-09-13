@@ -31,12 +31,13 @@ function PinterestIcon(props: React.SVGProps<SVGSVGElement>) {
 const SOCIALS: {
   key: SocialNetwork;
   label: string;
+  color: string;
   Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }[] = [
-  { key: "facebook", label: "Facebook", Icon: Facebook },
-  { key: "instagram", label: "Instagram", Icon: Instagram },
-  { key: "tiktok", label: "TikTok", Icon: TiktokIcon },
-  { key: "pinterest", label: "Pinterest", Icon: PinterestIcon },
+  { key: "facebook", label: "Facebook", color: "#1877F2", Icon: Facebook },
+  { key: "instagram", label: "Instagram", color: "#E4405F", Icon: Instagram },
+  { key: "tiktok", label: "TikTok", color: "#000000", Icon: TiktokIcon },
+  { key: "pinterest", label: "Pinterest", color: "#E60023", Icon: PinterestIcon },
 ];
 
 export function Footer() {
@@ -52,10 +53,10 @@ export function Footer() {
             Photoreal room concepts, paired with a shoppable list of discounted Amazon finds.
           </p>
           <div className="mt-5 flex items-center gap-3">
-            {SOCIALS.map(({ key, label, Icon }) => {
+            {SOCIALS.map(({ key, label, color, Icon }) => {
               const href = links?.[key];
               const className =
-                "flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary";
+                "flex size-9 items-center justify-center rounded-full border border-border bg-background transition-colors hover:opacity-100";
               return href ? (
                 <a
                   key={key}
@@ -66,16 +67,16 @@ export function Footer() {
                   title={label}
                   className={className}
                 >
-                  <Icon className="size-4" />
+                  <Icon className="size-4" style={{ color }} />
                 </a>
               ) : (
                 <span
                   key={key}
                   aria-label={label}
                   title={label}
-                  className={`${className} opacity-50`}
+                  className={`${className} opacity-40`}
                 >
-                  <Icon className="size-4" />
+                  <Icon className="size-4" style={{ color }} />
                 </span>
               );
             })}
