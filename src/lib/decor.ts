@@ -20,7 +20,52 @@ export const BUDGET_RANGES = ["$500 - $1,000", "$1,000 - $3,000", "$3,000+"] as 
 
 export const DISCOUNT_FILTERS = ["20% OFF", "30% OFF", "50% OFF", "Clearance"] as const;
 
+/** What the user wants to design: a whole room, one wall, or a single piece. */
+export const DESIGN_TYPES = [
+  { label: "Full Room", hint: "Design the whole space, furniture and all" },
+  { label: "Wall Decor", hint: "Style one wall — art, frames, shelves, mirrors" },
+  { label: "Single Item", hint: "Shop one decor piece for your space" },
+] as const;
+
+export type DesignType = (typeof DESIGN_TYPES)[number]["label"];
+
+/** Wall-only slots used when the design type is Wall Decor. */
+export const WALL_SLOTS: { category: string; item: string }[] = [
+  { category: "Wall Art", item: "framed wall art set" },
+  { category: "Gallery Frames", item: "gallery wall picture frame set" },
+  { category: "Mirror", item: "decorative wall mirror" },
+  { category: "Shelving", item: "floating wall shelf set" },
+  { category: "Lighting", item: "wall sconce pair" },
+  { category: "Accent", item: "woven wall hanging" },
+];
+
+/** Categories offered for Wall Decor and Single Item designs. */
+export const WALL_CATEGORIES = [
+  "Wall Art",
+  "Gallery Frames",
+  "Wall Mirror",
+  "Floating Shelf",
+  "Wall Clock",
+  "Tapestry / Wall Hanging",
+  "Wall Sconce",
+  "Wall Planter",
+] as const;
+
+export const SINGLE_ITEM_CATEGORIES = [
+  ...WALL_CATEGORIES,
+  "Table Lamp",
+  "Floor Lamp",
+  "Vase",
+  "Throw Pillow",
+  "Area Rug",
+  "Potted Plant",
+  "Sculpture / Figurine",
+  "Storage Basket",
+] as const;
+
 export type DesignSelection = {
+  designType?: DesignType | string | null;
+  decorCategory?: string | null;
   roomType: string;
   roomSize?: string | null;
   itemDensity?: string | null;
@@ -32,6 +77,13 @@ export type DesignSelection = {
   discountFilter?: string | null;
   discountPercent?: number | null;
 };
+
+export function designTypeOf(sel: DesignSelection): DesignType {
+  const value = String(sel.designType ?? "").toLowerCase();
+  if (value.startsWith("wall")) return "Wall Decor";
+  if (value.startsWith("single")) return "Single Item";
+  return "Full Room";
+}
 
 export type AmazonProduct = {
   name: string;
