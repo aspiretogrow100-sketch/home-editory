@@ -174,6 +174,136 @@ function AiSettingsPanel() {
 }
 
 
+function PaddlePanel() {
+  const load = useServerFn(getPaddleSettings);
+  const save = useServerFn(savePaddleSettings);
+  const queryClient = useQueryClient();
+
+  const settings = useQuery({
+    queryKey: ["paddle-settings"],
+    queryFn: () => load({ data: undefined }),
+  });
+
+  const [form, setForm] = useState({
+    environment: "sandbox" as "sandbox" | "production",
+    clientToken: "",
+    priceId: "",
+    apiKey: "",
+    webhookSecret: "",
+  });
+
+  useEffect(() => {
+    if (settings.data) {
+      setForm((f) => ({
+        ...f,
+        environment: settings.data.environment,
+        clientToken: settings.data.clientToken ?? "",
+        priceId: settings.data.priceId ?? "",
+      }));
+    }
+  }, [settings.data]);
+
+  const saveMutation = useMutation({
+    mutationFn: () => save({ data: form }),
+    onSuccess: () => {
+      toast.success("Paddle settings saved.");
+      setForm((f) => ({ ...f, apiKey: "", webhookSecret: "" }));
+      queryClient.invalidateQueries({ queryKey: ["paddle-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["paddle-checkout-info"] });
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  return (
+    <div className="surface-card mt-4 max-w-2xl p-6">
+      <h2 className="text-2xl">Paddle payments</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Add your Paddle client-side token, product price ID and API key. Until all three are saved,
+        checkout stays in demo mode.
+      </p>
+
+      <div className="mt-6 space-y-4">
+        <div className="space-y-2">
+          <Label>Mode</Label>
+          <RadioGroup
+            value={form.environment}
+            onValueChange={(v) => setForm({ ...form, environment: v as "sandbox" | "production" })}
+            className="grid gap-2 sm:grid-cols-2"
+          >
+            <label className="flex items-center gap-2 rounded-lg border border-border p-3 text-sm">
+              <RadioGroupItem value="sandbox" /> Sandbox (testing)
+            </label>
+            <label className="flex items-center gap-2 rounded-lg border border-border p-3 text-sm">
+              <RadioGroupItem value="production" /> Production (live)
+            </label>
+          </RadioGroup>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="paddle-token">Client-side token</Label>
+          <Input
+            id="paddle-token"
+            placeholder="live_xxx or test_xxx"
+            value={form.clientToken}
+            onChange={(e) => setForm({ ...form, clientToken: e.target.value })}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="paddle-price">Price ID</Label>
+          <Input
+            id="paddle-price"
+            placeholder="pri_01h..."
+            value={form.priceId}
+            onChange={(e) => setForm({ ...form, priceId: e.target.value })}
+          />
+          <p className="text-xs text-muted-foreground">
+            Create a one-time price in Paddle for the shopping-list unlock and paste its ID here.
+          </p>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="paddle-api">API key</Label>
+          <Input
+            id="paddle-api"
+            type="password"
+            autoComplete="off"
+            placeholder={settings.data?.apiKeyHint ?? "pdl_live_..."}
+            value={form.apiKey}
+            onChange={(e) => setForm({ ...form, apiKey: e.target.value })}
+          />
+          <p className="text-xs text-muted-foreground">
+            Leave empty to keep the saved key. Used only on the server to verify payments.
+          </p>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="paddle-webhook">Webhook secret</Label>
+          <Input
+            id="paddle-webhook"
+            type="password"
+            autoComplete="off"
+            placeholder={settings.data?.webhookSecretHint ?? "pdl_ntfset_..."}
+            value={form.webhookSecret}
+            onChange={(e) => setForm({ ...form, webhookSecret: e.target.value })}
+          />
+          <p className="text-xs text-muted-foreground">
+            In Paddle, add this notification URL: {settings.data?.webhookUrl ?? "/api/public/paddle-webhook"}
+          </p>
+        </div>
+      </div>
+
+      <Button
+        className="mt-6"
+        onClick={() => saveMutation.mutate()}
+        disabled={saveMutation.isPending || settings.isLoading}
+      >
+        {saveMutation.isPending ? "Saving..." : "Save changes"}
+      </Button>
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
