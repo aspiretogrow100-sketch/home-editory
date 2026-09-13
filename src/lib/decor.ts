@@ -349,11 +349,8 @@ export function budgetTargetFor(sel: DesignSelection): number {
 
 /** Per-slot spend allocation (sums to the room budget). */
 export function budgetAllocationFor(sel: DesignSelection): number[] {
-  const slots = slotsFor(sel);
   const budget = budgetTargetFor(sel);
-  const shares = slots.map((_, i) => SLOT_SHARES[i] ?? 0.1);
-  const total = shares.reduce((sum, s) => sum + s, 0) || 1;
-  return shares.map((s) => (s / total) * budget);
+  return sharesFor(sel).map((s) => s * budget);
 }
 
 export function buildProductList(sel: DesignSelection): AmazonProduct[] {
