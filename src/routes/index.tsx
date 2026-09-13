@@ -248,6 +248,11 @@ function StudioPage() {
     };
   }, [optionsQuery.data]);
 
+  const designType = selection.designType ?? "Full Room";
+  const categoryChoices: string[] =
+    designType === "Wall Decor" ? WALL_CATEGORIES : SINGLE_ITEM_CATEGORIES;
+
+
   const runGenerate = useServerFn(generateDesign);
   const runUnlock = useServerFn(unlockGeneration);
   const fetchGallery = useServerFn(listPublicGallery);
