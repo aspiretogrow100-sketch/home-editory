@@ -253,6 +253,12 @@ function StudioPage() {
   const designType = selection.designType ?? "Full Room";
   const categoryChoices: readonly string[] =
     designType === "Wall Decor" ? WALL_CATEGORIES : SINGLE_ITEM_CATEGORIES;
+  const customRoom = options.rooms.some((room) => room.label === selection.roomType)
+    ? ""
+    : (selection.roomType ?? "");
+  const customPiece = categoryChoices.includes(selection.decorCategory ?? "")
+    ? ""
+    : (selection.decorCategory ?? "");
 
 
   const runGenerate = useServerFn(generateDesign);
