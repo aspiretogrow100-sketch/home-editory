@@ -53,7 +53,25 @@ export function Footer() {
           <p className="mt-2 max-w-xs text-sm text-muted-foreground">
             Photoreal room concepts, paired with a shoppable list of discounted Amazon finds.
           </p>
+          {active.length > 0 ? (
+            <div className="mt-5 flex items-center gap-3">
+              {active.map(({ key, label, Icon }) => (
+                <a
+                  key={key}
+                  href={links![key]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  title={label}
+                  className="flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                >
+                  <Icon className="size-4" />
+                </a>
+              ))}
+            </div>
+          ) : null}
         </div>
+
         <div>
           <p className="text-sm font-medium">Explore</p>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
