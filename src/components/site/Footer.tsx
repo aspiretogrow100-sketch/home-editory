@@ -31,7 +31,7 @@ function PinterestIcon(props: React.SVGProps<SVGSVGElement>) {
 const SOCIALS: {
   key: SocialNetwork;
   label: string;
-  Icon: (props: React.SVGProps<SVGSVGElement>) => React.ReactElement;
+  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }[] = [
   { key: "facebook", label: "Facebook", Icon: Facebook },
   { key: "instagram", label: "Instagram", Icon: Instagram },
