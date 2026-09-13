@@ -19,7 +19,29 @@ function PrivacyPage() {
   return (
     <article className="mx-auto w-full max-w-3xl space-y-5 px-4 py-16 text-sm leading-relaxed text-muted-foreground">
       <h1 className="text-4xl text-foreground">Privacy Policy</h1>
-      <p>Last updated: {new Date().getFullYear()}</p>
+      <p>Last updated: September 2026</p>
+
+      <h2 className="pt-4 text-2xl text-foreground">Who is responsible</h2>
+      <p>
+        DecorAI is operated by Nahidul, Dhaka, Bangladesh. For any privacy question or data deletion
+        request, email{" "}
+        <a href="mailto:moumunira00@gmail.com" className="text-primary underline underline-offset-2">
+          moumunira00@gmail.com
+        </a>{" "}
+        or call{" "}
+        <a href="tel:+8801334920949" className="text-primary underline underline-offset-2">
+          +880 1334-920949
+        </a>
+        .
+      </p>
+
+      <h2 className="pt-4 text-2xl text-foreground">Payment data</h2>
+      <p>
+        Payments are handled by Paddle.com Market Ltd, our merchant of record. Card details are
+        entered on Paddle's secure checkout and are never stored by DecorAI. We only receive a record
+        that a payment succeeded.
+      </p>
+
 
       <h2 className="pt-4 text-2xl text-foreground">Information we collect</h2>
       <p>
