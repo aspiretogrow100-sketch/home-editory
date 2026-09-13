@@ -31,12 +31,13 @@ function PinterestIcon(props: React.SVGProps<SVGSVGElement>) {
 const SOCIALS: {
   key: SocialNetwork;
   label: string;
+  color: string;
   Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }[] = [
-  { key: "facebook", label: "Facebook", Icon: Facebook },
-  { key: "instagram", label: "Instagram", Icon: Instagram },
-  { key: "tiktok", label: "TikTok", Icon: TiktokIcon },
-  { key: "pinterest", label: "Pinterest", Icon: PinterestIcon },
+  { key: "facebook", label: "Facebook", color: "#1877F2", Icon: Facebook },
+  { key: "instagram", label: "Instagram", color: "#E4405F", Icon: Instagram },
+  { key: "tiktok", label: "TikTok", color: "#000000", Icon: TiktokIcon },
+  { key: "pinterest", label: "Pinterest", color: "#E60023", Icon: PinterestIcon },
 ];
 
 export function Footer() {
