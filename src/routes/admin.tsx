@@ -243,9 +243,14 @@ function AdminPage() {
           <ImagePromptPanel />
         </TabsContent>
 
+        <TabsContent value="ai">
+          <AiSettingsPanel />
+        </TabsContent>
+
         <TabsContent value="amazon">
           <AmazonSettingsPanel />
         </TabsContent>
+
       </Tabs>
     </div>
   );
