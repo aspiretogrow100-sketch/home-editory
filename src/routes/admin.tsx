@@ -171,7 +171,9 @@ function AdminPage() {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="options">Wizard options</TabsTrigger>
           <TabsTrigger value="prompt">Image prompt</TabsTrigger>
+          <TabsTrigger value="ai">AI generator</TabsTrigger>
           <TabsTrigger value="amazon">Amazon settings</TabsTrigger>
+
         </TabsList>
 
         <TabsContent value="overview">
