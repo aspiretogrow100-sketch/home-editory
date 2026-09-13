@@ -72,6 +72,8 @@ function validateSelection(input: DesignSelection): DesignSelection {
   const budgetAmount = Number(input.budgetAmount);
   const discountPercent = Number(input.discountPercent);
   return {
+    designType: input.designType ? String(input.designType).slice(0, 30) : "Full Room",
+    decorCategory: input.decorCategory ? String(input.decorCategory).slice(0, 60) : null,
     roomType: String(input.roomType).slice(0, 60),
     roomSize: input.roomSize ? String(input.roomSize).slice(0, 30) : null,
     itemDensity: input.itemDensity ? String(input.itemDensity).slice(0, 40) : null,

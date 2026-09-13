@@ -32,7 +32,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
-import { currency, type DesignSelection } from "@/lib/decor";
+import {
+  currency,
+  DESIGN_TYPES,
+  SINGLE_ITEM_CATEGORIES,
+  WALL_CATEGORIES,
+  type DesignSelection,
+} from "@/lib/decor";
 import {
   generateDesign,
   getUnlockPrice,
@@ -121,7 +127,7 @@ export const Route = createFileRoute("/")({
   component: StudioPage,
 });
 
-const STEPS = ["Room", "Size", "Style", "Budget / Colour", "Deals"] as const;
+const STEPS = ["Type & Room", "Size", "Style", "Budget / Colour", "Deals"] as const;
 
 const FEATURES = [
   {
@@ -208,7 +214,9 @@ function StudioPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [step, setStep] = useState(0);
-  const [selection, setSelection] = useState<Partial<DesignSelection>>({});
+  const [selection, setSelection] = useState<Partial<DesignSelection>>({
+    designType: "Full Room",
+  });
   const [customStyle, setCustomStyle] = useState("");
   const [customBudget, setCustomBudget] = useState("");
   const [palette, setPalette] = useState<string | null>(null);
@@ -241,6 +249,11 @@ function StudioPage() {
       discounts: by("deal_preference"),
     };
   }, [optionsQuery.data]);
+
+  const designType = selection.designType ?? "Full Room";
+  const categoryChoices: readonly string[] =
+    designType === "Wall Decor" ? WALL_CATEGORIES : SINGLE_ITEM_CATEGORIES;
+
 
   const runGenerate = useServerFn(generateDesign);
   const runUnlock = useServerFn(unlockGeneration);
@@ -421,7 +434,28 @@ function StudioPage() {
 
               {step === 0 && !optionsQuery.isLoading ? (
                 <div>
-                  <h2 className="text-2xl">Which room are we designing?</h2>
+                  <h2 className="text-2xl">What would you like to design?</h2>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                    {DESIGN_TYPES.map((type) => (
+                      <OptionCard
+                        key={type.label}
+                        label={type.label}
+                        hint={type.hint}
+                        selected={designType === type.label}
+                        onClick={() =>
+                          setSelection((s) => ({ ...s, designType: type.label, decorCategory: null }))
+                        }
+                      />
+                    ))}
+                  </div>
+
+                  <h3 className="mt-8 text-xl">
+                    {designType === "Full Room"
+                      ? "Which room are we designing?"
+                      : designType === "Wall Decor"
+                        ? "Which room is this wall in?"
+                        : "Which room is this piece for?"}
+                  </h3>
                   <div className="mt-4 grid gap-3 sm:grid-cols-3">
                     {options.rooms.map((room) => (
                       <OptionCard
@@ -437,6 +471,34 @@ function StudioPage() {
                     <p className="mt-4 text-sm text-muted-foreground">
                       No rooms available yet. Please check back soon.
                     </p>
+                  ) : null}
+
+                  {designType !== "Full Room" ? (
+                    <div className="mt-8">
+                      <h3 className="text-xl">
+                        {designType === "Wall Decor" ? "Lead the wall with" : "Which piece?"}
+                      </h3>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {designType === "Wall Decor"
+                          ? "Optional — we still add matching wall pieces around it."
+                          : "Pick the single item you want to shop."}
+                      </p>
+                      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                        {categoryChoices.map((category) => (
+                          <OptionCard
+                            key={category}
+                            label={category}
+                            selected={selection.decorCategory === category}
+                            onClick={() =>
+                              setSelection((s) => ({
+                                ...s,
+                                decorCategory: s.decorCategory === category ? null : category,
+                              }))
+                            }
+                          />
+                        ))}
+                      </div>
+                    </div>
                   ) : null}
                 </div>
               ) : null}
@@ -461,7 +523,7 @@ function StudioPage() {
                       />
                     ))}
                   </div>
-                  {options.densities.length ? (
+                  {options.densities.length && designType !== "Single Item" ? (
                     <div className="mt-8">
                       <h3 className="text-xl">How full should the room be?</h3>
                       <p className="mt-1 text-sm text-muted-foreground">

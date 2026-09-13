@@ -20,7 +20,52 @@ export const BUDGET_RANGES = ["$500 - $1,000", "$1,000 - $3,000", "$3,000+"] as 
 
 export const DISCOUNT_FILTERS = ["20% OFF", "30% OFF", "50% OFF", "Clearance"] as const;
 
+/** What the user wants to design: a whole room, one wall, or a single piece. */
+export const DESIGN_TYPES = [
+  { label: "Full Room", hint: "Design the whole space, furniture and all" },
+  { label: "Wall Decor", hint: "Style one wall — art, frames, shelves, mirrors" },
+  { label: "Single Item", hint: "Shop one decor piece for your space" },
+] as const;
+
+export type DesignType = (typeof DESIGN_TYPES)[number]["label"];
+
+/** Wall-only slots used when the design type is Wall Decor. */
+export const WALL_SLOTS: { category: string; item: string }[] = [
+  { category: "Wall Art", item: "framed wall art set" },
+  { category: "Gallery Frames", item: "gallery wall picture frame set" },
+  { category: "Mirror", item: "decorative wall mirror" },
+  { category: "Shelving", item: "floating wall shelf set" },
+  { category: "Lighting", item: "wall sconce pair" },
+  { category: "Accent", item: "woven wall hanging" },
+];
+
+/** Categories offered for Wall Decor and Single Item designs. */
+export const WALL_CATEGORIES = [
+  "Wall Art",
+  "Gallery Frames",
+  "Wall Mirror",
+  "Floating Shelf",
+  "Wall Clock",
+  "Tapestry / Wall Hanging",
+  "Wall Sconce",
+  "Wall Planter",
+] as const;
+
+export const SINGLE_ITEM_CATEGORIES = [
+  ...WALL_CATEGORIES,
+  "Table Lamp",
+  "Floor Lamp",
+  "Vase",
+  "Throw Pillow",
+  "Area Rug",
+  "Potted Plant",
+  "Sculpture / Figurine",
+  "Storage Basket",
+] as const;
+
 export type DesignSelection = {
+  designType?: DesignType | string | null;
+  decorCategory?: string | null;
   roomType: string;
   roomSize?: string | null;
   itemDensity?: string | null;
@@ -32,6 +77,13 @@ export type DesignSelection = {
   discountFilter?: string | null;
   discountPercent?: number | null;
 };
+
+export function designTypeOf(sel: DesignSelection): DesignType {
+  const value = String(sel.designType ?? "").toLowerCase();
+  if (value.startsWith("wall")) return "Wall Decor";
+  if (value.startsWith("single")) return "Single Item";
+  return "Full Room";
+}
 
 export type AmazonProduct = {
   name: string;
@@ -55,6 +107,25 @@ export const DEFAULT_IMAGE_PROMPT = [
   "{labels}",
 ].join(" ");
 
+/** Wall-decor prompt: one styled wall inside the real room, never a white studio backdrop. */
+export const DEFAULT_WALL_PROMPT = [
+  "A professional, hyper-realistic interior photograph of one decorated feature wall in a {size}{style} {roomType}.",
+  "The camera faces the wall straight on, showing the real room around it — floor, existing furniture edges, natural daylight and realistic shadows. Never a plain white studio background, never a product cut-out or collage.{area}{featured}",
+  "Mount and arrange the wall pieces on the wall exactly as they would hang in a real home, balanced and correctly scaled, within a {budget} budget.",
+  "Shot on a full-frame camera, 35mm lens, magazine editorial quality, no people, no watermarks. Every wall piece must be fully visible inside the frame with at least 10% empty margin on all four sides.",
+  "{labels}",
+].join(" ");
+
+/** Single-item prompt: the chosen piece styled in a real room corner, no white background. */
+export const DEFAULT_SINGLE_PROMPT = [
+  "A professional, hyper-realistic interior photograph of a single {style} decor piece styled inside a real {size}{roomType}.",
+  "The piece is the hero of the frame but sits in a genuine lived-in setting — real wall, floor, soft natural daylight, realistic shadows and gentle depth of field. Never a plain white studio background, never a cut-out product shot.{area}{featured}",
+  "Keep it faithful to the real product's shape, materials and colours, correctly scaled for the space, within a {budget} budget.",
+  "Shot on a full-frame camera, 50mm lens, magazine editorial quality, no people, no watermarks. The piece must be fully visible inside the frame with at least 10% empty margin on all four sides.",
+  "{labels}",
+].join(" ");
+
+
 /** Placeholders available inside the prompt template, with a short explanation. */
 export const PROMPT_PLACEHOLDERS: { token: string; hint: string }[] = [
   { token: "{roomType}", hint: "Chosen room, e.g. living room" },
@@ -74,10 +145,13 @@ export function buildPrompt(
 ): string {
   const size = sel.roomSize ? `${sel.roomSize.toLowerCase()}-sized ` : "";
   const area = sel.squareFeet ? ` The room measures about ${sel.squareFeet} square feet — scale the furniture and layout to that footprint.` : "";
+  const type = designTypeOf(sel);
+  const subject =
+    type === "Wall Decor" ? "wall" : type === "Single Item" ? "scene" : "room";
   const featured = products.length
-    ? ` The room must feature these exact products, rendered faithfully to their real appearance, materials and colours: ${products
+    ? ` The ${subject} must feature these exact products, rendered faithfully to their real appearance, materials and colours: ${products
         .map((p, i) => `(${i + 1}) ${p.category}: ${p.name}${p.description ? ` — ${p.description}` : ""}`)
-        .join("; ")}. Do not invent other major furniture pieces.`
+        .join("; ")}. Do not invent other major ${type === "Full Room" ? "furniture" : "decor"} pieces.`
     : "";
   const density = sel.itemDensity
     ? ` Styled as "${sel.itemDensity}" — roughly ${products.length || sel.itemCount || 6} key pieces in the room.`
@@ -99,7 +173,15 @@ export function buildPrompt(
     labels,
   };
 
-  const source = template?.trim() ? template : DEFAULT_IMAGE_PROMPT;
+  const fallback =
+    type === "Wall Decor"
+      ? DEFAULT_WALL_PROMPT
+      : type === "Single Item"
+        ? DEFAULT_SINGLE_PROMPT
+        : DEFAULT_IMAGE_PROMPT;
+  // The admin-editable template only drives full-room designs; wall and single-item
+  // designs use their own dedicated prompts.
+  const source = type === "Full Room" && template?.trim() ? template : fallback;
   return source
     .replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? values[key]! : match))
     .replace(/[ \t]+/g, " ")
@@ -124,15 +206,40 @@ const EXTRA_SLOTS = [
   { category: "Lighting", item: "table lamp" },
 ];
 
-/** How many products a design should include, based on the chosen room density. */
+/** How many products a design should include, based on design type and room density. */
 export function itemCountFor(sel: DesignSelection): number {
+  const type = designTypeOf(sel);
+  if (type === "Single Item") return 1;
   const raw = Number(sel.itemCount);
+  if (type === "Wall Decor") {
+    if (!Number.isFinite(raw) || raw <= 0) return 4;
+    return Math.min(6, Math.max(2, Math.round(raw)));
+  }
   if (!Number.isFinite(raw) || raw <= 0) return 6;
   return Math.min(12, Math.max(2, Math.round(raw)));
 }
 
-/** Furniture slots for a room, trimmed or extended to match the chosen item count. */
+/** Product slots for the design, trimmed or extended to match the chosen item count. */
 export function slotsFor(sel: DesignSelection): { category: string; item: string }[] {
+  const type = designTypeOf(sel);
+  const category = sel.decorCategory?.trim() || null;
+
+  if (type === "Single Item") {
+    const label = category ?? "decor accent";
+    return [{ category: category ?? "Decor", item: label.toLowerCase() }];
+  }
+
+  if (type === "Wall Decor") {
+    const count = itemCountFor(sel);
+    const wall = [...WALL_SLOTS];
+    if (category) {
+      const match = wall.findIndex((s) => s.category.toLowerCase() === category.toLowerCase());
+      if (match > 0) wall.unshift(...wall.splice(match, 1));
+      else if (match < 0) wall.unshift({ category, item: category.toLowerCase() });
+    }
+    return wall.slice(0, count);
+  }
+
   const base = CATALOG[sel.roomType] ?? GENERIC_SLOTS;
   const count = itemCountFor(sel);
   const slots = base.slice(0, count);
@@ -144,15 +251,28 @@ export function slotsFor(sel: DesignSelection): { category: string; item: string
   return slots;
 }
 
-/** Search queries (one per furniture slot) used to fetch live Amazon products for a room. */
+/** Normalised budget/search weight per slot (equal for wall and single-item designs). */
+export function sharesFor(sel: DesignSelection): number[] {
+  const slots = slotsFor(sel);
+  const type = designTypeOf(sel);
+  const raw =
+    type === "Full Room" ? slots.map((_, i) => SLOT_SHARES[i] ?? 0.1) : slots.map(() => 1);
+  const total = raw.reduce((sum, s) => sum + s, 0) || 1;
+  return raw.map((s) => s / total);
+}
+
+/** Search queries (one per product slot) used to fetch live Amazon products. */
 export function productQueriesFor(sel: DesignSelection): { category: string; query: string; share: number }[] {
   const slots = slotsFor(sel);
-  const shares = slots.map((_, i) => SLOT_SHARES[i] ?? 0.1);
-  const total = shares.reduce((sum, s) => sum + s, 0) || 1;
+  const shares = sharesFor(sel);
+  const type = designTypeOf(sel);
   return slots.map((slot, i) => ({
     category: slot.category,
-    query: `${sel.designStyle} ${slot.item} ${sel.roomType}`.toLowerCase(),
-    share: (shares[i] ?? 0.1) / total,
+    query: (type === "Wall Decor"
+      ? `${sel.designStyle} ${slot.item} wall decor ${sel.roomType}`
+      : `${sel.designStyle} ${slot.item} ${sel.roomType}`
+    ).toLowerCase(),
+    share: shares[i] ?? 1 / slots.length,
   }));
 }
 
@@ -229,11 +349,8 @@ export function budgetTargetFor(sel: DesignSelection): number {
 
 /** Per-slot spend allocation (sums to the room budget). */
 export function budgetAllocationFor(sel: DesignSelection): number[] {
-  const slots = slotsFor(sel);
   const budget = budgetTargetFor(sel);
-  const shares = slots.map((_, i) => SLOT_SHARES[i] ?? 0.1);
-  const total = shares.reduce((sum, s) => sum + s, 0) || 1;
-  return shares.map((s) => (s / total) * budget);
+  return sharesFor(sel).map((s) => s * budget);
 }
 
 export function buildProductList(sel: DesignSelection): AmazonProduct[] {
