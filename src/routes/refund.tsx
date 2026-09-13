@@ -1,4 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+
+import { currency } from "@/lib/decor";
+import { getUnlockPrice } from "@/lib/decor.functions";
 
 export const Route = createFileRoute("/refund")({
   head: () => ({
@@ -21,6 +25,9 @@ export const Route = createFileRoute("/refund")({
 });
 
 function RefundPage() {
+  const priceQuery = useQuery({ queryKey: ["unlock-price"], queryFn: () => getUnlockPrice() });
+  const price = currency(priceQuery.data?.price ?? 2);
+
   return (
     <article className="mx-auto w-full max-w-2xl px-4 py-16">
       <h1 className="text-4xl">Refund Policy</h1>
@@ -30,7 +37,7 @@ function RefundPage() {
         <section>
           <h2 className="text-lg font-medium text-foreground">Digital content unlocks</h2>
           <p>
-            DecorAI sells a one-time micro-payment (currently $2.00) that unlocks the complete
+            DecorAI sells a one-time micro-payment (currently {price}) that unlocks the complete
             Amazon shopping list and itemized purchase links for a specific generated room design.
             This is digital content that is delivered to your account immediately after a
             successful payment.
