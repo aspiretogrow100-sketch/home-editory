@@ -58,10 +58,16 @@ export function buildPrompt(sel: DesignSelection, products: AmazonProduct[] = []
   const density = sel.itemDensity
     ? ` Styled as "${sel.itemDensity}" — roughly ${products.length || sel.itemCount || 6} key pieces in the room.`
     : "";
+  const labels = products.length
+    ? ` Add a short, neat text label next to each featured product naming it (${products
+        .map((p) => p.name)
+        .join(", ")}). Strict layout rules: every product and every text label must sit completely inside the image with a clear empty margin on all four sides — nothing may touch or be cut off by the top, bottom, left or right edge. Keep all labels horizontal, fully legible, not overlapping each other or the products, and pull wall-edge items slightly inward so the whole composition breathes.`
+    : "";
   return [
     `A professional, hyper-realistic interior design photograph of a ${size}${sel.designStyle.toLowerCase()} ${sel.roomType.toLowerCase()}.`,
     `Furnished to a ${sel.budgetRange} budget with cohesive furniture, lighting, textiles and decor.${density}${area}${featured}`,
-    "Shot on a full-frame camera, 24mm lens, soft natural daylight, realistic shadows, magazine editorial quality, no people, no text, no watermarks.",
+    "Shot on a full-frame camera, 24mm lens, soft natural daylight, realistic shadows, magazine editorial quality, no people, no watermarks. Compose with generous headroom: the entire room and all furniture must be fully visible inside the frame, with at least 10% empty margin around every edge.",
+    labels,
   ].join(" ");
 }
 
