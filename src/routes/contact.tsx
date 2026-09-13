@@ -33,6 +33,9 @@ function ContactPage() {
       <p className="mt-2 text-sm text-muted-foreground">
         Support, billing or partnership questions — we usually reply within two business days.
       </p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        DecorAI is operated by Nahidul, Dhaka, Bangladesh.
+      </p>
 
       <div className="surface-card mt-8 space-y-4 p-6">
         <div className="flex items-start gap-3">
@@ -71,10 +74,10 @@ function ContactPage() {
         className="surface-card mt-8 space-y-4 p-6"
         onSubmit={(event) => {
           event.preventDefault();
-          toast.success("Thanks — your message has been noted.");
-          setName("");
-          setEmail("");
-          setMessage("");
+          const subject = encodeURIComponent(`DecorAI enquiry from ${name}`);
+          const body = encodeURIComponent(`${message}\n\n— ${name} (${email})`);
+          window.location.href = `mailto:moumunira00@gmail.com?subject=${subject}&body=${body}`;
+          toast.success("Opening your email app to send the message.");
         }}
       >
         <div className="space-y-1.5">
@@ -105,8 +108,7 @@ function ContactPage() {
           Send message
         </Button>
         <p className="text-xs text-muted-foreground">
-          This form does not send email yet — add an email service when you are ready to receive
-          messages.
+          This opens your email app with the message ready to send to moumunira00@gmail.com.
         </p>
       </form>
     </div>
