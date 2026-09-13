@@ -703,10 +703,19 @@ export const setUnlockPrice = createServerFn({ method: "POST" })
     const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
     if (!isAdmin) throw new Error("Admins only.");
 
-    await supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
       .from("app_settings")
-      .update({ setting_value: data.price.toFixed(2), updated_at: new Date().toISOString() })
-      .eq("setting_key", "unlock_price");
+      .upsert(
+        {
+          setting_key: "unlock_price",
+          setting_value: data.price.toFixed(2),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "setting_key" },
+      );
+    if (error) throw new Error("Could not save the unlock price.");
+
 
     return { price: data.price };
   });
