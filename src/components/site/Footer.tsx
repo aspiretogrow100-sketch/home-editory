@@ -88,7 +88,7 @@ export function Footer() {
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li>
               <Link to="/" className="hover:text-foreground">
-                Design studio
+                Home
               </Link>
             </li>
             <li>
