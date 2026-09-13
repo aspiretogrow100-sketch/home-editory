@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_settings: {
+        Row: {
+          active_image_provider: string
+          id: number
+          openai_api_key: string | null
+          replicate_api_key: string | null
+          replicate_model: string
+          updated_at: string
+        }
+        Insert: {
+          active_image_provider?: string
+          id?: number
+          openai_api_key?: string | null
+          replicate_api_key?: string | null
+          replicate_model?: string
+          updated_at?: string
+        }
+        Update: {
+          active_image_provider?: string
+          id?: number
+          openai_api_key?: string | null
+          replicate_api_key?: string | null
+          replicate_model?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       amazon_settings: {
         Row: {
           creators_client_id: string | null

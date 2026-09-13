@@ -48,40 +48,11 @@ function bearerToken(): string | null {
   return token.split(".").length === 3 ? token : null;
 }
 
-function gatewayUrl(): string {
-  const base = (process.env["AGW_URL"] ?? "https://ai.gateway.lovable.dev").replace(/\/$/, "");
-  return base.endsWith("/v1") ? `${base}/chat/completions` : `${base}/v1/chat/completions`;
-}
-
 async function generateRoomImage(prompt: string): Promise<string> {
-  const response = await fetch(gatewayUrl(), {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env["LOVABLE_API_KEY"]}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "google/gemini-3.1-flash-image",
-      messages: [{ role: "user", content: prompt }],
-      modalities: ["image", "text"],
-    }),
-  });
-
-  if (!response.ok) {
-    const detail = await response.text();
-    console.error("[decorai] image generation failed", response.status, detail);
-    if (response.status === 429) throw new Error("Too many requests right now. Try again in a moment.");
-    if (response.status === 402) throw new Error("Image credits are exhausted. Please try again later.");
-    throw new Error("The design engine could not create this room. Please try again.");
-  }
-
-  const payload = (await response.json()) as {
-    choices?: { message?: { images?: { image_url?: { url?: string } }[] } }[];
-  };
-  const dataUrl = payload.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-  if (!dataUrl) throw new Error("The design engine returned no image. Please try again.");
-  return dataUrl;
+  const { generateRoomImage: generate } = await import("./imageai.server");
+  return await generate(prompt);
 }
+
 
 function dataUrlToBytes(dataUrl: string): { bytes: Uint8Array; contentType: string } {
   const [meta, base64] = dataUrl.split(",");
@@ -805,4 +776,70 @@ export const setImagePromptTemplate = createServerFn({ method: "POST" })
     if (error) throw new Error("Could not save the prompt.");
 
     return { template: value };
+  });
+
+// ---------- AI image generator settings (admin only; keys never leave the server) ----------
+
+export type AiSettingsView = {
+  provider: "lovable" | "openai" | "replicate";
+  replicateModel: string;
+  openaiKeyHint: string | null;
+  replicateKeyHint: string | null;
+};
+
+export const getAiSettings = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<AiSettingsView> => {
+    await assertAdmin(context);
+    const { loadAiConfig } = await import("./imageai.server");
+    const cfg = await loadAiConfig();
+    return {
+      provider: cfg.provider,
+      replicateModel: cfg.replicateModel,
+      openaiKeyHint: hint(cfg.openaiApiKey),
+      replicateKeyHint: hint(cfg.replicateApiKey),
+    };
+  });
+
+export const saveAiSettings = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (input: {
+      provider: string;
+      replicateModel?: string;
+      openaiApiKey?: string;
+      replicateApiKey?: string;
+    }) => {
+      const provider =
+        input?.provider === "openai" ? "openai" : input?.provider === "replicate" ? "replicate" : "lovable";
+      const clean = (v?: string) => {
+        const s = String(v ?? "").trim();
+        return s ? s.slice(0, 400) : null; // empty = keep existing
+      };
+      return {
+        provider,
+        replicateModel: String(input?.replicateModel ?? "").trim().slice(0, 200),
+        openaiApiKey: clean(input.openaiApiKey),
+        replicateApiKey: clean(input.replicateApiKey),
+      };
+    },
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { DEFAULT_REPLICATE_MODEL } = await import("./imageai.server");
+    const patch: Database["public"]["Tables"]["ai_settings"]["Update"] = {
+      active_image_provider: data.provider,
+      replicate_model: data.replicateModel || DEFAULT_REPLICATE_MODEL,
+    };
+    if (data.openaiApiKey) patch.openai_api_key = data.openaiApiKey;
+    if (data.replicateApiKey) patch.replicate_api_key = data.replicateApiKey;
+    const { error } = await supabaseAdmin
+      .from("ai_settings")
+      .upsert({ id: 1, ...patch }, { onConflict: "id" });
+    if (error) {
+      console.error("[decorai] ai settings save failed", error.message);
+      throw new Error("Could not save the AI generator settings.");
+    }
+    return { saved: true };
   });
