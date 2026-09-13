@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { ExternalLink, Lock } from "lucide-react";
+import { ExternalLink, Image as ImageIcon, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 import { AdSlot } from "@/components/site/AdSlot";
@@ -223,7 +223,19 @@ function GalleryPage() {
                       key={product.asin ?? product.name}
                       className="flex items-center justify-between gap-3 py-3"
                     >
-                      <div className="min-w-0">
+                      {product.image ? (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          loading="lazy"
+                          className="size-12 shrink-0 rounded-full border border-border bg-background object-cover"
+                        />
+                      ) : (
+                        <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground">
+                          <ImageIcon className="size-4" />
+                        </span>
+                      )}
+                      <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium">{product.name}</p>
                         <p className="text-xs text-muted-foreground">{product.category}</p>
                       </div>
