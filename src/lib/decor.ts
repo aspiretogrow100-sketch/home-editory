@@ -251,15 +251,28 @@ export function slotsFor(sel: DesignSelection): { category: string; item: string
   return slots;
 }
 
-/** Search queries (one per furniture slot) used to fetch live Amazon products for a room. */
+/** Normalised budget/search weight per slot (equal for wall and single-item designs). */
+export function sharesFor(sel: DesignSelection): number[] {
+  const slots = slotsFor(sel);
+  const type = designTypeOf(sel);
+  const raw =
+    type === "Full Room" ? slots.map((_, i) => SLOT_SHARES[i] ?? 0.1) : slots.map(() => 1);
+  const total = raw.reduce((sum, s) => sum + s, 0) || 1;
+  return raw.map((s) => s / total);
+}
+
+/** Search queries (one per product slot) used to fetch live Amazon products. */
 export function productQueriesFor(sel: DesignSelection): { category: string; query: string; share: number }[] {
   const slots = slotsFor(sel);
-  const shares = slots.map((_, i) => SLOT_SHARES[i] ?? 0.1);
-  const total = shares.reduce((sum, s) => sum + s, 0) || 1;
+  const shares = sharesFor(sel);
+  const type = designTypeOf(sel);
   return slots.map((slot, i) => ({
     category: slot.category,
-    query: `${sel.designStyle} ${slot.item} ${sel.roomType}`.toLowerCase(),
-    share: (shares[i] ?? 0.1) / total,
+    query: (type === "Wall Decor"
+      ? `${sel.designStyle} ${slot.item} wall decor ${sel.roomType}`
+      : `${sel.designStyle} ${slot.item} ${sel.roomType}`
+    ).toLowerCase(),
+    share: shares[i] ?? 1 / slots.length,
   }));
 }
 
