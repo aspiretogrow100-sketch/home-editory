@@ -206,15 +206,40 @@ const EXTRA_SLOTS = [
   { category: "Lighting", item: "table lamp" },
 ];
 
-/** How many products a design should include, based on the chosen room density. */
+/** How many products a design should include, based on design type and room density. */
 export function itemCountFor(sel: DesignSelection): number {
+  const type = designTypeOf(sel);
+  if (type === "Single Item") return 1;
   const raw = Number(sel.itemCount);
+  if (type === "Wall Decor") {
+    if (!Number.isFinite(raw) || raw <= 0) return 4;
+    return Math.min(6, Math.max(2, Math.round(raw)));
+  }
   if (!Number.isFinite(raw) || raw <= 0) return 6;
   return Math.min(12, Math.max(2, Math.round(raw)));
 }
 
-/** Furniture slots for a room, trimmed or extended to match the chosen item count. */
+/** Product slots for the design, trimmed or extended to match the chosen item count. */
 export function slotsFor(sel: DesignSelection): { category: string; item: string }[] {
+  const type = designTypeOf(sel);
+  const category = sel.decorCategory?.trim() || null;
+
+  if (type === "Single Item") {
+    const label = category ?? "decor accent";
+    return [{ category: category ?? "Decor", item: label.toLowerCase() }];
+  }
+
+  if (type === "Wall Decor") {
+    const count = itemCountFor(sel);
+    const wall = [...WALL_SLOTS];
+    if (category) {
+      const match = wall.findIndex((s) => s.category.toLowerCase() === category.toLowerCase());
+      if (match > 0) wall.unshift(...wall.splice(match, 1));
+      else if (match < 0) wall.unshift({ category, item: category.toLowerCase() });
+    }
+    return wall.slice(0, count);
+  }
+
   const base = CATALOG[sel.roomType] ?? GENERIC_SLOTS;
   const count = itemCountFor(sel);
   const slots = base.slice(0, count);
