@@ -41,9 +41,13 @@ export function ShoppingList({ products, unlocked, price, busy, onUnlock }: Prop
                   src={product.image}
                   alt={product.name}
                   loading="lazy"
-                  className="size-12 shrink-0 rounded-md border border-border object-contain"
+                  className="size-14 shrink-0 rounded-full border border-border bg-background object-cover"
                 />
-              ) : null}
+              ) : (
+                <span className="flex size-14 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground">
+                  <ImageIcon className="size-5" />
+                </span>
+              )}
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{product.name}</p>
                 <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
