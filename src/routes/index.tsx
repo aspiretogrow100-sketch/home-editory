@@ -143,9 +143,10 @@ const FEATURES = [
 
 const FAQS = [
   {
-    question: "How does the $2.00 unlock work?",
+    question: "How does the {price} unlock work?",
     answer:
-      "Paying a one-time micro-payment of $2.00 unlocks the complete Amazon shopping list and itemized direct links for that specific room design.",
+      "Paying a one-time micro-payment of {price} unlocks the complete Amazon shopping list and itemized direct links for that specific room design.",
+
   },
   {
     question: "Is the shopping list globally unlocked?",
