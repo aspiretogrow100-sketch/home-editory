@@ -185,6 +185,36 @@ export type Database = {
         }
         Relationships: []
       }
+      paddle_settings: {
+        Row: {
+          api_key: string | null
+          client_token: string | null
+          environment: string
+          id: number
+          price_id: string | null
+          updated_at: string
+          webhook_secret: string | null
+        }
+        Insert: {
+          api_key?: string | null
+          client_token?: string | null
+          environment?: string
+          id?: number
+          price_id?: string | null
+          updated_at?: string
+          webhook_secret?: string | null
+        }
+        Update: {
+          api_key?: string | null
+          client_token?: string | null
+          environment?: string
+          id?: number
+          price_id?: string | null
+          updated_at?: string
+          webhook_secret?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
