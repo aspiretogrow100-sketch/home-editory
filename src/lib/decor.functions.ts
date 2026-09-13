@@ -777,3 +777,69 @@ export const setImagePromptTemplate = createServerFn({ method: "POST" })
 
     return { template: value };
   });
+
+// ---------- AI image generator settings (admin only; keys never leave the server) ----------
+
+export type AiSettingsView = {
+  provider: "lovable" | "openai" | "replicate";
+  replicateModel: string;
+  openaiKeyHint: string | null;
+  replicateKeyHint: string | null;
+};
+
+export const getAiSettings = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<AiSettingsView> => {
+    await assertAdmin(context);
+    const { loadAiConfig } = await import("./imageai.server");
+    const cfg = await loadAiConfig();
+    return {
+      provider: cfg.provider,
+      replicateModel: cfg.replicateModel,
+      openaiKeyHint: hint(cfg.openaiApiKey),
+      replicateKeyHint: hint(cfg.replicateApiKey),
+    };
+  });
+
+export const saveAiSettings = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (input: {
+      provider: string;
+      replicateModel?: string;
+      openaiApiKey?: string;
+      replicateApiKey?: string;
+    }) => {
+      const provider =
+        input?.provider === "openai" ? "openai" : input?.provider === "replicate" ? "replicate" : "lovable";
+      const clean = (v?: string) => {
+        const s = String(v ?? "").trim();
+        return s ? s.slice(0, 400) : null; // empty = keep existing
+      };
+      return {
+        provider,
+        replicateModel: String(input?.replicateModel ?? "").trim().slice(0, 200),
+        openaiApiKey: clean(input.openaiApiKey),
+        replicateApiKey: clean(input.replicateApiKey),
+      };
+    },
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { DEFAULT_REPLICATE_MODEL } = await import("./imageai.server");
+    const patch: Database["public"]["Tables"]["ai_settings"]["Update"] = {
+      active_image_provider: data.provider,
+      replicate_model: data.replicateModel || DEFAULT_REPLICATE_MODEL,
+    };
+    if (data.openaiApiKey) patch.openai_api_key = data.openaiApiKey;
+    if (data.replicateApiKey) patch.replicate_api_key = data.replicateApiKey;
+    const { error } = await supabaseAdmin
+      .from("ai_settings")
+      .upsert({ id: 1, ...patch }, { onConflict: "id" });
+    if (error) {
+      console.error("[decorai] ai settings save failed", error.message);
+      throw new Error("Could not save the AI generator settings.");
+    }
+    return { saved: true };
+  });
