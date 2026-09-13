@@ -42,8 +42,6 @@ const SOCIALS: {
 export function Footer() {
   const socialQuery = useQuery({ queryKey: ["social-links"], queryFn: () => getSocialLinks() });
   const links = socialQuery.data;
-  const active = SOCIALS.filter((s) => links?.[s.key]);
-
 
   return (
     <footer className="mt-20 border-t border-border bg-secondary/50">
@@ -53,23 +51,35 @@ export function Footer() {
           <p className="mt-2 max-w-xs text-sm text-muted-foreground">
             Photoreal room concepts, paired with a shoppable list of discounted Amazon finds.
           </p>
-          {active.length > 0 ? (
-            <div className="mt-5 flex items-center gap-3">
-              {active.map(({ key, label, Icon }) => (
+          <div className="mt-5 flex items-center gap-3">
+            {SOCIALS.map(({ key, label, Icon }) => {
+              const href = links?.[key];
+              const className =
+                "flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary";
+              return href ? (
                 <a
                   key={key}
-                  href={links![key]}
+                  href={href}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
                   title={label}
-                  className="flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                  className={className}
                 >
                   <Icon className="size-4" />
                 </a>
-              ))}
-            </div>
-          ) : null}
+              ) : (
+                <span
+                  key={key}
+                  aria-label={label}
+                  title={label}
+                  className={`${className} opacity-50`}
+                >
+                  <Icon className="size-4" />
+                </span>
+              );
+            })}
+          </div>
         </div>
 
         <div>
