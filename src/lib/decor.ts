@@ -145,10 +145,13 @@ export function buildPrompt(
 ): string {
   const size = sel.roomSize ? `${sel.roomSize.toLowerCase()}-sized ` : "";
   const area = sel.squareFeet ? ` The room measures about ${sel.squareFeet} square feet — scale the furniture and layout to that footprint.` : "";
+  const type = designTypeOf(sel);
+  const subject =
+    type === "Wall Decor" ? "wall" : type === "Single Item" ? "scene" : "room";
   const featured = products.length
-    ? ` The room must feature these exact products, rendered faithfully to their real appearance, materials and colours: ${products
+    ? ` The ${subject} must feature these exact products, rendered faithfully to their real appearance, materials and colours: ${products
         .map((p, i) => `(${i + 1}) ${p.category}: ${p.name}${p.description ? ` — ${p.description}` : ""}`)
-        .join("; ")}. Do not invent other major furniture pieces.`
+        .join("; ")}. Do not invent other major ${type === "Full Room" ? "furniture" : "decor"} pieces.`
     : "";
   const density = sel.itemDensity
     ? ` Styled as "${sel.itemDensity}" — roughly ${products.length || sel.itemCount || 6} key pieces in the room.`
