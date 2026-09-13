@@ -867,13 +867,14 @@ function StudioPage() {
             {FAQS.map((item, index) => (
               <AccordionItem key={item.question} value={`faq-${index}`}>
                 <AccordionTrigger className="py-5 text-left text-base hover:no-underline md:text-lg">
-                  {item.question}
+                  {item.question.replaceAll("{price}", currency(price))}
                 </AccordionTrigger>
                 <AccordionContent className="max-w-2xl pb-5 text-sm leading-6 text-muted-foreground md:text-base">
-                  {item.answer}
+                  {item.answer.replaceAll("{price}", currency(price))}
                 </AccordionContent>
               </AccordionItem>
             ))}
+
           </Accordion>
         </div>
       </section>
