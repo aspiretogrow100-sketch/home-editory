@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequestHeader } from "@tanstack/react-start/server";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
@@ -59,7 +60,9 @@ export const getPaddleSettings = createServerFn({ method: "POST" })
     await assertAdmin(context as never);
     const { loadPaddleConfig } = await import("./paddle.server");
     const cfg = await loadPaddleConfig();
-    const origin = process.env["VITE_PUBLIC_SITE_URL"] ?? "";
+    const host = getRequestHeader("host") ?? "";
+    const proto = host.startsWith("localhost") ? "http" : "https";
+    const origin = host ? `${proto}://${host}` : "";
     return {
       environment: cfg.environment,
       clientToken: cfg.clientToken,

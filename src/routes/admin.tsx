@@ -37,6 +37,7 @@ import {
   setUnlockPrice,
   testAmazonConnection,
 } from "@/lib/decor.functions";
+import { getPaddleSettings, savePaddleSettings } from "@/lib/paddle.functions";
 
 function AiSettingsPanel() {
   const queryClient = useQueryClient();
@@ -441,6 +442,7 @@ function AdminPage() {
           <TabsTrigger value="prompt">Image prompt</TabsTrigger>
           <TabsTrigger value="ai">AI generator</TabsTrigger>
           <TabsTrigger value="amazon">Amazon settings</TabsTrigger>
+          <TabsTrigger value="paddle">Payments</TabsTrigger>
 
         </TabsList>
 
@@ -515,6 +517,10 @@ function AdminPage() {
 
         <TabsContent value="ai">
           <AiSettingsPanel />
+        </TabsContent>
+
+        <TabsContent value="paddle">
+          <PaddlePanel />
         </TabsContent>
 
         <TabsContent value="amazon">
