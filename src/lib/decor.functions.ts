@@ -703,10 +703,19 @@ export const setUnlockPrice = createServerFn({ method: "POST" })
     const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
     if (!isAdmin) throw new Error("Admins only.");
 
-    await supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
       .from("app_settings")
-      .update({ setting_value: data.price.toFixed(2), updated_at: new Date().toISOString() })
-      .eq("setting_key", "unlock_price");
+      .upsert(
+        {
+          setting_key: "unlock_price",
+          setting_value: data.price.toFixed(2),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "setting_key" },
+      );
+    if (error) throw new Error("Could not save the unlock price.");
+
 
     return { price: data.price };
   });
@@ -842,4 +851,60 @@ export const saveAiSettings = createServerFn({ method: "POST" })
       throw new Error("Could not save the AI generator settings.");
     }
     return { saved: true };
+  });
+
+// ---------- Social profile links ----------
+
+export const SOCIAL_KEYS = ["facebook", "instagram", "tiktok", "pinterest"] as const;
+export type SocialNetwork = (typeof SOCIAL_KEYS)[number];
+export type SocialLinks = Record<SocialNetwork, string>;
+
+const emptySocials = (): SocialLinks => ({ facebook: "", instagram: "", tiktok: "", pinterest: "" });
+
+/** Public: read the social profile links shown in the footer. */
+export const getSocialLinks = createServerFn({ method: "GET" }).handler(async (): Promise<SocialLinks> => {
+  const { data } = await publicClient()
+    .from("app_settings")
+    .select("setting_key, setting_value")
+    .in(
+      "setting_key",
+      SOCIAL_KEYS.map((k) => `social_${k}`),
+    );
+
+  const links = emptySocials();
+  for (const row of data ?? []) {
+    const key = row.setting_key.replace("social_", "") as SocialNetwork;
+    if (SOCIAL_KEYS.includes(key)) links[key] = row.setting_value ?? "";
+  }
+  return links;
+});
+
+/** Admin: save the social profile links. */
+export const setSocialLinks = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: Partial<SocialLinks>) => {
+    const out = emptySocials();
+    for (const key of SOCIAL_KEYS) {
+      const value = String(input?.[key] ?? "").trim().slice(0, 500);
+      if (value && !/^https?:\/\//i.test(value)) {
+        throw new Error(`The ${key} link must start with https://`);
+      }
+      out[key] = value;
+    }
+    return out;
+  })
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const now = new Date().toISOString();
+    const { error } = await supabaseAdmin.from("app_settings").upsert(
+      SOCIAL_KEYS.map((key) => ({
+        setting_key: `social_${key}`,
+        setting_value: data[key],
+        updated_at: now,
+      })),
+      { onConflict: "setting_key" },
+    );
+    if (error) throw new Error("Could not save the social links.");
+    return data;
   });

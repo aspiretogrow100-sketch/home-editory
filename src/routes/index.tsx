@@ -143,9 +143,10 @@ const FEATURES = [
 
 const FAQS = [
   {
-    question: "How does the $2.00 unlock work?",
+    question: "How does the {price} unlock work?",
     answer:
-      "Paying a one-time micro-payment of $2.00 unlocks the complete Amazon shopping list and itemized direct links for that specific room design.",
+      "Paying a one-time micro-payment of {price} unlocks the complete Amazon shopping list and itemized direct links for that specific room design.",
+
   },
   {
     question: "Is the shopping list globally unlocked?",
@@ -866,13 +867,14 @@ function StudioPage() {
             {FAQS.map((item, index) => (
               <AccordionItem key={item.question} value={`faq-${index}`}>
                 <AccordionTrigger className="py-5 text-left text-base hover:no-underline md:text-lg">
-                  {item.question}
+                  {item.question.replaceAll("{price}", currency(price))}
                 </AccordionTrigger>
                 <AccordionContent className="max-w-2xl pb-5 text-sm leading-6 text-muted-foreground md:text-base">
-                  {item.answer}
+                  {item.answer.replaceAll("{price}", currency(price))}
                 </AccordionContent>
               </AccordionItem>
             ))}
+
           </Accordion>
         </div>
       </section>

@@ -1,4 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+
+import { currency } from "@/lib/decor";
+import { getUnlockPrice } from "@/lib/decor.functions";
 
 export const Route = createFileRoute("/terms")({
   head: () => ({
@@ -16,6 +20,9 @@ export const Route = createFileRoute("/terms")({
 });
 
 function TermsPage() {
+  const priceQuery = useQuery({ queryKey: ["unlock-price"], queryFn: () => getUnlockPrice() });
+  const price = currency(priceQuery.data?.price ?? 2);
+
   return (
     <article className="mx-auto w-full max-w-3xl space-y-5 px-4 py-16 text-sm leading-relaxed text-muted-foreground">
       <h1 className="text-4xl text-foreground">Terms &amp; Conditions</h1>
@@ -36,8 +43,8 @@ function TermsPage() {
 
       <h2 className="pt-4 text-2xl text-foreground">What we sell</h2>
       <p>
-        DecorAI generates AI interior design concepts for a room you describe. A one-time payment of
-        $2.00 USD unlocks the full itemized shopping list and product links for that design. There is
+        DecorAI generates AI interior design concepts for a room you describe. A one-time payment of{" "}
+        {price} USD unlocks the full itemized shopping list and product links for that design. There is
         no subscription and no recurring charge.
       </p>
 
