@@ -127,7 +127,7 @@ export const Route = createFileRoute("/")({
   component: StudioPage,
 });
 
-const STEPS = ["Room", "Size", "Style", "Budget / Colour", "Deals"] as const;
+const STEPS = ["Type & Room", "Size", "Style", "Budget / Colour", "Deals"] as const;
 
 const FEATURES = [
   {
