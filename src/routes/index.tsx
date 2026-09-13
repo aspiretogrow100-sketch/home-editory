@@ -249,7 +249,7 @@ function StudioPage() {
   }, [optionsQuery.data]);
 
   const designType = selection.designType ?? "Full Room";
-  const categoryChoices: string[] =
+  const categoryChoices: readonly string[] =
     designType === "Wall Decor" ? WALL_CATEGORIES : SINGLE_ITEM_CATEGORIES;
 
 
