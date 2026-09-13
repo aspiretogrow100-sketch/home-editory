@@ -667,11 +667,32 @@ export const getAdminOverview = createServerFn({ method: "POST" })
     const rows = transactions.data ?? [];
     const emails = new Map<string, string>();
     if (rows.length) {
+      const userIds = Array.from(new Set(rows.map((r) => r.user_id)));
       const { data: profiles } = await supabaseAdmin
         .from("profiles")
         .select("user_id, email")
-        .in("user_id", Array.from(new Set(rows.map((r) => r.user_id))));
-      for (const profile of profiles ?? []) emails.set(profile.user_id, profile.email ?? "unknown");
+        .in("user_id", userIds);
+      for (const profile of profiles ?? []) {
+        if (profile.email) emails.set(profile.user_id, profile.email);
+      }
+
+      const missing = userIds.filter((id) => !emails.has(id));
+      if (missing.length) {
+        const users = await Promise.all(
+          missing.map(async (id) => {
+            try {
+              const { data, error } = await supabaseAdmin.auth.admin.getUserById(id);
+              if (error || !data?.user) return null;
+              return { id, email: data.user.email };
+            } catch {
+              return null;
+            }
+          }),
+        );
+        for (const u of users) {
+          if (u?.email) emails.set(u.id, u.email);
+        }
+      }
     }
 
     const revenue = rows
