@@ -426,7 +426,9 @@ export const saveAmazonSettings = createServerFn({ method: "POST" })
     if (data.paapiSecretKey) patch.paapi_secret_key = data.paapiSecretKey;
     if (data.creatorsClientId) patch.creators_client_id = data.creatorsClientId;
     if (data.creatorsClientSecret) patch.creators_client_secret = data.creatorsClientSecret;
-    const { error } = await supabaseAdmin.from("amazon_settings").update(patch).eq("id", 1);
+    const { error } = await supabaseAdmin
+      .from("amazon_settings")
+      .upsert({ id: 1, ...patch }, { onConflict: "id" });
     if (error) {
       console.error("[decorai] amazon settings save failed", error.message);
       throw new Error("Could not save the Amazon settings.");
