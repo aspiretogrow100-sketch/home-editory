@@ -214,7 +214,9 @@ function StudioPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [step, setStep] = useState(0);
-  const [selection, setSelection] = useState<Partial<DesignSelection>>({});
+  const [selection, setSelection] = useState<Partial<DesignSelection>>({
+    designType: "Full Room",
+  });
   const [customStyle, setCustomStyle] = useState("");
   const [customBudget, setCustomBudget] = useState("");
   const [palette, setPalette] = useState<string | null>(null);
