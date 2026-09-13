@@ -33,8 +33,12 @@ import {
   saveAiSettings,
   saveAmazonSettings,
   saveDesignOption,
+  getSocialLinks,
   setImagePromptTemplate,
+  setSocialLinks,
   setUnlockPrice,
+  SOCIAL_KEYS,
+  type SocialLinks,
   testAmazonConnection,
 } from "@/lib/decor.functions";
 import { getPaddleSettings, savePaddleSettings } from "@/lib/paddle.functions";
@@ -443,6 +447,7 @@ function AdminPage() {
           <TabsTrigger value="ai">AI generator</TabsTrigger>
           <TabsTrigger value="amazon">Amazon settings</TabsTrigger>
           <TabsTrigger value="paddle">Payments</TabsTrigger>
+          <TabsTrigger value="social">Social links</TabsTrigger>
 
         </TabsList>
 
@@ -525,6 +530,10 @@ function AdminPage() {
 
         <TabsContent value="amazon">
           <AmazonSettingsPanel />
+        </TabsContent>
+
+        <TabsContent value="social">
+          <SocialLinksPanel />
         </TabsContent>
 
       </Tabs>
@@ -1030,3 +1039,67 @@ function DesignOptionsManager() {
   );
 }
 
+
+const SOCIAL_LABELS: Record<string, string> = {
+  facebook: "Facebook page URL",
+  instagram: "Instagram profile URL",
+  tiktok: "TikTok profile URL",
+  pinterest: "Pinterest profile URL",
+};
+
+function SocialLinksPanel() {
+  const queryClient = useQueryClient();
+  const save = useServerFn(setSocialLinks);
+
+  const links = useQuery({ queryKey: ["social-links"], queryFn: () => getSocialLinks() });
+  const [form, setForm] = useState<SocialLinks>({
+    facebook: "",
+    instagram: "",
+    tiktok: "",
+    pinterest: "",
+  });
+
+  useEffect(() => {
+    if (links.data) setForm(links.data);
+  }, [links.data]);
+
+  const saveMutation = useMutation({
+    mutationFn: () => save({ data: form }),
+    onSuccess: () => {
+      toast.success("Social links saved.");
+      queryClient.invalidateQueries({ queryKey: ["social-links"] });
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  return (
+    <div className="surface-card mt-4 max-w-xl p-6">
+      <h2 className="text-2xl">Social profile links</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Paste full links starting with https://. Empty fields are hidden from the footer.
+      </p>
+
+      <div className="mt-6 space-y-4">
+        {SOCIAL_KEYS.map((key) => (
+          <div key={key} className="space-y-1.5">
+            <Label htmlFor={`social-${key}`}>{SOCIAL_LABELS[key]}</Label>
+            <Input
+              id={`social-${key}`}
+              placeholder={`https://www.${key}.com/decorai`}
+              value={form[key]}
+              onChange={(event) => setForm({ ...form, [key]: event.target.value })}
+            />
+          </div>
+        ))}
+      </div>
+
+      <Button
+        className="mt-6"
+        onClick={() => saveMutation.mutate()}
+        disabled={saveMutation.isPending}
+      >
+        {saveMutation.isPending ? "Saving…" : "Save links"}
+      </Button>
+    </div>
+  );
+}
