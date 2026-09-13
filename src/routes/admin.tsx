@@ -26,15 +26,153 @@ import {
   claimFirstAdmin,
   deleteDesignOption,
   getAdminOverview,
+  getAiSettings,
   getAmazonSettings,
   getImagePromptTemplate,
   listAllDesignOptions,
+  saveAiSettings,
   saveAmazonSettings,
   saveDesignOption,
   setImagePromptTemplate,
   setUnlockPrice,
   testAmazonConnection,
 } from "@/lib/decor.functions";
+
+function AiSettingsPanel() {
+  const queryClient = useQueryClient();
+  const load = useServerFn(getAiSettings);
+  const save = useServerFn(saveAiSettings);
+
+  const settings = useQuery({
+    queryKey: ["ai-settings"],
+    queryFn: () => load({ data: undefined }),
+  });
+
+  const [form, setForm] = useState({
+    provider: "lovable" as "lovable" | "openai" | "replicate",
+    replicateModel: "black-forest-labs/flux-1.1-pro",
+    openaiApiKey: "",
+    replicateApiKey: "",
+  });
+
+  useEffect(() => {
+    if (settings.data) {
+      setForm((f) => ({
+        ...f,
+        provider: settings.data.provider,
+        replicateModel: settings.data.replicateModel,
+      }));
+    }
+  }, [settings.data]);
+
+  const saveMutation = useMutation({
+    mutationFn: () => save({ data: form }),
+    onSuccess: () => {
+      toast.success("AI generator settings saved.");
+      setForm((f) => ({ ...f, openaiApiKey: "", replicateApiKey: "" }));
+      queryClient.invalidateQueries({ queryKey: ["ai-settings"] });
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  const d = settings.data;
+
+  return (
+    <div className="surface-card mt-4 max-w-2xl p-6">
+      <div className="flex items-center gap-2">
+        <Sparkles className="size-5 text-primary" />
+        <h2 className="text-2xl">AI generator settings</h2>
+      </div>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Choose which model renders room images. Keys stay on the server — leave a key field empty to
+        keep the saved value.
+      </p>
+
+      <div className="mt-6 space-y-2">
+        <Label>Active image generation model</Label>
+        <RadioGroup
+          value={form.provider}
+          onValueChange={(v) => setForm({ ...form, provider: v as typeof form.provider })}
+          className="grid gap-3 sm:grid-cols-3"
+        >
+          <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-4">
+            <RadioGroupItem value="lovable" id="ai-lovable" className="mt-0.5" />
+            <span>
+              <span className="block text-sm font-medium">Built-in AI</span>
+              <span className="block text-xs text-muted-foreground">No key needed. Current default.</span>
+            </span>
+          </label>
+          <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-4">
+            <RadioGroupItem value="openai" id="ai-openai" className="mt-0.5" />
+            <span>
+              <span className="block text-sm font-medium">DALL·E 3</span>
+              <span className="block text-xs text-muted-foreground">Uses your OpenAI key.</span>
+            </span>
+          </label>
+          <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-4">
+            <RadioGroupItem value="replicate" id="ai-replicate" className="mt-0.5" />
+            <span>
+              <span className="block text-sm font-medium">Replicate</span>
+              <span className="block text-xs text-muted-foreground">Flux.1 / SDXL models.</span>
+            </span>
+          </label>
+        </RadioGroup>
+      </div>
+
+      <div className="mt-6 grid gap-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="openai-key">OpenAI API key</Label>
+          <Input
+            id="openai-key"
+            type="password"
+            autoComplete="off"
+            placeholder={d?.openaiKeyHint ?? "sk-..."}
+            value={form.openaiApiKey}
+            onChange={(e) => setForm({ ...form, openaiApiKey: e.target.value })}
+          />
+          {d?.openaiKeyHint ? (
+            <p className="text-xs text-muted-foreground">Saved key: {d.openaiKeyHint}</p>
+          ) : null}
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="replicate-key">Replicate API key</Label>
+          <Input
+            id="replicate-key"
+            type="password"
+            autoComplete="off"
+            placeholder={d?.replicateKeyHint ?? "r8_..."}
+            value={form.replicateApiKey}
+            onChange={(e) => setForm({ ...form, replicateApiKey: e.target.value })}
+          />
+          {d?.replicateKeyHint ? (
+            <p className="text-xs text-muted-foreground">Saved key: {d.replicateKeyHint}</p>
+          ) : null}
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="replicate-model">Replicate model</Label>
+          <Input
+            id="replicate-model"
+            placeholder="black-forest-labs/flux-1.1-pro"
+            value={form.replicateModel}
+            onChange={(e) => setForm({ ...form, replicateModel: e.target.value })}
+          />
+          <p className="text-xs text-muted-foreground">
+            For example black-forest-labs/flux-1.1-pro or stability-ai/sdxl.
+          </p>
+        </div>
+      </div>
+
+      <Button
+        className="mt-6"
+        onClick={() => saveMutation.mutate()}
+        disabled={saveMutation.isPending || settings.isLoading}
+      >
+        {saveMutation.isPending ? "Saving..." : "Save changes"}
+      </Button>
+    </div>
+  );
+}
+
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
