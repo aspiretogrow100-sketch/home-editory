@@ -253,6 +253,12 @@ function StudioPage() {
   const designType = selection.designType ?? "Full Room";
   const categoryChoices: readonly string[] =
     designType === "Wall Decor" ? WALL_CATEGORIES : SINGLE_ITEM_CATEGORIES;
+  const customRoom = options.rooms.some((room) => room.label === selection.roomType)
+    ? ""
+    : (selection.roomType ?? "");
+  const customPiece = categoryChoices.includes(selection.decorCategory ?? "")
+    ? ""
+    : (selection.decorCategory ?? "");
 
 
   const runGenerate = useServerFn(generateDesign);
@@ -473,6 +479,22 @@ function StudioPage() {
                     </p>
                   ) : null}
 
+                  <div className="mt-5 max-w-sm space-y-1.5">
+                    <Label htmlFor="custom-room">Not listed? Type your own room</Label>
+                    <Input
+                      id="custom-room"
+                      placeholder="e.g. Sunroom, Music Studio, Prayer Room"
+                      value={customRoom}
+                      onChange={(event) => {
+                        const value = event.target.value;
+                        setSelection((s) => ({ ...s, roomType: value }));
+                      }}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      We design and shop for exactly what you type here.
+                    </p>
+                  </div>
+
                   {designType !== "Full Room" ? (
                     <div className="mt-8">
                       <h3 className="text-xl">
@@ -497,6 +519,21 @@ function StudioPage() {
                             }
                           />
                         ))}
+                      </div>
+                      <div className="mt-5 max-w-sm space-y-1.5">
+                        <Label htmlFor="custom-piece">Not listed? Type your own piece</Label>
+                        <Input
+                          id="custom-piece"
+                          placeholder="e.g. Neon Sign, Macrame Hanger, Vintage Poster"
+                          value={customPiece}
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            setSelection((s) => ({ ...s, decorCategory: value || null }));
+                          }}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          We design and shop for exactly what you type here.
+                        </p>
                       </div>
                     </div>
                   ) : null}
