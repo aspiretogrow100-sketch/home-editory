@@ -270,8 +270,15 @@ export const generateDesign = createServerFn({ method: "POST" })
     }
     if (!products.length) products = buildProductList(data);
 
-    // 2. Image prompt built from the exact products.
-    const dataUrl = await generateRoomImage(buildPrompt(data, products));
+    // 2. Image prompt built from the exact products (admin-editable template).
+    const { data: promptSetting } = await publicClient()
+      .from("app_settings")
+      .select("setting_value")
+      .eq("setting_key", "image_prompt_template")
+      .maybeSingle();
+    const dataUrl = await generateRoomImage(
+      buildPrompt(data, products, promptSetting?.setting_value ?? null),
+    );
     const base: GenerationResult = {
       generationId: null,
       imageUrl: dataUrl,
