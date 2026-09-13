@@ -32,7 +32,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
-import { currency, type DesignSelection } from "@/lib/decor";
+import {
+  currency,
+  DESIGN_TYPES,
+  SINGLE_ITEM_CATEGORIES,
+  WALL_CATEGORIES,
+  type DesignSelection,
+} from "@/lib/decor";
 import {
   generateDesign,
   getUnlockPrice,
