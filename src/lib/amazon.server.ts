@@ -440,6 +440,7 @@ export async function fetchAmazonProducts(
 ): Promise<AmazonProduct[]> {
   const queries = productQueriesFor(sel);
   const budget = budgetTargetFor(sel);
+  const prioritizeDiscount = sel.discountFilter === "On Sale & Deals";
   const minDiscount = sel.discountPercent && sel.discountPercent > 0 ? sel.discountPercent : 0;
   let lastError: unknown = null;
 
@@ -464,7 +465,11 @@ export async function fetchAmazonProducts(
         const withinCap = candidates.filter((c) => c.price > 0 && c.price <= cap);
         const usable = withinCap.length ? withinCap : candidates.filter((c) => c.price > 0);
         const discounted = usable.filter((c) => (c.discountPercent ?? 0) >= minDiscount);
-        const pool = (discounted.length ? discounted : usable).sort((a, b) => a.price - b.price);
+        const base = discounted.length ? discounted : usable;
+        // "On Sale & Deals" maximizes discount first; everything else optimizes price fit.
+        const pool = prioritizeDiscount
+          ? base.sort((a, b) => (b.discountPercent ?? 0) - (a.discountPercent ?? 0))
+          : base.sort((a, b) => a.price - b.price);
         return pool;
       } catch (error) {
         lastError = error;
@@ -476,7 +481,7 @@ export async function fetchAmazonProducts(
 
   if (pools.every((p) => p.length === 0) && lastError) throw lastError;
 
-  // Initial pick: the most expensive option that still fits the slot's allocation.
+  // Initial pick: best value for the mode (price fit normally, highest discount when deals-first).
   const seen = new Set<string>();
   const picks: { pool: AmazonProduct[]; index: number }[] = [];
   pools.forEach((pool, i) => {
@@ -484,24 +489,30 @@ export async function fetchAmazonProducts(
     const available = pool.filter((c) => !seen.has(c.asin ?? c.name));
     if (!available.length) return;
     const fitting = available.filter((c) => c.price <= allocation);
-    const chosen = fitting.length ? fitting[fitting.length - 1]! : available[0]!;
+    const chosen = prioritizeDiscount
+      ? fitting[0] ?? available[0]!
+      : fitting.length
+        ? fitting[fitting.length - 1]!
+        : available[0]!;
     seen.add(chosen.asin ?? chosen.name);
     picks.push({ pool: available, index: available.indexOf(chosen) });
   });
 
-  // Trim down until the basket total fits the user's budget.
-  const total = () => picks.reduce((sum, p) => sum + (p.pool[p.index]?.price ?? 0), 0);
-  let guard = 0;
-  while (total() > budget && guard < 200) {
-    guard += 1;
-    let best: { pick: (typeof picks)[number]; saving: number } | null = null;
-    for (const pick of picks) {
-      if (pick.index === 0) continue;
-      const saving = (pick.pool[pick.index]?.price ?? 0) - (pick.pool[pick.index - 1]?.price ?? 0);
-      if (saving > 0 && (!best || saving > best.saving)) best = { pick, saving };
+  // Trim down until the basket total fits the user's budget (price-sorted pools only).
+  if (!prioritizeDiscount) {
+    const total = () => picks.reduce((sum, p) => sum + (p.pool[p.index]?.price ?? 0), 0);
+    let guard = 0;
+    while (total() > budget && guard < 200) {
+      guard += 1;
+      let best: { pick: (typeof picks)[number]; saving: number } | null = null;
+      for (const pick of picks) {
+        if (pick.index === 0) continue;
+        const saving = (pick.pool[pick.index]?.price ?? 0) - (pick.pool[pick.index - 1]?.price ?? 0);
+        if (saving > 0 && (!best || saving > best.saving)) best = { pick, saving };
+      }
+      if (!best) break;
+      best.pick.index -= 1;
     }
-    if (!best) break;
-    best.pick.index -= 1;
   }
 
   return picks.map((p) => p.pool[p.index]!).filter(Boolean);
