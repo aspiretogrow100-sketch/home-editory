@@ -523,7 +523,7 @@ function StudioPage() {
                       />
                     ))}
                   </div>
-                  {options.densities.length ? (
+                  {options.densities.length && designType !== "Single Item" ? (
                     <div className="mt-8">
                       <h3 className="text-xl">How full should the room be?</h3>
                       <p className="mt-1 text-sm text-muted-foreground">
