@@ -19,6 +19,35 @@ function TermsPage() {
   return (
     <article className="mx-auto w-full max-w-3xl space-y-5 px-4 py-16 text-sm leading-relaxed text-muted-foreground">
       <h1 className="text-4xl text-foreground">Terms &amp; Conditions</h1>
+      <p>Last updated: September 2026</p>
+
+      <h2 className="pt-4 text-2xl text-foreground">Who we are</h2>
+      <p>
+        DecorAI is operated by Nahidul, Dhaka, Bangladesh. You can reach us at{" "}
+        <a href="mailto:moumunira00@gmail.com" className="text-primary underline underline-offset-2">
+          moumunira00@gmail.com
+        </a>{" "}
+        or{" "}
+        <a href="tel:+8801334920949" className="text-primary underline underline-offset-2">
+          +880 1334-920949
+        </a>
+        .
+      </p>
+
+      <h2 className="pt-4 text-2xl text-foreground">What we sell</h2>
+      <p>
+        DecorAI generates AI interior design concepts for a room you describe. A one-time payment of
+        $2.00 USD unlocks the full itemized shopping list and product links for that design. There is
+        no subscription and no recurring charge.
+      </p>
+
+      <h2 className="pt-4 text-2xl text-foreground">Merchant of record</h2>
+      <p>
+        Payments are processed by Paddle.com Market Ltd, which acts as the merchant of record for all
+        orders. Paddle handles billing, tax and payment support, and will appear on your bank or card
+        statement.
+      </p>
+
 
       <h2 className="pt-4 text-2xl text-foreground">Using the service</h2>
       <p>
