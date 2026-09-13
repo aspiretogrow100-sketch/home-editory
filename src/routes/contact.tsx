@@ -33,6 +33,9 @@ function ContactPage() {
       <p className="mt-2 text-sm text-muted-foreground">
         Support, billing or partnership questions — we usually reply within two business days.
       </p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        DecorAI is operated by Nahidul, Dhaka, Bangladesh.
+      </p>
 
       <div className="surface-card mt-8 space-y-4 p-6">
         <div className="flex items-start gap-3">
