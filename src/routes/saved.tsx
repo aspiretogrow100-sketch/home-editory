@@ -288,6 +288,11 @@ function SavedPage() {
         busy={unlock.isPending}
         onOpenChange={setCheckoutOpen}
         onConfirm={() => active?.generationId && unlock.mutate(active.generationId)}
+        generationId={active?.generationId ?? null}
+        onPaid={async () => {
+          setActive((prev) => (prev ? { ...prev, isUnlocked: true } : prev));
+          await queryClient.invalidateQueries({ queryKey: ["saved-rooms"] });
+        }}
       />
     </div>
   );

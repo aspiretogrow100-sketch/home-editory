@@ -281,6 +281,15 @@ function GalleryPage() {
         busy={unlock.isPending}
         onOpenChange={setCheckoutOpen}
         onConfirm={() => active && unlock.mutate(active.id)}
+        generationId={active?.id ?? null}
+        onPaid={async () => {
+          const refreshed = await queryClient.fetchQuery({
+            queryKey: ["public-gallery"],
+            queryFn: () => fetchGallery(),
+          });
+          await queryClient.invalidateQueries({ queryKey: ["saved-rooms"] });
+          setActive((prev) => (prev ? (refreshed.find((r) => r.id === prev.id) ?? prev) : prev));
+        }}
       />
     </div>
   );

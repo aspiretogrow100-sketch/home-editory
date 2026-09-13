@@ -883,6 +883,10 @@ function StudioPage() {
         busy={unlock.isPending}
         onOpenChange={setCheckoutOpen}
         onConfirm={() => result?.generationId && unlock.mutate(result.generationId)}
+        generationId={result?.generationId ?? null}
+        onPaid={() => {
+          setResult((prev) => (prev ? { ...prev, isUnlocked: true } : prev));
+        }}
       />
     </div>
   );
