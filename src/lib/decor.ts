@@ -173,7 +173,15 @@ export function buildPrompt(
     labels,
   };
 
-  const source = template?.trim() ? template : DEFAULT_IMAGE_PROMPT;
+  const fallback =
+    type === "Wall Decor"
+      ? DEFAULT_WALL_PROMPT
+      : type === "Single Item"
+        ? DEFAULT_SINGLE_PROMPT
+        : DEFAULT_IMAGE_PROMPT;
+  // The admin-editable template only drives full-room designs; wall and single-item
+  // designs use their own dedicated prompts.
+  const source = type === "Full Room" && template?.trim() ? template : fallback;
   return source
     .replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? values[key]! : match))
     .replace(/[ \t]+/g, " ")
