@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { ExternalLink, Lock } from "lucide-react";
+import { ExternalLink, Image as ImageIcon, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 import { AdSlot } from "@/components/site/AdSlot";
