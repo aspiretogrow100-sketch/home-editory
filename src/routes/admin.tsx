@@ -20,15 +20,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useAuth } from "@/hooks/useAuth";
-import { currency } from "@/lib/decor";
+import { Textarea } from "@/components/ui/textarea";
+import { currency, DEFAULT_IMAGE_PROMPT, PROMPT_PLACEHOLDERS } from "@/lib/decor";
 import {
   claimFirstAdmin,
   deleteDesignOption,
   getAdminOverview,
   getAmazonSettings,
+  getImagePromptTemplate,
   listAllDesignOptions,
   saveAmazonSettings,
   saveDesignOption,
+  setImagePromptTemplate,
   setUnlockPrice,
   testAmazonConnection,
 } from "@/lib/decor.functions";
@@ -167,6 +170,7 @@ function AdminPage() {
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="options">Wizard options</TabsTrigger>
+          <TabsTrigger value="prompt">Image prompt</TabsTrigger>
           <TabsTrigger value="amazon">Amazon settings</TabsTrigger>
         </TabsList>
 
@@ -235,10 +239,89 @@ function AdminPage() {
           <DesignOptionsManager />
         </TabsContent>
 
+        <TabsContent value="prompt">
+          <ImagePromptPanel />
+        </TabsContent>
+
         <TabsContent value="amazon">
           <AmazonSettingsPanel />
         </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+function ImagePromptPanel() {
+  const load = useServerFn(getImagePromptTemplate);
+  const save = useServerFn(setImagePromptTemplate);
+  const [draft, setDraft] = useState("");
+
+  const query = useQuery({
+    queryKey: ["admin-image-prompt"],
+    queryFn: () => load({ data: undefined }),
+  });
+
+  useEffect(() => {
+    if (query.data) setDraft(query.data.template);
+  }, [query.data]);
+
+  const mutation = useMutation({
+    mutationFn: (template: string) => save({ data: { template } }),
+    onSuccess: (result) => {
+      setDraft(result.template);
+      toast.success("Image prompt saved.");
+      query.refetch();
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  if (query.isLoading) {
+    return <Skeleton className="mt-4 h-64 w-full rounded-xl" />;
+  }
+
+  return (
+    <div className="surface-card mt-4 p-6">
+      <h2 className="text-2xl">AI image prompt</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        This text is sent to the AI for every generated room image. Keep the placeholders below so
+        the room, style, budget and product details are filled in automatically.
+      </p>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        {PROMPT_PLACEHOLDERS.map((p) => (
+          <button
+            key={p.token}
+            type="button"
+            title={p.hint}
+            className="rounded-full border border-border bg-muted px-3 py-1 text-xs text-muted-foreground hover:text-foreground"
+            onClick={() => setDraft((current) => `${current} ${p.token}`.trim())}
+          >
+            {p.token}
+          </button>
+        ))}
+      </div>
+
+      <Textarea
+        className="mt-4 min-h-64 font-mono text-sm"
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+      />
+
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <Button onClick={() => mutation.mutate(draft)} disabled={mutation.isPending}>
+          Save prompt
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => setDraft(query.data?.defaultTemplate ?? DEFAULT_IMAGE_PROMPT)}
+          disabled={mutation.isPending}
+        >
+          Restore default
+        </Button>
+        <p className="text-xs text-muted-foreground">
+          {query.data?.isCustom ? "Using your custom prompt." : "Using the default prompt."}
+        </p>
+      </div>
     </div>
   );
 }

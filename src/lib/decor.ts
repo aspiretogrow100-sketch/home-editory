@@ -47,7 +47,31 @@ export type AmazonProduct = {
   discountPercent?: number | null;
 };
 
-export function buildPrompt(sel: DesignSelection, products: AmazonProduct[] = []): string {
+/** Editable image prompt template. Admins can change this from the Admin page. */
+export const DEFAULT_IMAGE_PROMPT = [
+  "A professional, hyper-realistic interior design photograph of a {size}{style} {roomType}.",
+  "Furnished to a {budget} budget with cohesive furniture, lighting, textiles and decor.{density}{area}{featured}",
+  "Shot on a full-frame camera, 24mm lens, soft natural daylight, realistic shadows, magazine editorial quality, no people, no watermarks. Compose with generous headroom: the entire room and all furniture must be fully visible inside the frame, with at least 10% empty margin around every edge.",
+  "{labels}",
+].join(" ");
+
+/** Placeholders available inside the prompt template, with a short explanation. */
+export const PROMPT_PLACEHOLDERS: { token: string; hint: string }[] = [
+  { token: "{roomType}", hint: "Chosen room, e.g. living room" },
+  { token: "{style}", hint: "Chosen design style" },
+  { token: "{size}", hint: "Room size prefix, e.g. large-sized" },
+  { token: "{budget}", hint: "Chosen budget range" },
+  { token: "{area}", hint: "Square feet sentence, when given" },
+  { token: "{density}", hint: "Item density sentence" },
+  { token: "{featured}", hint: "The exact product list to render" },
+  { token: "{labels}", hint: "Text label + layout rules for each product" },
+];
+
+export function buildPrompt(
+  sel: DesignSelection,
+  products: AmazonProduct[] = [],
+  template?: string | null,
+): string {
   const size = sel.roomSize ? `${sel.roomSize.toLowerCase()}-sized ` : "";
   const area = sel.squareFeet ? ` The room measures about ${sel.squareFeet} square feet — scale the furniture and layout to that footprint.` : "";
   const featured = products.length
@@ -63,12 +87,23 @@ export function buildPrompt(sel: DesignSelection, products: AmazonProduct[] = []
         .map((p) => p.name)
         .join(", ")}). Strict layout rules: every product and every text label must sit completely inside the image with a clear empty margin on all four sides — nothing may touch or be cut off by the top, bottom, left or right edge. Keep all labels horizontal, fully legible, not overlapping each other or the products, and pull wall-edge items slightly inward so the whole composition breathes.`
     : "";
-  return [
-    `A professional, hyper-realistic interior design photograph of a ${size}${sel.designStyle.toLowerCase()} ${sel.roomType.toLowerCase()}.`,
-    `Furnished to a ${sel.budgetRange} budget with cohesive furniture, lighting, textiles and decor.${density}${area}${featured}`,
-    "Shot on a full-frame camera, 24mm lens, soft natural daylight, realistic shadows, magazine editorial quality, no people, no watermarks. Compose with generous headroom: the entire room and all furniture must be fully visible inside the frame, with at least 10% empty margin around every edge.",
+
+  const values: Record<string, string> = {
+    size,
+    style: sel.designStyle.toLowerCase(),
+    roomType: sel.roomType.toLowerCase(),
+    budget: sel.budgetRange,
+    area,
+    density,
+    featured,
     labels,
-  ].join(" ");
+  };
+
+  const source = template?.trim() ? template : DEFAULT_IMAGE_PROMPT;
+  return source
+    .replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? values[key]! : match))
+    .replace(/[ \t]+/g, " ")
+    .trim();
 }
 
 const GENERIC_SLOTS = [

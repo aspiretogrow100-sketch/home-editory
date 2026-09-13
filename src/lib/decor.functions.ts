@@ -7,6 +7,7 @@ import type { Database } from "@/integrations/supabase/types";
 import {
   buildProductList,
   buildPrompt,
+  DEFAULT_IMAGE_PROMPT,
   type AmazonProduct,
   type DesignSelection,
 } from "./decor";
@@ -270,8 +271,15 @@ export const generateDesign = createServerFn({ method: "POST" })
     }
     if (!products.length) products = buildProductList(data);
 
-    // 2. Image prompt built from the exact products.
-    const dataUrl = await generateRoomImage(buildPrompt(data, products));
+    // 2. Image prompt built from the exact products (admin-editable template).
+    const { data: promptSetting } = await publicClient()
+      .from("app_settings")
+      .select("setting_value")
+      .eq("setting_key", "image_prompt_template")
+      .maybeSingle();
+    const dataUrl = await generateRoomImage(
+      buildPrompt(data, products, promptSetting?.setting_value ?? null),
+    );
     const base: GenerationResult = {
       generationId: null,
       imageUrl: dataUrl,
@@ -749,4 +757,52 @@ export const claimFirstAdmin = createServerFn({ method: "POST" })
     if (error) throw new Error("Could not grant admin access.");
 
     return { granted: true };
+  });
+
+/** Admin: read the current image prompt template. */
+export const getImagePromptTemplate = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+    if (!isAdmin) throw new Error("Admins only.");
+
+    const { data } = await supabase
+      .from("app_settings")
+      .select("setting_value")
+      .eq("setting_key", "image_prompt_template")
+      .maybeSingle();
+
+    return {
+      template: data?.setting_value?.trim() ? data.setting_value : DEFAULT_IMAGE_PROMPT,
+      isCustom: Boolean(data?.setting_value?.trim()),
+      defaultTemplate: DEFAULT_IMAGE_PROMPT,
+    };
+  });
+
+/** Admin: save (or reset) the image prompt template. */
+export const setImagePromptTemplate = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { template: string }) => {
+    const template = String(input?.template ?? "").trim();
+    if (template && template.length < 20) throw new Error("The prompt is too short.");
+    if (template.length > 4000) throw new Error("The prompt is too long (max 4000 characters).");
+    return { template };
+  })
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+    if (!isAdmin) throw new Error("Admins only.");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const value = data.template || DEFAULT_IMAGE_PROMPT;
+    const { error } = await supabaseAdmin
+      .from("app_settings")
+      .upsert(
+        { setting_key: "image_prompt_template", setting_value: value, updated_at: new Date().toISOString() },
+        { onConflict: "setting_key" },
+      );
+    if (error) throw new Error("Could not save the prompt.");
+
+    return { template: value };
   });
