@@ -1,4 +1,4 @@
-import { ExternalLink, Lock, Star } from "lucide-react";
+import { ExternalLink, Image as ImageIcon, Lock, Star } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
