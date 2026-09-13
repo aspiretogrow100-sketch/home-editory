@@ -105,8 +105,7 @@ function ContactPage() {
           Send message
         </Button>
         <p className="text-xs text-muted-foreground">
-          This form does not send email yet — add an email service when you are ready to receive
-          messages.
+          This opens your email app with the message ready to send to moumunira00@gmail.com.
         </p>
       </form>
     </div>
