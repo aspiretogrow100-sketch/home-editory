@@ -765,7 +765,8 @@ function AmazonSettingsPanel() {
             onChange={(e) => setForm({ ...form, scraperapiApiKey: e.target.value })}
           />
           <p className="text-xs text-muted-foreground">
-            Get it from scraperapi.com → Dashboard → API Key.
+            Get it from scraperapi.com → Dashboard → API Key. You can paste several keys
+            separated by commas — when one runs out of credits, the next one is used automatically.
           </p>
         </div>
       ) : form.provider === "creators" ? (
