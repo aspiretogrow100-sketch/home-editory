@@ -32,8 +32,15 @@ export function ShoppingList({ products, unlocked, price, busy, onUnlock }: Prop
         )}
       </div>
 
-      <div className="relative">
-        <ul className="divide-y divide-border">
+      <div>
+        <ul
+          className={
+            unlocked
+              ? "divide-y divide-border"
+              : "pointer-events-none select-none divide-y divide-border opacity-60 blur-[5px]"
+          }
+          aria-hidden={unlocked ? undefined : true}
+        >
           {products.map((product) => (
             <li key={product.asin ?? product.name} className="flex items-center justify-between gap-4 px-5 py-4">
               {product.image ? (
@@ -68,21 +75,14 @@ export function ShoppingList({ products, unlocked, price, busy, onUnlock }: Prop
                     {currency(product.listPrice)}
                   </p>
                 </div>
-                {unlocked ? (
-                  <Button asChild size="sm" variant="outline">
-                    <a href={product.url} target="_blank" rel="noopener noreferrer nofollow">
-                      Buy <ExternalLink className="size-3.5" />
-                    </a>
-                  </Button>
-                ) : null}
               </div>
             </li>
           ))}
         </ul>
 
         {!unlocked ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-card/70 backdrop-blur-[6px]">
-            <div className="mx-4 max-w-sm rounded-xl border border-border bg-card p-6 text-center shadow-sm">
+          <div className="border-t border-border px-5 py-5 text-center">
+            <div className="mx-auto max-w-sm rounded-xl border border-primary/25 bg-primary/5 p-5">
               <span className="mx-auto flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <Lock className="size-5" />
               </span>
@@ -90,7 +90,7 @@ export function ShoppingList({ products, unlocked, price, busy, onUnlock }: Prop
               <p className="mt-1 text-sm text-muted-foreground">
                 Get direct Amazon links and itemised prices for every piece in this room.
               </p>
-              <div className="mt-4 grid grid-cols-3 gap-2 rounded-lg border border-border bg-muted/50 px-3 py-2.5 text-center">
+              <div className="mt-4 grid grid-cols-3 gap-2 rounded-lg border border-border bg-background px-3 py-2.5 text-center">
                 <div>
                   <p className="text-sm font-semibold">{products.length}</p>
                   <p className="text-[11px] text-muted-foreground">{products.length === 1 ? "item" : "items"}</p>
@@ -105,7 +105,7 @@ export function ShoppingList({ products, unlocked, price, busy, onUnlock }: Prop
                 </div>
               </div>
               <Button className="mt-4 w-full" onClick={onUnlock} disabled={busy}>
-                {busy ? "Processing…" : `Buy from Amazon · Unlock for ${currency(price)}`}
+                {busy ? "Processing…" : `Unlock for ${currency(price)}`}
               </Button>
             </div>
           </div>
