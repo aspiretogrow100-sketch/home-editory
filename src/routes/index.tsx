@@ -196,7 +196,7 @@ function OptionCard({
     <button
       type="button"
       onClick={onClick}
-      className={`lift-hover hover:lift-hover-on rounded-xl border px-4 py-4 text-left ${
+      className={`lift-hover hover:lift-hover-on rounded-lg border px-4 py-3 text-left ${
         selected
           ? "border-primary bg-primary/10 ring-1 ring-primary"
           : "border-border bg-card hover:border-primary/40"
@@ -330,7 +330,7 @@ function StudioPage() {
 
   return (
     <div>
-      <section className="relative min-h-[620px] overflow-hidden border-b border-border md:min-h-[calc(100vh-4rem)] md:max-h-[860px]">
+      <section className="relative min-h-[520px] overflow-hidden border-b border-border md:min-h-[600px] md:h-[72vh] md:max-h-[700px]">
         <img
           src={heroJapandiMain}
           alt="Sunlit Japandi living room generated with DecorAI"
@@ -340,20 +340,20 @@ function StudioPage() {
           className="absolute inset-0 h-full w-full object-cover object-center"
         />
         <div className="hero-image-shade absolute inset-0" />
-        <div className="relative mx-auto flex min-h-[620px] w-full max-w-7xl items-end px-4 pb-12 pt-24 sm:px-6 md:min-h-[calc(100vh-4rem)] md:max-h-[860px] md:items-center md:pb-20 lg:px-8">
+        <div className="relative mx-auto flex min-h-[520px] w-full max-w-7xl items-end px-4 pb-9 pt-20 sm:px-6 md:h-full md:min-h-0 md:items-center md:pb-12 lg:px-8">
           <div className="hero-reveal max-w-2xl text-background">
-            <Badge className="mb-6 border-background/25 bg-foreground/45 text-background shadow-none backdrop-blur-md hover:bg-foreground/45">
+            <Badge className="mb-4 border-background/25 bg-foreground/45 text-background shadow-none backdrop-blur-md hover:bg-foreground/45">
               <Sparkles className="size-3.5 text-primary" /> AI interior design + real product matches
             </Badge>
             <h1 className="text-5xl leading-[0.94] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
               Design the room.<br />
               <span className="italic text-primary">Shop the look.</span>
             </h1>
-            <p className="mt-6 max-w-xl text-base leading-7 text-background/80 md:text-lg">
+            <p className="mt-4 max-w-xl text-base leading-7 text-background/80 md:text-lg">
               Create a photoreal interior around your space, style and budget—then discover the
               matching pieces on Amazon.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Button
                 size="lg"
                 className="h-12 px-7 text-base shadow-[var(--shadow-lift)]"
@@ -365,7 +365,7 @@ function StudioPage() {
                 <Link to="/gallery">View real designs <ArrowUpRight /></Link>
               </Button>
             </div>
-            <div className="mt-9 grid max-w-xl grid-cols-3 border-t border-background/25 pt-5 text-background/75">
+            <div className="mt-6 grid max-w-xl grid-cols-3 border-t border-background/25 pt-4 text-background/75">
               <div><p className="text-xs font-semibold uppercase">Create</p><p className="mt-1 text-sm">Photoreal rooms</p></div>
               <div className="border-l border-background/25 pl-4"><p className="text-xs font-semibold uppercase">Match</p><p className="mt-1 text-sm">Real products</p></div>
               <div className="border-l border-background/25 pl-4"><p className="text-xs font-semibold uppercase">Shop</p><p className="mt-1 text-sm">Direct on Amazon</p></div>
@@ -374,21 +374,21 @@ function StudioPage() {
         </div>
       </section>
 
-      <section id="design-studio" className="scroll-mt-16 border-b border-border bg-background py-14 md:py-20">
+      <section id="design-studio" className="scroll-mt-16 border-b border-border bg-background py-10 md:py-12">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-9 grid gap-4 md:grid-cols-[0.8fr_1.2fr] md:items-end">
+          <div className="mb-6 grid gap-3 md:grid-cols-[0.8fr_1.2fr] md:items-end">
             <div>
               <p className="text-xs font-semibold uppercase text-primary">DecorAI studio</p>
-              <h2 className="mt-2 text-4xl leading-none md:text-5xl">Make the room yours.</h2>
+              <h2 className="mt-1 text-3xl leading-none md:text-4xl">Make the room yours.</h2>
             </div>
             <p className="max-w-xl text-sm leading-6 text-muted-foreground md:justify-self-end md:text-base">
               Choose the room, size, style and budget. We will compose the space and match every
               shoppable piece to your brief.
             </p>
           </div>
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
-        <div className="space-y-8">
-          <div className="surface-card p-5 md:p-8">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px]">
+        <div className="space-y-6">
+          <div className="surface-card p-5 md:p-6">
             <div className="flex flex-wrap items-center gap-2">
               {STEPS.map((label, index) => (
                 <button
@@ -408,7 +408,7 @@ function StudioPage() {
               ))}
             </div>
 
-            <div className="mt-6">
+            <div className="mt-5">
               {optionsQuery.isLoading ? <Skeleton className="h-40 w-full rounded-lg" /> : null}
 
               {step === 0 && !optionsQuery.isLoading ? (
@@ -705,7 +705,7 @@ function StudioPage() {
             </div>
 
 
-            <div className="mt-8 flex items-center justify-between gap-3 border-t border-border pt-5">
+            <div className="mt-6 flex items-center justify-between gap-3 border-t border-border pt-4">
               <Button
                 variant="ghost"
                 onClick={() => setStep((s) => Math.max(0, s - 1))}
@@ -806,13 +806,13 @@ function StudioPage() {
           ) : null}
         </div>
 
-        <aside className="space-y-6 lg:border-l lg:border-border lg:pl-7">
+        <aside className="space-y-5 lg:border-l lg:border-border lg:pl-6">
           <div>
             <p className="text-xs font-semibold uppercase text-primary">Three simple steps</p>
-            <ol className="mt-5 space-y-6">
-              <li className="border-t border-border pt-4"><span className="text-xs text-muted-foreground">01</span><h3 className="mt-1 text-xl">Set your vision</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">Choose the room, style, budget and deal preference.</p></li>
-              <li className="border-t border-border pt-4"><span className="text-xs text-muted-foreground">02</span><h3 className="mt-1 text-xl">See the design</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">Receive a photoreal concept built around your choices.</p></li>
-              <li className="border-t border-border pt-4"><span className="text-xs text-muted-foreground">03</span><h3 className="mt-1 text-xl">Shop exact matches</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">Unlock the Amazon list and bring the room home.</p></li>
+            <ol className="mt-4 space-y-4">
+              <li className="border-t border-border pt-3"><span className="text-xs text-muted-foreground">01</span><h3 className="mt-1 text-lg">Set your vision</h3><p className="mt-1 text-sm leading-5 text-muted-foreground">Choose the room, style, budget and deal preference.</p></li>
+              <li className="border-t border-border pt-3"><span className="text-xs text-muted-foreground">02</span><h3 className="mt-1 text-lg">See the design</h3><p className="mt-1 text-sm leading-5 text-muted-foreground">Receive a photoreal concept built around your choices.</p></li>
+              <li className="border-t border-border pt-3"><span className="text-xs text-muted-foreground">03</span><h3 className="mt-1 text-lg">Shop exact matches</h3><p className="mt-1 text-sm leading-5 text-muted-foreground">Unlock the Amazon list and bring the room home.</p></li>
             </ol>
           </div>
           <div className="pt-3"><AdSlot label="Sponsored" /></div>
@@ -821,7 +821,7 @@ function StudioPage() {
         </div>
       </section>
 
-      <section className="border-y border-border bg-card/45 py-14 md:py-20" aria-labelledby="community-heading">
+      <section className="border-y border-border bg-card/45 py-10 md:py-12" aria-labelledby="community-heading">
         <div className="mx-auto w-full max-w-6xl px-4">
           <div className="flex items-end justify-between gap-6">
             <div>
@@ -839,13 +839,13 @@ function StudioPage() {
           </div>
 
           {galleryQuery.isLoading ? (
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[0, 1, 2].map((item) => (
                 <Skeleton key={item} className="aspect-[4/3] w-full rounded-lg" />
               ))}
             </div>
           ) : recentRooms.length ? (
-            <div className="-mx-4 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
+            <div className="-mx-4 mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
               {recentRooms.map((item) => (
                 <Link
                   key={item.id}
@@ -902,16 +902,16 @@ function StudioPage() {
         </div>
       </section>
 
-      <section className="feature-showcase py-16 text-primary-foreground md:py-24" aria-labelledby="features-heading">
+      <section className="feature-showcase py-10 text-primary-foreground md:py-14" aria-labelledby="features-heading">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-7 border-b border-primary-foreground/20 pb-10 md:grid-cols-[0.55fr_1.45fr] md:items-end md:pb-14">
+          <div className="grid gap-5 border-b border-primary-foreground/20 pb-7 md:grid-cols-[0.55fr_1.45fr] md:items-end md:pb-8">
             <div>
               <p className="text-xs font-semibold uppercase text-primary">From idea to finished room</p>
               <p className="mt-3 max-w-xs text-sm leading-6 text-primary-foreground/60">
                 One considered path from inspiration to a room you can actually bring home.
               </p>
             </div>
-            <h2 id="features-heading" className="max-w-4xl text-4xl leading-[1.02] md:text-6xl">
+            <h2 id="features-heading" className="max-w-4xl text-3xl leading-[1.02] md:text-5xl">
               Everything you need to design and shop <span className="italic text-primary">with confidence.</span>
             </h2>
           </div>
@@ -921,18 +921,18 @@ function StudioPage() {
               return (
                 <article
                   key={feature.title}
-                  className="feature-item group relative border-b border-primary-foreground/20 py-9 md:min-h-80 md:border-b-0 md:border-r md:px-8 md:py-12 md:first:pl-0 md:last:border-r-0 md:last:pr-0"
+                  className="feature-item group relative border-b border-primary-foreground/20 py-6 md:min-h-60 md:border-b-0 md:border-r md:px-7 md:py-8 md:first:pl-0 md:last:border-r-0 md:last:pr-0"
                 >
                   <div className="flex items-start justify-between gap-6">
-                    <span className="font-display text-6xl italic text-primary-foreground/12 transition-colors duration-500 group-hover:text-primary/35">
+                    <span className="font-display text-5xl italic text-primary-foreground/12 transition-colors duration-500 group-hover:text-primary/35">
                       0{index + 1}
                     </span>
                     <span className="flex size-11 items-center justify-center rounded-full border border-primary-foreground/25 text-primary transition-colors duration-300 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
                       <Icon className="size-5" />
                     </span>
                   </div>
-                  <div className="mt-12 md:mt-20">
-                    <h3 className="text-2xl md:text-3xl">{feature.title}</h3>
+                  <div className="mt-7 md:mt-10">
+                    <h3 className="text-2xl">{feature.title}</h3>
                     <p className="mt-3 max-w-sm text-sm leading-6 text-primary-foreground/60 md:text-base">
                       {feature.description}
                     </p>
@@ -945,30 +945,30 @@ function StudioPage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden border-t border-border bg-background py-20 md:py-28" aria-labelledby="faq-heading">
+      <section className="relative overflow-hidden border-t border-border bg-background py-12 md:py-16" aria-labelledby="faq-heading">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 mx-auto h-px max-w-5xl bg-primary/55" />
         <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-semibold uppercase text-primary">Good to know</p>
-            <h2 id="faq-heading" className="mt-4 text-4xl leading-none md:text-6xl">
+            <h2 id="faq-heading" className="mt-3 text-4xl leading-none md:text-5xl">
               Questions, <span className="italic text-primary">beautifully answered.</span>
             </h2>
-            <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-muted-foreground md:text-base">
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground md:text-base">
               Everything you need to know about room generation, product matching and shared unlocks.
             </p>
           </div>
-          <Accordion type="single" collapsible className="mx-auto mt-12 max-w-4xl border-t border-border md:mt-16">
+          <Accordion type="single" collapsible className="mx-auto mt-8 max-w-4xl border-t border-border md:mt-10">
             {FAQS.map((item, index) => (
               <AccordionItem key={item.question} value={`faq-${index}`} className="group border-border transition-colors data-[state=open]:border-primary/45">
-                <AccordionTrigger className="relative justify-center gap-5 py-7 pl-12 pr-12 text-center hover:no-underline [&>svg]:absolute [&>svg]:right-4 [&>svg]:size-5 [&>svg]:text-primary md:py-8 md:pl-20 md:pr-20 md:[&>svg]:right-7">
+                <AccordionTrigger className="relative justify-center gap-5 py-5 pl-12 pr-12 text-center hover:no-underline [&>svg]:absolute [&>svg]:right-4 [&>svg]:size-5 [&>svg]:text-primary md:py-6 md:pl-20 md:pr-20 md:[&>svg]:right-7">
                   <span className="absolute left-4 font-sans text-[0.65rem] font-semibold text-primary/70 md:left-7">
                     0{index + 1}
                   </span>
-                  <h3 className="text-xl leading-tight transition-colors group-hover:text-primary md:text-2xl">
+                  <h3 className="text-lg leading-tight transition-colors group-hover:text-primary md:text-xl">
                     {item.question.replaceAll("{price}", currency(price))}
                   </h3>
                 </AccordionTrigger>
-                <AccordionContent className="mx-auto max-w-2xl px-5 pb-8 text-center text-sm leading-7 text-muted-foreground md:px-10 md:text-base">
+                <AccordionContent className="mx-auto max-w-2xl px-5 pb-6 text-center text-sm leading-6 text-muted-foreground md:px-10 md:text-base">
                   <span className="mx-auto mb-5 block h-px w-12 bg-primary/50" aria-hidden="true" />
                   {item.answer.replaceAll("{price}", currency(price))}
                 </AccordionContent>
