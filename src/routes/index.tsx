@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -282,6 +282,25 @@ function StudioPage() {
   const [saved, setSaved] = useState(false);
   const [communityRoom, setCommunityRoom] = useState("All rooms");
   const [roomPhoto, setRoomPhoto] = useState<string | null>(null);
+  const scrollBeforeStep = useRef(0);
+
+  // Keep the page exactly where it is when moving between wizard steps.
+  function goToStep(next: number | ((s: number) => number)) {
+    scrollBeforeStep.current = window.scrollY;
+    setStep(next);
+  }
+  useEffect(() => {
+    if (scrollBeforeStep.current) {
+      window.scrollTo({ top: scrollBeforeStep.current });
+      scrollBeforeStep.current = 0;
+    }
+  }, [step]);
+
+  function scrollToDesignOnMobile() {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      document.getElementById("design-studio")?.scrollIntoView({ behavior: "smooth" });
+    }
+  }
 
   async function handleRoomPhoto(file: File | undefined) {
     if (!file) return;
@@ -351,6 +370,7 @@ function StudioPage() {
     onSuccess: (data) => {
       setResult(data);
       setSaved(false);
+      scrollToDesignOnMobile();
       if (!data.saved && user) {
         toast.message("Design ready", { description: "We couldn't save it to your gallery this time." });
       }
@@ -540,7 +560,7 @@ function StudioPage() {
                     type="button"
                     size="sm"
                     variant={active ? "default" : done ? "secondary" : "outline"}
-                    onClick={() => setStep(index)}
+                    onClick={() => goToStep(index)}
                     aria-current={active ? "step" : undefined}
                     className="h-7 shrink-0 gap-1.5 rounded-full border px-3 text-xs font-medium"
                   >
@@ -920,14 +940,14 @@ function StudioPage() {
             <div className="mt-3 flex shrink-0 items-center justify-between gap-3 border-t border-border pt-3">
               <Button
                 variant="ghost"
-                onClick={() => setStep((s) => Math.max(0, s - 1))}
+                onClick={() => goToStep((s) => Math.max(0, s - 1))}
                 disabled={step === 0}
               >
                 <ArrowLeft className="size-4" /> Back
               </Button>
 
               {step < STEPS.length - 1 ? (
-                <Button onClick={() => setStep((s) => s + 1)} disabled={!canContinue}>
+                <Button onClick={() => goToStep((s) => s + 1)} disabled={!canContinue}>
                   Continue <ArrowRight className="size-4" />
                 </Button>
               ) : (
@@ -951,8 +971,8 @@ function StudioPage() {
         </div>
 
         <aside
-          className={`min-h-0 flex-col border-t border-border pt-4 lg:flex lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0 ${
-            result || generate.isPending ? "flex" : "hidden lg:flex"
+          className={`min-h-0 min-w-0 flex-col border-t border-border pt-4 lg:flex lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0 ${
+            result || generate.isPending ? "order-first flex lg:order-none" : "hidden lg:flex"
           }`}
         >
           <p className="shrink-0 text-xs font-semibold uppercase text-primary">Your design</p>
