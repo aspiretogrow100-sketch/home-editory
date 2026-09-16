@@ -3,12 +3,13 @@ import { createHash, createHmac } from "crypto";
 import type { AmazonProduct, DesignSelection } from "./decor";
 import { budgetTargetFor, productQueriesFor } from "./decor";
 
-export type AmazonProvider = "rainforest" | "paapi" | "creators";
+export type AmazonProvider = "rainforest" | "paapi" | "creators" | "scraperapi";
 
 export type AmazonConfig = {
   provider: AmazonProvider;
   trackingId: string | null;
   rainforestApiKey: string | null;
+  scraperapiApiKey: string | null;
   paapiAccessKey: string | null;
   paapiSecretKey: string | null;
   creatorsClientId: string | null;
@@ -19,12 +20,20 @@ export type AmazonConfig = {
 export async function loadAmazonConfig(): Promise<AmazonConfig> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data } = await supabaseAdmin.from("amazon_settings").select("*").eq("id", 1).maybeSingle();
-  const provider =
-    data?.provider === "paapi" ? "paapi" : data?.provider === "creators" ? "creators" : "rainforest";
+  const row = (data ?? null) as (Record<string, string | null> & { provider?: string }) | null;
+  const provider: AmazonProvider =
+    row?.provider === "paapi"
+      ? "paapi"
+      : row?.provider === "creators"
+        ? "creators"
+        : row?.provider === "scraperapi"
+          ? "scraperapi"
+          : "rainforest";
   return {
     provider,
     trackingId: data?.tracking_id ?? null,
     rainforestApiKey: data?.rainforest_api_key ?? null,
+    scraperapiApiKey: row?.["scraperapi_api_key"] ?? null,
     paapiAccessKey: data?.paapi_access_key ?? null,
     paapiSecretKey: data?.paapi_secret_key ?? null,
     creatorsClientId: data?.creators_client_id ?? null,
