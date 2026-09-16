@@ -290,7 +290,7 @@ function StudioPage() {
     stepTransition.current = {
       scrollY: window.scrollY,
       actionsTop: wizardActionsRef.current?.getBoundingClientRect().top ?? null,
-      keepActions: step === 0 && next === 1,
+      keepActions: (step === 0 && next === 1) || (step === 3 && next === 4),
     };
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     setStep(next);
