@@ -183,6 +183,20 @@
   );
 }
 
+@utility feature-showcase {
+  background:
+    linear-gradient(oklch(0.19 0.014 58 / 0.97), oklch(0.19 0.014 58 / 0.97)),
+    radial-gradient(circle at 85% 10%, oklch(0.62 0.13 45 / 0.16), transparent 32%);
+}
+
+@utility feature-item {
+  background-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    oklch(0.62 0.13 45 / 0.045) 100%
+  );
+}
+
 @utility lift-hover {
   transition:
     transform 220ms cubic-bezier(0.22, 1, 0.36, 1),

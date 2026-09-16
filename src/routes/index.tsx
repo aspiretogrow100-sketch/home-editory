@@ -902,25 +902,43 @@ function StudioPage() {
         </div>
       </section>
 
-      <section className="py-16 md:py-24" aria-labelledby="features-heading">
-        <div className="mx-auto w-full max-w-6xl px-4">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase text-primary">From idea to finished room</p>
-            <h2 id="features-heading" className="mt-2 text-3xl md:text-4xl">
-              Everything you need to design and shop with confidence
+      <section className="feature-showcase py-16 text-primary-foreground md:py-24" aria-labelledby="features-heading">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-7 border-b border-primary-foreground/20 pb-10 md:grid-cols-[0.55fr_1.45fr] md:items-end md:pb-14">
+            <div>
+              <p className="text-xs font-semibold uppercase text-primary">From idea to finished room</p>
+              <p className="mt-3 max-w-xs text-sm leading-6 text-primary-foreground/60">
+                One considered path from inspiration to a room you can actually bring home.
+              </p>
+            </div>
+            <h2 id="features-heading" className="max-w-4xl text-4xl leading-[1.02] md:text-6xl">
+              Everything you need to design and shop <span className="italic text-primary">with confidence.</span>
             </h2>
           </div>
-          <div className="mt-10 grid gap-8 border-y border-border py-9 md:grid-cols-3 md:divide-x md:divide-border">
-            {FEATURES.map((feature) => {
+          <div className="grid md:grid-cols-3">
+            {FEATURES.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <div key={feature.title} className="md:px-7 md:first:pl-0 md:last:pr-0">
-                  <span className="flex size-10 items-center justify-center rounded-md bg-primary/10 text-primary">
-                    <Icon className="size-5" />
-                  </span>
-                  <h3 className="mt-5 text-2xl">{feature.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{feature.description}</p>
-                </div>
+                <article
+                  key={feature.title}
+                  className="feature-item group relative border-b border-primary-foreground/20 py-9 md:min-h-80 md:border-b-0 md:border-r md:px-8 md:py-12 md:first:pl-0 md:last:border-r-0 md:last:pr-0"
+                >
+                  <div className="flex items-start justify-between gap-6">
+                    <span className="font-display text-6xl italic text-primary-foreground/12 transition-colors duration-500 group-hover:text-primary/35">
+                      0{index + 1}
+                    </span>
+                    <span className="flex size-11 items-center justify-center rounded-full border border-primary-foreground/25 text-primary transition-colors duration-300 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
+                      <Icon className="size-5" />
+                    </span>
+                  </div>
+                  <div className="mt-12 md:mt-20">
+                    <h3 className="text-2xl md:text-3xl">{feature.title}</h3>
+                    <p className="mt-3 max-w-sm text-sm leading-6 text-primary-foreground/60 md:text-base">
+                      {feature.description}
+                    </p>
+                  </div>
+                  <span aria-hidden="true" className="absolute bottom-0 left-0 h-px w-0 bg-primary transition-all duration-500 group-hover:w-full" />
+                </article>
               );
             })}
           </div>
