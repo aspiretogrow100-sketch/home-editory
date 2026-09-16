@@ -362,6 +362,7 @@ export const saveAmazonSettings = createServerFn({ method: "POST" })
       trackingId: string;
       marketplace: string;
       rainforestApiKey?: string;
+      scraperapiApiKey?: string;
       paapiAccessKey?: string;
       paapiSecretKey?: string;
       creatorsClientId?: string;
