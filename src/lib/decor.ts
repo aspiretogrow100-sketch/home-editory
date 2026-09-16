@@ -103,8 +103,7 @@ export type AmazonProduct = {
 export const DEFAULT_IMAGE_PROMPT = [
   "A professional, hyper-realistic interior design photograph of a {size}{style} {roomType}.",
   "Furnished to a {budget} budget with cohesive furniture, lighting, textiles and decor.{density}{area}{featured}",
-  "Shot on a full-frame camera, 24mm lens, soft natural daylight, realistic shadows, magazine editorial quality, no people, no watermarks. Compose with generous headroom: the entire room and all furniture must be fully visible inside the frame, with at least 10% empty margin around every edge.",
-  "{labels}",
+  "Shot on a full-frame camera, 24mm lens, soft natural daylight, realistic shadows, magazine editorial quality, no people, no watermarks, no text, no labels, no captions. Compose with generous headroom: the entire room and all furniture must be fully visible inside the frame, with at least 10% empty margin around every edge.",
 ].join(" ");
 
 /** Wall-decor prompt: one styled wall inside the real room, never a white studio backdrop. */
@@ -112,8 +111,7 @@ export const DEFAULT_WALL_PROMPT = [
   "A professional, hyper-realistic interior photograph of one decorated feature wall in a {size}{style} {roomType}.",
   "The camera faces the wall straight on, showing the real room around it — floor, existing furniture edges, natural daylight and realistic shadows. Never a plain white studio background, never a product cut-out or collage.{area}{featured}",
   "Mount and arrange the wall pieces on the wall exactly as they would hang in a real home, balanced and correctly scaled, within a {budget} budget.",
-  "Shot on a full-frame camera, 35mm lens, magazine editorial quality, no people, no watermarks. Every wall piece must be fully visible inside the frame with at least 10% empty margin on all four sides.",
-  "{labels}",
+  "Shot on a full-frame camera, 35mm lens, magazine editorial quality, no people, no watermarks, no text, no labels, no captions. Every wall piece must be fully visible inside the frame with at least 10% empty margin on all four sides — never cropped by an edge.",
 ].join(" ");
 
 /** Single-item prompt: the chosen piece styled in a real room corner, no white background. */
@@ -121,8 +119,7 @@ export const DEFAULT_SINGLE_PROMPT = [
   "A professional, hyper-realistic interior photograph of a single {style} decor piece styled inside a real {size}{roomType}.",
   "The piece is the hero of the frame but sits in a genuine lived-in setting — real wall, floor, soft natural daylight, realistic shadows and gentle depth of field. Never a plain white studio background, never a cut-out product shot.{area}{featured}",
   "Keep it faithful to the real product's shape, materials and colours, correctly scaled for the space, within a {budget} budget.",
-  "Shot on a full-frame camera, 50mm lens, magazine editorial quality, no people, no watermarks. The piece must be fully visible inside the frame with at least 10% empty margin on all four sides.",
-  "{labels}",
+  "Shot on a full-frame camera, 50mm lens, magazine editorial quality, no people, no watermarks, no text, no labels, no captions. The piece must be fully visible inside the frame with at least 10% empty margin on all four sides — never cropped by an edge.",
 ].join(" ");
 
 
@@ -135,7 +132,6 @@ export const PROMPT_PLACEHOLDERS: { token: string; hint: string }[] = [
   { token: "{area}", hint: "Square feet sentence, when given" },
   { token: "{density}", hint: "Item density sentence" },
   { token: "{featured}", hint: "The exact product list to render" },
-  { token: "{labels}", hint: "Text label + layout rules for each product" },
 ];
 
 export function buildPrompt(
@@ -151,15 +147,10 @@ export function buildPrompt(
   const featured = products.length
     ? ` The ${subject} must feature these exact products, rendered faithfully to their real appearance, materials and colours: ${products
         .map((p, i) => `(${i + 1}) ${p.category}: ${p.name}${p.description ? ` — ${p.description}` : ""}`)
-        .join("; ")}. Do not invent other major ${type === "Full Room" ? "furniture" : "decor"} pieces.`
+        .join("; ")}. Do not invent other major ${type === "Full Room" ? "furniture" : "decor"} pieces. Every listed product must appear complete and fully inside the frame — never cut off, cropped or sticking out of an edge. The image must contain no text of any kind: no product names, no labels, no captions, no annotations.`
     : "";
   const density = sel.itemDensity
     ? ` Styled as "${sel.itemDensity}" — roughly ${products.length || sel.itemCount || 6} key pieces in the room.`
-    : "";
-  const labels = products.length
-    ? ` Add a short, neat text label next to each featured product naming it (${products
-        .map((p) => p.name)
-        .join(", ")}). Strict layout rules: every product and every text label must sit completely inside the image with a clear empty margin on all four sides — nothing may touch or be cut off by the top, bottom, left or right edge. Keep all labels horizontal, fully legible, not overlapping each other or the products, and pull wall-edge items slightly inward so the whole composition breathes.`
     : "";
 
   const values: Record<string, string> = {
@@ -170,7 +161,9 @@ export function buildPrompt(
     area,
     density,
     featured,
-    labels,
+    // Legacy: templates saved before labels were removed may still contain
+    // {labels} — it now renders nothing (images must be text-free).
+    labels: "",
   };
 
   const fallback =
