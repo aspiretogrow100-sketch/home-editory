@@ -266,6 +266,7 @@ export const generateDesign = createServerFn({ method: "POST" })
       .maybeSingle();
     const dataUrl = await generateRoomImage(
       buildPrompt(data, products, promptSetting?.setting_value ?? null),
+      data.roomPhoto ?? null,
     );
     const base: GenerationResult = {
       generationId: null,
