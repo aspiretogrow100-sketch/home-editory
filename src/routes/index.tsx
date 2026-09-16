@@ -550,7 +550,7 @@ function StudioPage() {
           >
         <div className="min-h-0 min-w-0 space-y-6">
           <div className="surface-card flex h-full min-h-0 min-w-0 flex-col overflow-hidden p-4 md:p-5">
-            <div className="flex shrink-0 gap-2 overflow-x-auto pb-1">
+            <div className="flex shrink-0 flex-wrap gap-2 pb-1">
               {STEPS.map((label, index) => {
                 const done = index < step;
                 const active = index === step;
