@@ -438,10 +438,11 @@ function StudioPage() {
                   <Link to="/gallery">View real designs <ArrowUpRight /></Link>
                 </Button>
               </div>
-              <div className="mt-6 grid max-w-xl grid-cols-3 border-t border-background/25 pt-4 text-background/75">
+              <div className="mt-6 grid max-w-xl grid-cols-2 gap-y-3 border-t border-background/25 pt-4 text-background/75 sm:grid-cols-4">
+                <div><p className="text-xs font-semibold uppercase">No credit card</p><p className="mt-1 text-sm">Designing is free</p></div>
                 <div><p className="text-xs font-semibold uppercase">Your budget</p><p className="mt-1 text-sm">Rooms built to fit it</p></div>
-                <div className="border-l border-background/25 pl-4"><p className="text-xs font-semibold uppercase">Real Amazon</p><p className="mt-1 text-sm">Live products &amp; prices</p></div>
-                <div className="border-l border-background/25 pl-4"><p className="text-xs font-semibold uppercase">Discounts</p><p className="mt-1 text-sm">Deals surfaced first</p></div>
+                <div className="sm:border-l sm:border-background/25 sm:pl-4"><p className="text-xs font-semibold uppercase">Real Amazon</p><p className="mt-1 text-sm">Live products &amp; prices</p></div>
+                <div className="sm:border-l sm:border-background/25 sm:pl-4"><p className="text-xs font-semibold uppercase">Discounts</p><p className="mt-1 text-sm">Deals surfaced first</p></div>
               </div>
             </div>
             <div className="hero-reveal-delayed hidden lg:block">
