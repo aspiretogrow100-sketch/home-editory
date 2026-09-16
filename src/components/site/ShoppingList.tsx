@@ -90,6 +90,20 @@ export function ShoppingList({ products, unlocked, price, busy, onUnlock }: Prop
               <p className="mt-1 text-sm text-muted-foreground">
                 Get direct Amazon links and itemised prices for every piece in this room.
               </p>
+              <div className="mt-4 grid grid-cols-3 gap-2 rounded-lg border border-border bg-muted/50 px-3 py-2.5 text-center">
+                <div>
+                  <p className="text-sm font-semibold">{products.length}</p>
+                  <p className="text-[11px] text-muted-foreground">{products.length === 1 ? "item" : "items"}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">{currency(total)}</p>
+                  <p className="text-[11px] text-muted-foreground">total</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-primary">{currency(saved)}</p>
+                  <p className="text-[11px] text-muted-foreground">you save</p>
+                </div>
+              </div>
               <Button className="mt-4 w-full" onClick={onUnlock} disabled={busy}>
                 {busy ? "Processing…" : `Buy from Amazon · Unlock for ${currency(price)}`}
               </Button>
