@@ -102,8 +102,12 @@ function scraperapiKeys(cfg: AmazonConfig): string[] {
 
 function isScraperapiKeyError(status: number, body: string): boolean {
   if ([401, 402, 403, 429].includes(status)) return true;
+  // Only inspect the body for quota wording on failed responses — a successful
+  // payload legitimately contains words like "is_limited_deal".
+  if (status >= 200 && status < 300) return false;
   return /credit|quota|exceeded|limit|unauthor|invalid api key|forbidden|expired/i.test(body);
 }
+
 
 async function scraperapiSearch(cfg: AmazonConfig, term: string): Promise<ScraperApiItem[]> {
   const keys = scraperapiKeys(cfg);
