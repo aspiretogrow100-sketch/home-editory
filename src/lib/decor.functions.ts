@@ -99,6 +99,7 @@ function validateSelection(input: DesignSelection): DesignSelection {
     discountFilter: input.discountFilter ? String(input.discountFilter).slice(0, 40) : null,
     discountPercent:
       Number.isFinite(discountPercent) && discountPercent > 0 ? discountPercent : null,
+    roomPhoto: cleanRoomPhoto(input.roomPhoto),
   };
 }
 
