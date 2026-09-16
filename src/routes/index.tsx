@@ -998,6 +998,116 @@ function StudioPage() {
         </div>
       </section>
 
+      <section className="border-y border-border bg-card/45 py-10 md:py-12" aria-labelledby="community-heading">
+        <div className="mx-auto w-full max-w-6xl px-4">
+          <div className="flex items-end justify-between gap-6">
+            <div>
+              <p className="text-xs font-semibold uppercase text-primary">Made by the community</p>
+              <h2 id="community-heading" className="mt-2 text-3xl md:text-4xl">
+                Recent rooms to inspire yours
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                Explore fresh spaces from the Interior AI Designer community while you shape your own.
+              </p>
+            </div>
+            <Button asChild variant="outline" className="hidden shrink-0 sm:inline-flex">
+              <Link to="/gallery">View all rooms <ArrowUpRight /></Link>
+            </Button>
+          </div>
+
+          <div className="mt-6 border-y border-border py-3">
+            <div className="flex snap-x gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {communityRooms.map((room) => (
+                <Button
+                  key={room}
+                  type="button"
+                  size="sm"
+                  variant={communityRoom === room ? "default" : "ghost"}
+                  onClick={() => setCommunityRoom(room)}
+                  className={`h-9 shrink-0 snap-start rounded-full px-4 ${
+                    communityRoom === room ? "shadow-sm" : "border border-border bg-background"
+                  }`}
+                  aria-pressed={communityRoom === room}
+                >
+                  {room}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {galleryQuery.isLoading ? (
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[0, 1, 2].map((item) => (
+                <Skeleton key={item} className="aspect-[4/3] w-full rounded-lg" />
+              ))}
+            </div>
+          ) : recentRooms.length ? (
+            <div className="-mx-4 mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
+              {recentRooms.map((item) => (
+                <Link
+                  key={item.id}
+                  to="/gallery"
+                  className="surface-card group min-w-[82%] snap-start overflow-hidden transition-shadow hover:shadow-[var(--shadow-lift)] sm:min-w-0"
+                  aria-label={`View ${item.designStyle} ${item.roomType} in the gallery`}
+                >
+                  {item.imageUrl ? (
+                    <div className="overflow-hidden">
+                      <img
+                        src={item.imageUrl}
+                        alt={`${item.designStyle} ${item.roomType} created by the Interior AI Designer community`}
+                        loading="lazy"
+                        className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
+                      />
+                    </div>
+                  ) : (
+                    <div className="aspect-[4/3] bg-muted" />
+                  )}
+                  <div className="p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="text-xl leading-tight">{item.designStyle} {item.roomType}</h3>
+                        <p className="mt-1 text-xs leading-5 text-muted-foreground">{roomSummary(item)}</p>
+                      </div>
+                      <ArrowUpRight className="mt-1 size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
+                    </div>
+                    <Badge
+                      variant={item.isUnlocked ? "secondary" : "outline"}
+                      className="mt-3"
+                    >
+                      {item.isUnlocked ? <Unlock className="size-3" /> : <Lock className="size-3" />}
+                      {item.isUnlocked ? "Unlocked" : `Locked · ${currency(price)}`}
+                    </Badge>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-8 border-y border-border py-10 text-center">
+              <p className="font-display text-2xl">
+                {communityRoom === "All rooms"
+                  ? "The next inspiring room could be yours."
+                  : `No ${communityRoom.toLowerCase()} designs yet.`}
+              </p>
+              <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+                {communityRoom === "All rooms"
+                  ? "Create a room and share the inspiration."
+                  : `Be the first to create a ${communityRoom.toLowerCase()} for the community.`}
+              </p>
+              <Button
+                className="mt-4"
+                onClick={() => document.getElementById("design-studio")?.scrollIntoView({ behavior: "smooth" })}
+              >
+                Start designing
+              </Button>
+            </div>
+          )}
+
+          <Button asChild variant="outline" className="mt-5 w-full sm:hidden">
+            <Link to="/gallery">View all rooms <ArrowUpRight /></Link>
+          </Button>
+        </div>
+      </section>
+
       <section className="relative overflow-hidden border-t border-border bg-background py-12 md:py-16" aria-labelledby="faq-heading">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 mx-auto h-px max-w-5xl bg-primary/55" />
         <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
