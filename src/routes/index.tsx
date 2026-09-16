@@ -417,7 +417,13 @@ function StudioPage() {
               Choose your room, style and budget. We create the space and match every shoppable piece.
             </p>
           </div>
-          <div className="grid min-h-0 min-w-0 flex-1 gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
+          <div
+            className={`grid min-h-0 min-w-0 flex-1 gap-4 ${
+              result || generate.isPending
+                ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]"
+                : "lg:grid-cols-[minmax(0,1fr)_220px]"
+            }`}
+          >
         <div className="min-h-0 min-w-0 space-y-6">
           <div className="surface-card flex h-full min-h-0 min-w-0 flex-col overflow-hidden p-4 md:p-5">
             <div className="flex shrink-0 gap-2 overflow-x-auto pb-1">
