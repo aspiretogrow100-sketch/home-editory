@@ -848,11 +848,6 @@ function StudioPage() {
           ) : null}
         </aside>
 
-        <aside className={`hidden min-h-0 lg:flex-col lg:border-l lg:border-border lg:pl-5 ${result || generate.isPending ? "" : "lg:flex"}`}>
-          <p className="mt-0 font-display text-xl leading-tight">Five quick choices. One room made for you.</p>
-          <p className="mt-2 text-xs leading-5 text-muted-foreground">Every option shapes both the finished image and its matching shopping list.</p>
-          <div className="mt-auto pt-3"><AdSlot label="Sponsored" /></div>
-        </aside>
           </div>
         </div>
       </section>
