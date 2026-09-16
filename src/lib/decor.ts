@@ -76,6 +76,8 @@ export type DesignSelection = {
   budgetAmount?: number | null;
   discountFilter?: string | null;
   discountPercent?: number | null;
+  /** Optional photo of the user's own room (data URL) — we redesign that exact room. */
+  roomPhoto?: string | null;
 };
 
 export function designTypeOf(sel: DesignSelection): DesignType {
