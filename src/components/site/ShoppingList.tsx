@@ -68,14 +68,21 @@ export function ShoppingList({ products, unlocked, price, busy, onUnlock }: Prop
                   </Badge>
                 </div>
               </div>
-              <div className="flex shrink-0 items-center gap-3">
-                <div className="text-right">
-                  <p className="text-sm font-semibold">{currency(product.price)}</p>
-                  <p className="text-xs text-muted-foreground line-through">
-                    {currency(product.listPrice)}
-                  </p>
+                <div className="flex shrink-0 items-center gap-3">
+                  <div className="text-right">
+                    <p className="text-sm font-semibold">{currency(product.price)}</p>
+                    <p className="text-xs text-muted-foreground line-through">
+                      {currency(product.listPrice)}
+                    </p>
+                  </div>
+                  {unlocked ? (
+                    <Button asChild size="sm" variant="outline">
+                      <a href={product.url} target="_blank" rel="noopener noreferrer nofollow">
+                        Buy <ExternalLink className="size-3.5" />
+                      </a>
+                    </Button>
+                  ) : null}
                 </div>
-              </div>
             </li>
           ))}
         </ul>
