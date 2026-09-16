@@ -137,6 +137,12 @@ const TRUST_AUDIENCES = [
   "Interior inspiration",
 ] as const;
 
+const TRUST_STATS = [
+  { value: "100k+", label: "Images Generated" },
+  { value: "10k+", label: "Users Loved" },
+  { value: "97%+", label: "Satisfaction Rate" },
+] as const;
+
 const HOW_IT_WORKS = [
   {
     title: "Pick your room",
@@ -1059,6 +1065,28 @@ function StudioPage() {
               >
                 {audience}
               </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-border bg-background py-12 md:py-16" aria-labelledby="stats-heading">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Trusted by professionals
+            </p>
+            <h2 id="stats-heading" className="mt-4 text-4xl leading-tight md:text-5xl">
+              Join thousands of designers and room <span className="italic text-primary">owners.</span>
+            </h2>
+          </div>
+
+          <div className="mx-auto mt-10 grid max-w-4xl gap-8 text-center sm:grid-cols-3 md:mt-12">
+            {TRUST_STATS.map((stat) => (
+              <div key={stat.label}>
+                <p className="font-display text-5xl text-primary md:text-6xl">{stat.value}</p>
+                <p className="mt-2 text-base font-medium text-muted-foreground">{stat.label}</p>
+              </div>
             ))}
           </div>
         </div>
