@@ -290,20 +290,19 @@ function StudioPage() {
     setStep(next);
   }
   useEffect(() => {
-    if (scrollBeforeStep.current) {
-      const y = scrollBeforeStep.current;
-      scrollBeforeStep.current = 0;
-      window.scrollTo({ top: y });
-      // layout can shift while the next step renders — keep restoring for a few frames
-      const raf = requestAnimationFrame(() => window.scrollTo({ top: y }));
-      const t1 = window.setTimeout(() => window.scrollTo({ top: y }), 120);
-      const t2 = window.setTimeout(() => window.scrollTo({ top: y }), 320);
-      return () => {
-        cancelAnimationFrame(raf);
-        clearTimeout(t1);
-        clearTimeout(t2);
-      };
-    }
+    const y = scrollBeforeStep.current;
+    if (!y) return undefined;
+    scrollBeforeStep.current = 0;
+    window.scrollTo({ top: y });
+    // layout can shift while the next step renders — keep restoring for a few frames
+    const raf = requestAnimationFrame(() => window.scrollTo({ top: y }));
+    const t1 = window.setTimeout(() => window.scrollTo({ top: y }), 120);
+    const t2 = window.setTimeout(() => window.scrollTo({ top: y }), 320);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, [step]);
 
   function scrollToDesignOnMobile() {
