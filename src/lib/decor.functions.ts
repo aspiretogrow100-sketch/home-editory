@@ -372,6 +372,8 @@ export const saveAmazonSettings = createServerFn({ method: "POST" })
       marketplace: string;
       rainforestApiKey?: string;
       scraperapiApiKey?: string;
+      /** Explicit slot list: null/"" keeps the stored key at that slot, a string replaces it. */
+      scraperapiKeys?: (string | null)[];
       paapiAccessKey?: string;
       paapiSecretKey?: string;
       creatorsClientId?: string;
