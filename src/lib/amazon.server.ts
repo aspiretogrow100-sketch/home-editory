@@ -558,6 +558,11 @@ export async function fetchAmazonProducts(
         if (cfg.provider === "creators") {
           const items = await creatorsSearch(cfg, query, minPrice, cap, minDiscount || null);
           candidates = items.map((i) => paapiToProduct(i, category, cfg)).filter(Boolean) as AmazonProduct[];
+        } else if (cfg.provider === "scraperapi") {
+          const items = await scraperapiSearch(cfg, query);
+          candidates = items
+            .map((i) => scraperapiToProduct(i, category, cfg))
+            .filter(Boolean) as AmazonProduct[];
         } else if (cfg.provider === "paapi") {
           const items = await paapiSearch(cfg, query, minPrice, cap, minDiscount || null);
           candidates = items.map((i) => paapiToProduct(i, category, cfg)).filter(Boolean) as AmazonProduct[];
