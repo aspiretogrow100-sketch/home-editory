@@ -409,6 +409,8 @@ export const saveAmazonSettings = createServerFn({ method: "POST" })
       marketplace: data.marketplace,
     };
     if (data.rainforestApiKey) patch.rainforest_api_key = data.rainforestApiKey;
+    if (data.scraperapiApiKey)
+      (patch as Record<string, unknown>)["scraperapi_api_key"] = data.scraperapiApiKey;
     if (data.paapiAccessKey) patch.paapi_access_key = data.paapiAccessKey;
     if (data.paapiSecretKey) patch.paapi_secret_key = data.paapiSecretKey;
     if (data.creatorsClientId) patch.creators_client_id = data.creatorsClientId;
