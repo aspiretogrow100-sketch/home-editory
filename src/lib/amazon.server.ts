@@ -115,8 +115,8 @@ async function scraperapiSearch(cfg: AmazonConfig, term: string): Promise<Scrape
   url.searchParams.set("tld", cfg.marketplace.replace(/^www\.amazon\./, ""));
 
   let lastError = "";
-  for (let i = 0; i < keys.length; i++) {
-    url.searchParams.set("api_key", keys[i]);
+  for (const [i, key] of keys.entries()) {
+    url.searchParams.set("api_key", key);
     let res: Response;
     let raw: string;
     try {
