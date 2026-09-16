@@ -233,14 +233,14 @@ function OptionCard({
     <button
       type="button"
       onClick={onClick}
-      className={`lift-hover hover:lift-hover-on rounded-lg border px-4 py-3 text-left ${
+      className={`lift-hover hover:lift-hover-on rounded-lg border px-3 py-2.5 text-left sm:px-4 sm:py-3 ${
         selected
           ? "border-primary bg-primary/10 ring-1 ring-primary"
           : "border-border bg-card hover:border-primary/40"
       }`}
     >
       <span className="block text-sm font-medium">{label}</span>
-      {hint ? <span className="mt-1 block text-xs text-muted-foreground">{hint}</span> : null}
+      {hint ? <span className="mt-0.5 hidden text-xs text-muted-foreground sm:block">{hint}</span> : null}
     </button>
   );
 }
@@ -566,8 +566,8 @@ function StudioPage() {
 
               {step === 0 && !optionsQuery.isLoading ? (
                 <div>
-                  <h2 className="text-2xl">What would you like to design?</h2>
-                  <div className="mt-3 grid gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                  <h2 className="text-xl sm:text-2xl">What would you like to design?</h2>
+                  <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
                     {DESIGN_TYPES.map((type) => (
                       <OptionCard
                         key={type.label}
@@ -588,7 +588,7 @@ function StudioPage() {
                         ? "Which room is this wall in?"
                         : "Which room is this piece for?"}
                   </h3>
-                  <div className="mt-3 grid gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                  <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
                     {options.rooms.map((room) => (
                       <OptionCard
                         key={room.id}
@@ -622,7 +622,7 @@ function StudioPage() {
                   </div>
 
                   <div className="mt-6 rounded-xl border border-primary/25 bg-primary/5 p-4">
-                    <h3 className="text-lg">Use my room photo</h3>
+                    <h3 className="text-base sm:text-lg">Use my room photo</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
                       Optional — upload a photo and we redesign that exact room, keeping your walls,
                       windows and layout. No photo? We&apos;ll create the room for you.
@@ -682,7 +682,7 @@ function StudioPage() {
 
                   {designType !== "Full Room" ? (
                     <div className="mt-8">
-                      <h3 className="text-xl">
+                      <h3 className="text-base sm:text-xl">
                         {designType === "Wall Decor" ? "Lead the wall with" : "Which piece?"}
                       </h3>
                       <p className="mt-1 text-sm text-muted-foreground">
@@ -690,7 +690,7 @@ function StudioPage() {
                           ? "Optional — we still add matching wall pieces around it."
                           : "Pick the single item you want to shop."}
                       </p>
-                      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                      <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-4 sm:grid-cols-3 sm:gap-3">
                         {categoryChoices.map((category) => (
                           <OptionCard
                             key={category}
@@ -727,9 +727,9 @@ function StudioPage() {
 
               {step === 1 && !optionsQuery.isLoading ? (
                 <div>
-                  <h2 className="text-2xl">How big is the space?</h2>
+                  <h2 className="text-xl sm:text-2xl">How big is the space?</h2>
                   <p className="mt-1 text-sm text-muted-foreground">Optional — skip if unsure.</p>
-                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-4 sm:grid-cols-3 sm:gap-3">
                     {options.sizes.map((size) => (
                       <OptionCard
                         key={size.id}
@@ -747,11 +747,11 @@ function StudioPage() {
                   </div>
                   {options.densities.length && designType !== "Single Item" ? (
                     <div className="mt-8">
-                      <h3 className="text-xl">How full should the room be?</h3>
+                      <h3 className="text-base sm:text-xl">How full should the room be?</h3>
                       <p className="mt-1 text-sm text-muted-foreground">
                         Sets how many products we shop for.
                       </p>
-                      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                      <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-4 sm:grid-cols-3 sm:gap-3">
                         {options.densities.map((item) => (
                           <OptionCard
                             key={item.id}
@@ -797,8 +797,8 @@ function StudioPage() {
 
               {step === 2 && !optionsQuery.isLoading ? (
                 <div>
-                  <h2 className="text-2xl">Pick a design style</h2>
-                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  <h2 className="text-xl sm:text-2xl">Pick a design style</h2>
+                  <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-4 sm:grid-cols-3 sm:gap-3">
                     {options.styles.map((style) => (
                       <OptionCard
                         key={style.id}
@@ -830,8 +830,8 @@ function StudioPage() {
 
               {step === 3 && !optionsQuery.isLoading ? (
                 <div>
-                  <h2 className="text-2xl">What's your budget?</h2>
-                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  <h2 className="text-xl sm:text-2xl">What's your budget?</h2>
+                  <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-4 sm:grid-cols-3 sm:gap-3">
                     {options.budgets.map((budget) => (
                       <OptionCard
                         key={budget.id}
@@ -872,9 +872,9 @@ function StudioPage() {
 
                   {options.palettes.length ? (
                     <div className="mt-8">
-                      <h3 className="text-xl">Colour palette</h3>
+                      <h3 className="text-base sm:text-xl">Colour palette</h3>
                       <p className="mt-1 text-sm text-muted-foreground">Optional — sets the mood of your room.</p>
-                      <div className="mt-4 grid gap-3 sm:grid-cols-4">
+                      <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-4 sm:grid-cols-4 sm:gap-3">
                         {options.palettes.map((item) => (
                           <OptionCard
                             key={item.id}
@@ -892,9 +892,9 @@ function StudioPage() {
 
               {step === 4 && !optionsQuery.isLoading ? (
                 <div>
-                  <h2 className="text-2xl">Deal preferences</h2>
+                  <h2 className="text-xl sm:text-2xl">Deal preferences</h2>
                   <p className="mt-1 text-sm text-muted-foreground">Optional — how you want us to pick products.</p>
-                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-4 sm:grid-cols-3 sm:gap-3">
                     {options.discounts.map((discount) => (
                       <OptionCard
                         key={discount.id}
