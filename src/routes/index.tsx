@@ -1051,13 +1051,13 @@ function StudioPage() {
           </div>
 
           {galleryQuery.isLoading ? (
-            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {[0, 1, 2, 3, 4, 5].map((item) => (
                 <Skeleton key={item} className="aspect-[4/3] w-full rounded-lg" />
               ))}
             </div>
           ) : recentRooms.length ? (
-            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {recentRooms.map((item) => (
                 <Link
                   key={item.id}
