@@ -86,11 +86,10 @@ export function Footer() {
           <p className="mt-2 max-w-xs text-sm text-muted-foreground">
             Photoreal room concepts, paired with a shoppable list of discounted Amazon finds.
           </p>
-          <div className="mt-5 flex items-center gap-3">
-            {SOCIALS.map(({ key, label, color, Icon }) => {
+          <div className="mt-5 flex items-center gap-4">
+            {SOCIALS.map(({ key, label, Icon }) => {
               const href = links?.[key];
-              const className =
-                "flex size-9 items-center justify-center rounded-full border border-border bg-background transition-colors hover:opacity-100";
+              const className = "transition-opacity hover:opacity-75";
               return href ? (
                 <a
                   key={key}
@@ -101,7 +100,7 @@ export function Footer() {
                   title={label}
                   className={className}
                 >
-                  <Icon className="size-4" style={{ color }} />
+                  <Icon className="size-7" />
                 </a>
               ) : (
                 <span
@@ -110,7 +109,7 @@ export function Footer() {
                   title={label}
                   className={`${className} opacity-40`}
                 >
-                  <Icon className="size-4" style={{ color }} />
+                  <Icon className="size-7" />
                 </span>
               );
             })}
