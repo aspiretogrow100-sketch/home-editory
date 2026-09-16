@@ -36,7 +36,13 @@ function failure(status: number, detail: string, label: string): Error {
   return new Error("The design engine could not create this room. Please try again.");
 }
 
-async function generateWithLovable(prompt: string): Promise<string> {
+async function generateWithLovable(prompt: string, referenceImage?: string | null): Promise<string> {
+  const content = referenceImage
+    ? [
+        { type: "text", text: prompt },
+        { type: "image_url", image_url: { url: referenceImage } },
+      ]
+    : prompt;
   const response = await fetch(gatewayUrl(), {
     method: "POST",
     headers: {
@@ -45,7 +51,7 @@ async function generateWithLovable(prompt: string): Promise<string> {
     },
     body: JSON.stringify({
       model: "google/gemini-3.1-flash-image",
-      messages: [{ role: "user", content: prompt }],
+      messages: [{ role: "user", content }],
       modalities: ["image", "text"],
     }),
   });
@@ -131,8 +137,15 @@ async function generateWithReplicate(prompt: string, key: string, model: string)
   return await urlToDataUrl(output);
 }
 
-export async function generateRoomImage(prompt: string, cfg?: AiConfig): Promise<string> {
+export async function generateRoomImage(
+  prompt: string,
+  cfg?: AiConfig,
+  referenceImage?: string | null,
+): Promise<string> {
   const config = cfg ?? (await loadAiConfig());
+  // Redesigning a user's own room photo needs an image-input model. Only the
+  // built-in Lovable AI model supports it here, so fall back to it for photos.
+  if (referenceImage) return await generateWithLovable(prompt, referenceImage);
   if (config.provider === "openai") {
     if (!config.openaiApiKey) throw new Error("Add an OpenAI API key in Admin → AI generator settings.");
     return await generateWithOpenai(prompt, config.openaiApiKey);

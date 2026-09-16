@@ -7,6 +7,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   Heart,
+  ImagePlus,
   Lock,
   Palette,
   Ruler,
@@ -14,6 +15,7 @@ import {
   Sparkles,
   Unlock,
   Wand2,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -239,6 +241,27 @@ function OptionCard({
   );
 }
 
+/** Reads a room photo and shrinks it in the browser so uploads stay small and fast. */
+async function readRoomPhoto(file: File): Promise<string> {
+  if (!/^image\/(png|jpe?g|webp)$/i.test(file.type)) {
+    throw new Error("Please choose a PNG, JPG or WebP photo.");
+  }
+  if (file.size > 25 * 1024 * 1024) throw new Error("That photo is too large. Please pick a smaller one.");
+  const bitmap = await createImageBitmap(file);
+  const max = 1280;
+  const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
+  const width = Math.round(bitmap.width * scale);
+  const height = Math.round(bitmap.height * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("We couldn't read that photo. Please try another one.");
+  ctx.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close();
+  return canvas.toDataURL("image/jpeg", 0.85);
+}
+
 function StudioPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -254,6 +277,17 @@ function StudioPage() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [saved, setSaved] = useState(false);
   const [communityRoom, setCommunityRoom] = useState("All rooms");
+  const [roomPhoto, setRoomPhoto] = useState<string | null>(null);
+
+  async function handleRoomPhoto(file: File | undefined) {
+    if (!file) return;
+    try {
+      setRoomPhoto(await readRoomPhoto(file));
+      toast.success("Photo added — we'll redesign this exact room.");
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
+  }
 
   const priceQuery = useQuery({
     queryKey: ["unlock-price"],
@@ -569,6 +603,65 @@ function StudioPage() {
                     </p>
                   </div>
 
+                  <div className="mt-6 rounded-xl border border-primary/25 bg-primary/5 p-4">
+                    <h3 className="text-lg">Use my room photo</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Optional — upload a photo and we redesign that exact room, keeping your walls,
+                      windows and layout. No photo? We&apos;ll create the room for you.
+                    </p>
+
+                    {roomPhoto ? (
+                      <div className="mt-3 flex items-center gap-3">
+                        <img
+                          src={roomPhoto}
+                          alt="Your room photo"
+                          className="size-20 rounded-lg object-cover"
+                        />
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium">Photo ready</p>
+                          <div className="flex gap-2">
+                            <Label
+                              htmlFor="room-photo"
+                              className="cursor-pointer text-xs font-medium text-primary underline"
+                            >
+                              Replace
+                            </Label>
+                            <button
+                              type="button"
+                              onClick={() => setRoomPhoto(null)}
+                              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                            >
+                              <X className="size-3" /> Remove
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <Label
+                        htmlFor="room-photo"
+                        className="mt-3 flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium hover:border-primary"
+                      >
+                        <ImagePlus className="size-4" /> Upload a photo
+                      </Label>
+                    )}
+
+                    <input
+                      id="room-photo"
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      className="hidden"
+                      onChange={(event) => {
+                        void handleRoomPhoto(event.target.files?.[0]);
+                        event.target.value = "";
+                      }}
+                    />
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Best results: a bright, tidy photo taken from a corner of the room.
+                    </p>
+                  </div>
+
+
+
                   {designType !== "Full Room" ? (
                     <div className="mt-8">
                       <h3 className="text-xl">
@@ -823,6 +916,7 @@ function StudioPage() {
                 <Button
                   onClick={() => generate.mutate({
                     ...(selection as DesignSelection),
+                    roomPhoto,
                     designStyle: palette
                       ? `${selection.designStyle} with a ${palette.toLowerCase()} colour palette`
                       : (selection.designStyle as string),

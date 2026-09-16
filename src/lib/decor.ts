@@ -76,6 +76,8 @@ export type DesignSelection = {
   budgetAmount?: number | null;
   discountFilter?: string | null;
   discountPercent?: number | null;
+  /** Optional photo of the user's own room (data URL) — we redesign that exact room. */
+  roomPhoto?: string | null;
 };
 
 export function designTypeOf(sel: DesignSelection): DesignType {
@@ -121,6 +123,16 @@ export const DEFAULT_SINGLE_PROMPT = [
   "Keep it faithful to the real product's shape, materials and colours, correctly scaled for the space, within a {budget} budget.",
   "Shot on a full-frame camera, 50mm lens, magazine editorial quality, no people, no watermarks, no text, no labels, no captions. The piece must be fully visible inside the frame with at least 10% empty margin on all four sides — never cropped by an edge.",
 ].join(" ");
+
+/** Used when the user uploads a photo of their own room — we restyle that exact room. */
+export const DEFAULT_REDESIGN_PROMPT = [
+  "Redesign the room in the attached photograph as a {style} {roomType}, keeping it unmistakably the same room.",
+  "Keep the existing architecture exactly: the same camera angle and perspective, the same walls, ceiling height, windows, doors, radiators and floor layout. Do not move, add or remove windows, doors or walls.",
+  "Replace the furniture, lighting, textiles and decor with the new styled pieces, arranged where they would realistically sit in this room, furnished to a {budget} budget.{density}{area}{featured}",
+  "Photorealistic result with the same daylight direction as the photo, realistic shadows and reflections, magazine editorial quality, no people, no watermarks, no text, no labels, no captions. Everything must be fully visible inside the frame — never cropped by an edge.",
+].join(" ");
+
+
 
 
 /** Placeholders available inside the prompt template, with a short explanation. */
@@ -172,9 +184,14 @@ export function buildPrompt(
       : type === "Single Item"
         ? DEFAULT_SINGLE_PROMPT
         : DEFAULT_IMAGE_PROMPT;
-  // The admin-editable template only drives full-room designs; wall and single-item
-  // designs use their own dedicated prompts.
-  const source = type === "Full Room" && template?.trim() ? template : fallback;
+  // A photo of the user's own room always uses the redesign prompt so the real
+  // architecture is preserved. The admin-editable template only drives full-room
+  // designs from scratch; wall and single-item designs use their own prompts.
+  const source = sel.roomPhoto
+    ? DEFAULT_REDESIGN_PROMPT
+    : type === "Full Room" && template?.trim()
+      ? template
+      : fallback;
   return source
     .replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? values[key]! : match))
     .replace(/[ \t]+/g, " ")
