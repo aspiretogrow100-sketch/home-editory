@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -282,34 +282,42 @@ function StudioPage() {
   const [saved, setSaved] = useState(false);
   const [communityRoom, setCommunityRoom] = useState("All rooms");
   const [roomPhoto, setRoomPhoto] = useState<string | null>(null);
-  const scrollBeforeStep = useRef(0);
+  const scrollBeforeStep = useRef<number | null>(null);
 
   // Keep the page exactly where it is when moving between wizard steps.
-  function goToStep(next: number | ((s: number) => number)) {
+  function goToStep(next: number) {
     scrollBeforeStep.current = window.scrollY;
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     setStep(next);
   }
-  useEffect(() => {
+  useLayoutEffect(() => {
     const y = scrollBeforeStep.current;
-    if (!y) return undefined;
-    scrollBeforeStep.current = 0;
-    window.scrollTo({ top: y });
-    // Lock the scroll position while the next step renders — the browser
-    // otherwise scrolls to the tapped button / shifted layout.
+    if (y === null) return undefined;
+    scrollBeforeStep.current = null;
+    const root = document.documentElement;
+    const body = document.body;
+    const rootAnchor = root.style.overflowAnchor;
+    const bodyAnchor = body.style.overflowAnchor;
+    root.style.overflowAnchor = "none";
+    body.style.overflowAnchor = "none";
     const lock = () => {
       if (window.scrollY !== y) window.scrollTo({ top: y });
     };
+    lock();
     const raf = requestAnimationFrame(lock);
     const t1 = window.setTimeout(lock, 120);
     const t2 = window.setTimeout(lock, 320);
-    window.addEventListener("scroll", lock, { passive: true });
-    const release = window.setTimeout(() => window.removeEventListener("scroll", lock), 500);
+    const release = window.setTimeout(() => {
+      root.style.overflowAnchor = rootAnchor;
+      body.style.overflowAnchor = bodyAnchor;
+    }, 450);
     return () => {
       cancelAnimationFrame(raf);
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(release);
-      window.removeEventListener("scroll", lock);
+      root.style.overflowAnchor = rootAnchor;
+      body.style.overflowAnchor = bodyAnchor;
     };
   }, [step]);
 
@@ -957,14 +965,14 @@ function StudioPage() {
             <div className="mt-3 flex shrink-0 items-center justify-between gap-3 border-t border-border pt-3">
               <Button
                 variant="ghost"
-                onClick={() => goToStep((s) => Math.max(0, s - 1))}
+                onClick={() => goToStep(Math.max(0, step - 1))}
                 disabled={step === 0}
               >
                 <ArrowLeft className="size-4" /> Back
               </Button>
 
               {step < STEPS.length - 1 ? (
-                <Button onClick={() => goToStep((s) => s + 1)} disabled={!canContinue}>
+                <Button onClick={() => goToStep(step + 1)} disabled={!canContinue}>
                   Continue <ArrowRight className="size-4" />
                 </Button>
               ) : (
