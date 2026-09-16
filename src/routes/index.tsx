@@ -621,7 +621,7 @@ function StudioPage() {
                     </p>
                   </div>
 
-                  <div className="mt-6 rounded-xl border border-primary/25 bg-primary/5 p-4">
+                  <div className="mt-5 rounded-xl border border-primary/25 bg-primary/5 p-3 sm:mt-6 sm:p-4">
                     <h3 className="text-base sm:text-lg">Use my room photo</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
                       Optional — upload a photo and we redesign that exact room, keeping your walls,
