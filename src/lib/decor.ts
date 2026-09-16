@@ -184,9 +184,14 @@ export function buildPrompt(
       : type === "Single Item"
         ? DEFAULT_SINGLE_PROMPT
         : DEFAULT_IMAGE_PROMPT;
-  // The admin-editable template only drives full-room designs; wall and single-item
-  // designs use their own dedicated prompts.
-  const source = type === "Full Room" && template?.trim() ? template : fallback;
+  // A photo of the user's own room always uses the redesign prompt so the real
+  // architecture is preserved. The admin-editable template only drives full-room
+  // designs from scratch; wall and single-item designs use their own prompts.
+  const source = sel.roomPhoto
+    ? DEFAULT_REDESIGN_PROMPT
+    : type === "Full Room" && template?.trim()
+      ? template
+      : fallback;
   return source
     .replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? values[key]! : match))
     .replace(/[ \t]+/g, " ")
