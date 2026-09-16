@@ -376,8 +376,8 @@ function StudioPage() {
 
       <section
         id="design-studio"
-        className={`scroll-mt-16 border-b border-border bg-background py-7 md:py-5 ${
-          result || generate.isPending ? "" : "md:h-[calc(100svh-4rem)]"
+        className={`scroll-mt-16 border-b border-border bg-background py-5 ${
+          result || generate.isPending ? "" : "h-[calc(100svh-4rem)] min-h-[560px]"
         }`}
       >
         <div className="mx-auto flex h-full w-full max-w-7xl flex-col px-4 sm:px-6 lg:px-8">
@@ -390,9 +390,9 @@ function StudioPage() {
               Choose your room, style and budget. We create the space and match every shoppable piece.
             </p>
           </div>
-          <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
-        <div className="min-h-0 space-y-6">
-          <div className="surface-card flex h-full min-h-0 flex-col overflow-hidden p-4 md:p-5">
+          <div className="grid min-h-0 min-w-0 flex-1 gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
+        <div className="min-h-0 min-w-0 space-y-6">
+          <div className="surface-card flex h-full min-h-0 min-w-0 flex-col overflow-hidden p-4 md:p-5">
             <div className="flex shrink-0 gap-2 overflow-x-auto pb-1">
               {STEPS.map((label, index) => (
                 <Button
