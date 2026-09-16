@@ -311,10 +311,11 @@ export const generateDesign = createServerFn({ method: "POST" })
 // ---------- Amazon integration settings (admin only; secrets never leave the server) ----------
 
 export type AmazonSettingsView = {
-  provider: "rainforest" | "paapi" | "creators";
+  provider: "rainforest" | "paapi" | "creators" | "scraperapi";
   trackingId: string;
   marketplace: string;
   rainforestKeyHint: string | null;
+  scraperapiKeyHint: string | null;
   paapiAccessKeyHint: string | null;
   paapiSecretKeyHint: string | null;
   creatorsClientIdHint: string | null;
