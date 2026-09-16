@@ -628,10 +628,11 @@ function AmazonSettingsPanel() {
   });
 
   const [form, setForm] = useState({
-    provider: "rainforest" as "rainforest" | "paapi" | "creators",
+    provider: "rainforest" as "rainforest" | "paapi" | "creators" | "scraperapi",
     trackingId: "",
     marketplace: "www.amazon.com",
     rainforestApiKey: "",
+    scraperapiApiKey: "",
     paapiAccessKey: "",
     paapiSecretKey: "",
     creatorsClientId: "",
