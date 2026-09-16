@@ -13,13 +13,13 @@ import { lovable } from "@/integrations/lovable/index";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign In or Create an Account — DecorAI" },
+      { title: "Sign In or Create an Account — Interior AI Designer" },
       {
         name: "description",
-        content: "Sign in to DecorAI to save your AI room designs and unlock Amazon shopping links.",
+        content: "Sign in to Interior AI Designer to save your AI room designs and unlock Amazon shopping links.",
       },
-      { property: "og:title", content: "Sign In — DecorAI" },
-      { property: "og:description", content: "Access your saved AI interior designs on DecorAI." },
+      { property: "og:title", content: "Sign In — Interior AI Designer" },
+      { property: "og:description", content: "Access your saved AI interior designs on Interior AI Designer." },
     ],
   }),
   component: AuthPage,

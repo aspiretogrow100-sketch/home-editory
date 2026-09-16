@@ -3,13 +3,13 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — DecorAI" },
+      { title: "Privacy Policy — Interior AI Designer" },
       {
         name: "description",
-        content: "How DecorAI collects, uses and protects your account, design and payment data.",
+        content: "How Interior AI Designer collects, uses and protects your account, design and payment data.",
       },
-      { property: "og:title", content: "Privacy Policy — DecorAI" },
-      { property: "og:description", content: "How DecorAI handles your personal data." },
+      { property: "og:title", content: "Privacy Policy — Interior AI Designer" },
+      { property: "og:description", content: "How Interior AI Designer handles your personal data." },
     ],
   }),
   component: PrivacyPage,
@@ -23,7 +23,7 @@ function PrivacyPage() {
 
       <h2 className="pt-4 text-2xl text-foreground">Who is responsible</h2>
       <p>
-        DecorAI is operated by Nahidul, Dhaka, Bangladesh. For any privacy question or data deletion
+        Interior AI Designer is operated by Nahidul, Dhaka, Bangladesh. For any privacy question or data deletion
         request, email{" "}
         <a href="mailto:moumunira00@gmail.com" className="text-primary underline underline-offset-2">
           moumunira00@gmail.com
@@ -38,7 +38,7 @@ function PrivacyPage() {
       <h2 className="pt-4 text-2xl text-foreground">Payment data</h2>
       <p>
         Payments are handled by Paddle.com Market Ltd, our merchant of record. Card details are
-        entered on Paddle's secure checkout and are never stored by DecorAI. We only receive a record
+        entered on Paddle's secure checkout and are never stored by Interior AI Designer. We only receive a record
         that a payment succeeded.
       </p>
 

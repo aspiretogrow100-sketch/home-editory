@@ -312,13 +312,13 @@ function PaddlePanel() {
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Admin Dashboard — DecorAI" },
+      { title: "Admin Dashboard — Interior AI Designer" },
       {
         name: "description",
-        content: "DecorAI admin dashboard: users, generations, revenue and unlock price control.",
+        content: "Interior AI Designer admin dashboard: users, generations, revenue and unlock price control.",
       },
-      { property: "og:title", content: "Admin Dashboard — DecorAI" },
-      { property: "og:description", content: "Internal DecorAI analytics and settings." },
+      { property: "og:title", content: "Admin Dashboard — Interior AI Designer" },
+      { property: "og:description", content: "Internal Interior AI Designer analytics and settings." },
       { name: "robots", content: "noindex" },
     ],
   }),

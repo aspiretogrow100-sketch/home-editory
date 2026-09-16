@@ -48,7 +48,7 @@ export function Footer() {
     <footer className="mt-20 border-t border-border bg-secondary/50">
       <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-12 md:grid-cols-3">
         <div>
-          <p className="font-display text-2xl">DecorAI</p>
+          <p className="font-display text-2xl">Interior AI Designer</p>
           <p className="mt-2 max-w-xs text-sm text-muted-foreground">
             Photoreal room concepts, paired with a shoppable list of discounted Amazon finds.
           </p>
@@ -118,7 +118,7 @@ export function Footer() {
       </div>
       <div className="border-t border-border/70 px-4 py-6 text-center text-xs text-muted-foreground">
         <p>
-          © {new Date().getFullYear()} DecorAI. As an Amazon Associate we may earn from qualifying
+          © {new Date().getFullYear()} Interior AI Designer. As an Amazon Associate we may earn from qualifying
           purchases. Product prices and availability are illustrative.
         </p>
       </div>
