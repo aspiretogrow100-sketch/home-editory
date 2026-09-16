@@ -937,6 +937,67 @@ function StudioPage() {
         </div>
       </section>
 
+
+
+      <section className="trust-grid border-b border-border py-10 md:py-14" aria-labelledby="trust-heading">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+          <div className="text-center">
+            <p className="text-xs font-semibold uppercase text-muted-foreground">Designed for real homes</p>
+            <h2 id="trust-heading" className="mx-auto mt-3 max-w-4xl text-3xl leading-tight md:text-5xl">
+              A clearer way to turn inspiration into a room <span className="italic text-primary">you can actually shop.</span>
+            </h2>
+          </div>
+
+          <div className="mt-8 grid divide-y divide-border border-y border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+            <div className="px-4 py-6 text-center md:py-8">
+              <p className="font-display text-4xl text-primary md:text-5xl">Free</p>
+              <p className="mt-1 text-sm font-medium text-muted-foreground">Room design concepts</p>
+            </div>
+            <div className="px-4 py-6 text-center md:py-8">
+              <p className="font-display text-4xl text-primary md:text-5xl">Real</p>
+              <p className="mt-1 text-sm font-medium text-muted-foreground">Amazon product matches</p>
+            </div>
+            <div className="px-4 py-6 text-center md:py-8">
+              <p className="font-display text-4xl text-primary md:text-5xl">{currency(price)}</p>
+              <p className="mt-1 text-sm font-medium text-muted-foreground">One-time list unlock</p>
+            </div>
+          </div>
+
+          <div className="mx-auto mt-7 flex max-w-5xl flex-wrap justify-center gap-2.5">
+            {TRUST_AUDIENCES.map((audience) => (
+              <span
+                key={audience}
+                className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-sm"
+              >
+                {audience}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-border bg-background py-12 md:py-16" aria-labelledby="stats-heading">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Trusted by professionals
+            </p>
+            <h2 id="stats-heading" className="mt-4 text-4xl leading-tight md:text-5xl">
+              Join thousands of designers and room <span className="italic text-primary">owners.</span>
+            </h2>
+          </div>
+
+          <div className="mx-auto mt-10 grid max-w-4xl gap-8 text-center sm:grid-cols-3 md:mt-12">
+            {TRUST_STATS.map((stat) => (
+              <div key={stat.label}>
+                <p className="font-display text-5xl text-primary md:text-6xl">{stat.value}</p>
+                <p className="mt-2 text-base font-medium text-muted-foreground">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="border-y border-border bg-card/45 py-10 md:py-12" aria-labelledby="community-heading">
         <div className="mx-auto w-full max-w-6xl px-4">
           <div className="flex items-end justify-between gap-6">
@@ -1044,66 +1105,6 @@ function StudioPage() {
           <Button asChild variant="outline" className="mt-5 w-full sm:hidden">
             <Link to="/gallery">View all rooms <ArrowUpRight /></Link>
           </Button>
-        </div>
-      </section>
-
-
-      <section className="trust-grid border-b border-border py-10 md:py-14" aria-labelledby="trust-heading">
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <div className="text-center">
-            <p className="text-xs font-semibold uppercase text-muted-foreground">Designed for real homes</p>
-            <h2 id="trust-heading" className="mx-auto mt-3 max-w-4xl text-3xl leading-tight md:text-5xl">
-              A clearer way to turn inspiration into a room <span className="italic text-primary">you can actually shop.</span>
-            </h2>
-          </div>
-
-          <div className="mt-8 grid divide-y divide-border border-y border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-            <div className="px-4 py-6 text-center md:py-8">
-              <p className="font-display text-4xl text-primary md:text-5xl">Free</p>
-              <p className="mt-1 text-sm font-medium text-muted-foreground">Room design concepts</p>
-            </div>
-            <div className="px-4 py-6 text-center md:py-8">
-              <p className="font-display text-4xl text-primary md:text-5xl">Real</p>
-              <p className="mt-1 text-sm font-medium text-muted-foreground">Amazon product matches</p>
-            </div>
-            <div className="px-4 py-6 text-center md:py-8">
-              <p className="font-display text-4xl text-primary md:text-5xl">{currency(price)}</p>
-              <p className="mt-1 text-sm font-medium text-muted-foreground">One-time list unlock</p>
-            </div>
-          </div>
-
-          <div className="mx-auto mt-7 flex max-w-5xl flex-wrap justify-center gap-2.5">
-            {TRUST_AUDIENCES.map((audience) => (
-              <span
-                key={audience}
-                className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-sm"
-              >
-                {audience}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-border bg-background py-12 md:py-16" aria-labelledby="stats-heading">
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Trusted by professionals
-            </p>
-            <h2 id="stats-heading" className="mt-4 text-4xl leading-tight md:text-5xl">
-              Join thousands of designers and room <span className="italic text-primary">owners.</span>
-            </h2>
-          </div>
-
-          <div className="mx-auto mt-10 grid max-w-4xl gap-8 text-center sm:grid-cols-3 md:mt-12">
-            {TRUST_STATS.map((stat) => (
-              <div key={stat.label}>
-                <p className="font-display text-5xl text-primary md:text-6xl">{stat.value}</p>
-                <p className="mt-2 text-base font-medium text-muted-foreground">{stat.label}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
