@@ -771,7 +771,7 @@ function StudioPage() {
 
         <aside
           className={`min-h-0 flex-col border-t border-border pt-4 lg:flex lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0 ${
-            result || generate.isPending ? "flex" : "hidden"
+            result || generate.isPending ? "flex" : "hidden lg:flex"
           }`}
         >
           <p className="shrink-0 text-xs font-semibold uppercase text-primary">Your design</p>
