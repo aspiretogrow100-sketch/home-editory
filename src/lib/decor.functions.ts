@@ -316,11 +316,19 @@ export type AmazonSettingsView = {
   marketplace: string;
   rainforestKeyHint: string | null;
   scraperapiKeyHint: string | null;
+  scraperapiKeyHints: string[];
   paapiAccessKeyHint: string | null;
   paapiSecretKeyHint: string | null;
   creatorsClientIdHint: string | null;
   creatorsClientSecretHint: string | null;
 };
+
+function splitKeys(value: string | null | undefined): string[] {
+  return String(value ?? "")
+    .split(/[\s,;]+/)
+    .map((k) => k.trim())
+    .filter(Boolean);
+}
 
 function hint(value: string | null | undefined): string | null {
   if (!value) return null;
@@ -347,6 +355,7 @@ export const getAmazonSettings = createServerFn({ method: "POST" })
       marketplace: cfg.marketplace,
       rainforestKeyHint: hint(cfg.rainforestApiKey),
       scraperapiKeyHint: hint(cfg.scraperapiApiKey),
+      scraperapiKeyHints: splitKeys(cfg.scraperapiApiKey).map((k) => hint(k) ?? ""),
       paapiAccessKeyHint: hint(cfg.paapiAccessKey),
       paapiSecretKeyHint: hint(cfg.paapiSecretKey),
       creatorsClientIdHint: hint(cfg.creatorsClientId),
@@ -363,6 +372,8 @@ export const saveAmazonSettings = createServerFn({ method: "POST" })
       marketplace: string;
       rainforestApiKey?: string;
       scraperapiApiKey?: string;
+      /** Explicit slot list: null/"" keeps the stored key at that slot, a string replaces it. */
+      scraperapiKeys?: (string | null)[];
       paapiAccessKey?: string;
       paapiSecretKey?: string;
       creatorsClientId?: string;
@@ -393,6 +404,12 @@ export const saveAmazonSettings = createServerFn({ method: "POST" })
         marketplace: marketplace.startsWith("www.") ? marketplace : `www.${marketplace}`,
         rainforestApiKey: clean(input.rainforestApiKey),
         scraperapiApiKey: clean(input.scraperapiApiKey),
+        scraperapiKeys: Array.isArray(input.scraperapiKeys)
+          ? input.scraperapiKeys.slice(0, 20).map((k) => {
+              const s = String(k ?? "").trim();
+              return s ? s.slice(0, 400) : null;
+            })
+          : null,
         paapiAccessKey: clean(input.paapiAccessKey),
         paapiSecretKey: clean(input.paapiSecretKey),
         creatorsClientId: clean(input.creatorsClientId),
@@ -409,8 +426,19 @@ export const saveAmazonSettings = createServerFn({ method: "POST" })
       marketplace: data.marketplace,
     };
     if (data.rainforestApiKey) patch.rainforest_api_key = data.rainforestApiKey;
-    if (data.scraperapiApiKey)
+    if (data.scraperapiKeys) {
+      const { loadAmazonConfig } = await import("./amazon.server");
+      const existing = splitKeys((await loadAmazonConfig()).scraperapiApiKey);
+      const merged = data.scraperapiKeys
+        .map((k, i) => k ?? existing[i] ?? "")
+        .map((k) => k.trim())
+        .filter(Boolean);
+      (patch as Record<string, unknown>)["scraperapi_api_key"] = merged.length
+        ? merged.join(",")
+        : null;
+    } else if (data.scraperapiApiKey) {
       (patch as Record<string, unknown>)["scraperapi_api_key"] = data.scraperapiApiKey;
+    }
     if (data.paapiAccessKey) patch.paapi_access_key = data.paapiAccessKey;
     if (data.paapiSecretKey) patch.paapi_secret_key = data.paapiSecretKey;
     if (data.creatorsClientId) patch.creators_client_id = data.creatorsClientId;

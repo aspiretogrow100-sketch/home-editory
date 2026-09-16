@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { DollarSign, Images, ShoppingBag, Sparkles, Users } from "lucide-react";
+import { DollarSign, Images, Plus, ShoppingBag, Sparkles, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -639,6 +639,11 @@ function AmazonSettingsPanel() {
     creatorsClientSecret: "",
   });
 
+  // One row per ScraperAPI key. `hint` = masked key already stored on the server.
+  const [saKeys, setSaKeys] = useState<{ hint: string | null; value: string }[]>([
+    { hint: null, value: "" },
+  ]);
+
   useEffect(() => {
     if (settings.data) {
       setForm((f) => ({
@@ -647,11 +652,21 @@ function AmazonSettingsPanel() {
         trackingId: settings.data.trackingId,
         marketplace: settings.data.marketplace,
       }));
+      const hints = settings.data.scraperapiKeyHints ?? [];
+      setSaKeys(
+        hints.length ? hints.map((h) => ({ hint: h, value: "" })) : [{ hint: null, value: "" }],
+      );
     }
   }, [settings.data]);
 
   const saveMutation = useMutation({
-    mutationFn: () => save({ data: form }),
+    mutationFn: () =>
+      save({
+        data: {
+          ...form,
+          scraperapiKeys: saKeys.map((k) => (k.value.trim() ? k.value.trim() : null)),
+        },
+      }),
     onSuccess: () => {
       toast.success("Amazon settings saved.");
       setForm((f) => ({
@@ -754,19 +769,54 @@ function AmazonSettingsPanel() {
       </div>
 
       {form.provider === "scraperapi" ? (
-        <div className="mt-6 space-y-1.5">
-          <Label htmlFor="sa-key">ScraperAPI key</Label>
-          <Input
-            id="sa-key"
-            type="password"
-            autoComplete="off"
-            placeholder={d?.scraperapiKeyHint ?? "Paste your ScraperAPI key"}
-            value={form.scraperapiApiKey}
-            onChange={(e) => setForm({ ...form, scraperapiApiKey: e.target.value })}
-          />
+        <div className="mt-6 space-y-3">
+          <Label>ScraperAPI keys</Label>
+          <div className="space-y-2">
+            {saKeys.map((row, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <span className="w-5 shrink-0 text-xs text-muted-foreground">{index + 1}.</span>
+                <Input
+                  id={index === 0 ? "sa-key" : `sa-key-${index}`}
+                  type="password"
+                  autoComplete="off"
+                  placeholder={row.hint ?? "Paste a ScraperAPI key"}
+                  value={row.value}
+                  onChange={(e) =>
+                    setSaKeys((keys) =>
+                      keys.map((k, i) => (i === index ? { ...k, value: e.target.value } : k)),
+                    )
+                  }
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Remove key ${index + 1}`}
+                  disabled={saKeys.length === 1 && !row.hint && !row.value}
+                  onClick={() =>
+                    setSaKeys((keys) => {
+                      const next = keys.filter((_, i) => i !== index);
+                      return next.length ? next : [{ hint: null, value: "" }];
+                    })
+                  }
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setSaKeys((keys) => [...keys, { hint: null, value: "" }])}
+          >
+            <Plus className="size-4" /> Add another key
+          </Button>
           <p className="text-xs text-muted-foreground">
-            Get it from scraperapi.com → Dashboard → API Key. You can paste several keys
-            separated by commas — when one runs out of credits, the next one is used automatically.
+            Get keys from scraperapi.com → Dashboard → API Key. Add one key per box — when the first
+            one runs out of credits, the next box is used automatically. Remove a box with the bin
+            icon, then press Save settings.
           </p>
         </div>
       ) : form.provider === "creators" ? (
