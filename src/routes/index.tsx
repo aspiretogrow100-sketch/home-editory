@@ -128,6 +128,12 @@ export const Route = createFileRoute("/")({
 
 const STEPS = ["Type & Room", "Size", "Style", "Budget / Colour", "Deals"] as const;
 
+const HERO_DEALS = [
+  { name: "Linen 3-seater sofa, terracotta", was: 649, now: 479, off: "26% off" },
+  { name: "Walnut oval coffee table", was: 210, now: 164, off: "22% off" },
+  { name: "Arched rattan floor lamp", was: 95, now: 72, off: "24% off" },
+] as const;
+
 const TRUST_AUDIENCES = [
   "Homeowners",
   "Renters",
@@ -371,35 +377,81 @@ function StudioPage() {
           className="absolute inset-0 h-full w-full object-cover object-center"
         />
         <div className="hero-image-shade absolute inset-0" />
-        <div className="relative mx-auto flex min-h-[520px] w-full max-w-7xl items-end px-4 pb-9 pt-20 sm:px-6 md:h-full md:min-h-0 md:items-center md:pb-12 lg:px-8">
-          <div className="hero-reveal max-w-2xl text-background">
-            <Badge className="mb-4 border-background/25 bg-foreground/45 text-background shadow-none backdrop-blur-md hover:bg-foreground/45">
-              <Sparkles className="size-3.5 text-primary" /> AI interior design + real product matches
-            </Badge>
-            <h1 className="text-5xl leading-[0.94] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
-              Design the room.<br />
-              <span className="italic text-primary">Shop the look.</span>
-            </h1>
-            <p className="mt-4 max-w-xl text-base leading-7 text-background/80 md:text-lg">
-              Create a photoreal interior around your space, style and budget—then discover the
-              matching pieces on Amazon.
-            </p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Button
-                size="lg"
-                className="h-12 px-7 text-base shadow-[var(--shadow-lift)]"
-                onClick={() => document.getElementById("design-studio")?.scrollIntoView({ behavior: "smooth" })}
-              >
-                Start designing <ArrowRight />
-              </Button>
-              <Button asChild variant="outline" size="lg" className="h-12 border-background/35 bg-background/10 px-7 text-background shadow-none backdrop-blur-md hover:bg-background hover:text-foreground">
-                <Link to="/gallery">View real designs <ArrowUpRight /></Link>
-              </Button>
+        <div className="relative mx-auto flex min-h-[520px] w-full max-w-7xl items-center px-4 pb-9 pt-20 sm:px-6 md:h-full md:min-h-0 md:pb-12 lg:px-8">
+          <div className="grid w-full items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,400px)]">
+            <div className="hero-reveal max-w-2xl text-background">
+              <Badge className="mb-4 border-background/25 bg-foreground/45 text-background shadow-none backdrop-blur-md hover:bg-foreground/45">
+                <Sparkles className="size-3.5 text-primary" /> AI rooms matched with real discounted Amazon finds
+              </Badge>
+              <h1 className="text-5xl leading-[0.94] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
+                Design the room.<br />
+                <span className="italic text-primary">Shop the look.</span>
+              </h1>
+              <p className="mt-4 max-w-xl text-base leading-7 text-background/80 md:text-lg">
+                Set <span className="font-semibold text-background">your own budget</span> and deal
+                filter — we design a photoreal room around it, then match every piece with real
+                Amazon products at <span className="font-semibold text-background">today's discounts</span>.
+              </p>
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Button
+                  size="lg"
+                  className="h-12 px-7 text-base shadow-[var(--shadow-lift)]"
+                  onClick={() => document.getElementById("design-studio")?.scrollIntoView({ behavior: "smooth" })}
+                >
+                  Start designing <ArrowRight />
+                </Button>
+                <Button asChild variant="outline" size="lg" className="h-12 border-background/35 bg-background/10 px-7 text-background shadow-none backdrop-blur-md hover:bg-background hover:text-foreground">
+                  <Link to="/gallery">View real designs <ArrowUpRight /></Link>
+                </Button>
+              </div>
+              <div className="mt-6 grid max-w-xl grid-cols-3 border-t border-background/25 pt-4 text-background/75">
+                <div><p className="text-xs font-semibold uppercase">Your budget</p><p className="mt-1 text-sm">Rooms built to fit it</p></div>
+                <div className="border-l border-background/25 pl-4"><p className="text-xs font-semibold uppercase">Real Amazon</p><p className="mt-1 text-sm">Live products &amp; prices</p></div>
+                <div className="border-l border-background/25 pl-4"><p className="text-xs font-semibold uppercase">Discounts</p><p className="mt-1 text-sm">Deals surfaced first</p></div>
+              </div>
             </div>
-            <div className="mt-6 grid max-w-xl grid-cols-3 border-t border-background/25 pt-4 text-background/75">
-              <div><p className="text-xs font-semibold uppercase">Create</p><p className="mt-1 text-sm">Photoreal rooms</p></div>
-              <div className="border-l border-background/25 pl-4"><p className="text-xs font-semibold uppercase">Match</p><p className="mt-1 text-sm">Real products</p></div>
-              <div className="border-l border-background/25 pl-4"><p className="text-xs font-semibold uppercase">Shop</p><p className="mt-1 text-sm">Direct on Amazon</p></div>
+            <div className="hero-reveal-delayed hidden lg:block">
+              <div className="rounded-2xl border border-background/20 bg-foreground/40 p-5 shadow-[var(--shadow-lift)] backdrop-blur-xl">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-background/70">Straight from Amazon</p>
+                  <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-primary/40 bg-primary/15 px-2.5 py-1 text-[11px] font-semibold text-primary">
+                    <span className="size-1.5 rounded-full bg-primary" /> Live discounts
+                  </span>
+                </div>
+                <div className="mt-4 space-y-2.5">
+                  {HERO_DEALS.map((deal) => (
+                    <div key={deal.name} className="flex items-center justify-between gap-3 rounded-lg border border-background/10 bg-background/10 px-3 py-2.5">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm text-background">{deal.name}</p>
+                        <p className="mt-0.5 text-xs text-background/60">
+                          <s>${deal.was}</s>{" "}
+                          <span className="font-semibold text-background">${deal.now}</span>
+                        </p>
+                      </div>
+                      <span className="shrink-0 rounded-full bg-primary px-2 py-0.5 text-[11px] font-bold text-primary-foreground">
+                        {deal.off}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 border-t border-background/20 pt-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-background/75">Total at your budget</span>
+                    <span className="font-semibold text-background">
+                      <s className="font-normal text-background/50">$954</s> $715
+                    </span>
+                  </div>
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-background/15">
+                    <div className="h-full w-[75%] rounded-full bg-primary" />
+                  </div>
+                  <p className="mt-2 text-xs text-background/70">
+                    Fits your $500–$800 budget — you save $239.
+                  </p>
+                </div>
+                <p className="mt-3 text-center text-[11px] text-background/55">
+                  What an unlocked shopping list looks like
+                </p>
+              </div>
             </div>
           </div>
         </div>
