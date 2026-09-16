@@ -549,7 +549,7 @@ function StudioPage() {
             }`}
           >
         <div className="min-h-0 min-w-0 space-y-6">
-          <div className="surface-card flex h-full min-h-0 min-w-0 flex-col overflow-hidden p-4 md:p-5">
+          <div className="surface-card flex min-h-0 min-w-0 flex-col p-4 md:p-5 lg:h-full lg:overflow-hidden">
             <div className="flex shrink-0 gap-2 overflow-x-auto pb-1">
               {STEPS.map((label, index) => {
                 const done = index < step;
@@ -581,7 +581,7 @@ function StudioPage() {
               })}
             </div>
 
-            <div className="mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable] md:pr-3">
+            <div className="mt-3 min-h-0 flex-1 pr-1 [scrollbar-gutter:stable] md:pr-3 lg:overflow-y-auto lg:overscroll-contain">
               {optionsQuery.isLoading ? <Skeleton className="h-40 w-full rounded-lg" /> : null}
 
               {step === 0 && !optionsQuery.isLoading ? (
@@ -996,7 +996,7 @@ function StudioPage() {
           ) : null}
 
           {result && !generate.isPending ? (
-            <div className="mt-3 min-h-0 space-y-4 overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable] lg:flex-1">
+            <div className="mt-3 min-h-0 space-y-4 pr-1 [scrollbar-gutter:stable] lg:flex-1 lg:overflow-y-auto lg:overscroll-contain">
               <figure className="surface-card overflow-hidden">
                 <img
                   src={result.imageUrl}
