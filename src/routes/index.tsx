@@ -776,6 +776,15 @@ function StudioPage() {
         >
           <p className="shrink-0 text-xs font-semibold uppercase text-primary">Your design</p>
 
+          {!result && !generate.isPending ? (
+            <>
+              <p className="mt-3 font-display text-xl leading-tight">Five quick choices. One room made for you.</p>
+              <p className="mt-2 text-xs leading-5 text-muted-foreground">Every option shapes both the finished image and its matching shopping list.</p>
+              <div className="mt-auto pt-3"><AdSlot label="Sponsored" /></div>
+            </>
+          ) : null}
+
+
           {generate.isPending ? (
             <div className="mt-3">
               <Skeleton className="aspect-[4/3] w-full rounded-lg" />
