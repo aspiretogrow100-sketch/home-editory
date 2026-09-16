@@ -282,18 +282,29 @@ function StudioPage() {
   const [saved, setSaved] = useState(false);
   const [communityRoom, setCommunityRoom] = useState("All rooms");
   const [roomPhoto, setRoomPhoto] = useState<string | null>(null);
-  const scrollBeforeStep = useRef<number | null>(null);
+  const stepTransition = useRef<{ scrollY: number; actionsTop: number | null; keepActions: boolean } | null>(null);
+  const wizardActionsRef = useRef<HTMLDivElement>(null);
 
   // Keep the page exactly where it is when moving between wizard steps.
   function goToStep(next: number) {
-    scrollBeforeStep.current = window.scrollY;
+    stepTransition.current = {
+      scrollY: window.scrollY,
+      actionsTop: wizardActionsRef.current?.getBoundingClientRect().top ?? null,
+      keepActions: step === 0 && next === 1,
+    };
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     setStep(next);
   }
   useLayoutEffect(() => {
-    const y = scrollBeforeStep.current;
-    if (y === null) return undefined;
-    scrollBeforeStep.current = null;
+    const transition = stepTransition.current;
+    if (!transition) return undefined;
+    stepTransition.current = null;
+    const nextActionsTop = wizardActionsRef.current?.getBoundingClientRect().top ?? null;
+    const actionShift =
+      transition.keepActions && transition.actionsTop !== null && nextActionsTop !== null
+        ? nextActionsTop - transition.actionsTop
+        : 0;
+    const y = Math.max(0, transition.scrollY + actionShift);
     const root = document.documentElement;
     const body = document.body;
     const rootAnchor = root.style.overflowAnchor;
@@ -962,7 +973,7 @@ function StudioPage() {
             </div>
 
 
-            <div className="mt-3 flex shrink-0 items-center justify-between gap-3 border-t border-border pt-3">
+            <div ref={wizardActionsRef} className="mt-3 flex shrink-0 items-center justify-between gap-3 border-t border-border pt-3">
               <Button
                 variant="ghost"
                 onClick={() => goToStep(Math.max(0, step - 1))}
