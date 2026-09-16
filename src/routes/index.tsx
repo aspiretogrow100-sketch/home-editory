@@ -1083,7 +1083,10 @@ function StudioPage() {
                       <h3 className="text-sm leading-tight">{item.designStyle} {item.roomType}</h3>
                       <ArrowUpRight className="mt-0.5 size-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
                     </div>
-                    <p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
+                    <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
+                      {roomSummary(item)}
+                    </p>
+                    <p className="mt-1 flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
                       {item.isUnlocked ? <Unlock className="size-3" /> : <Lock className="size-3" />}
                       {item.isUnlocked ? "Unlocked" : currency(price)}
                     </p>
