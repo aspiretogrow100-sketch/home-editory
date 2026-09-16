@@ -253,6 +253,7 @@ function StudioPage() {
   const [result, setResult] = useState<GenerationResult | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [communityRoom, setCommunityRoom] = useState("All rooms");
 
   const priceQuery = useQuery({
     queryKey: ["unlock-price"],
@@ -299,7 +300,10 @@ function StudioPage() {
     queryFn: () => fetchGallery(),
   });
 
-  const recentRooms = (galleryQuery.data ?? []).slice(0, 6);
+  const communityRooms = ["All rooms", ...options.rooms.map((room) => room.label)];
+  const recentRooms = (galleryQuery.data ?? [])
+    .filter((room) => communityRoom === "All rooms" || room.roomType === communityRoom)
+    .slice(0, 6);
 
 
   const generate = useMutation({
@@ -941,6 +945,26 @@ function StudioPage() {
             </Button>
           </div>
 
+          <div className="mt-6 border-y border-border py-3">
+            <div className="flex snap-x gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {communityRooms.map((room) => (
+                <Button
+                  key={room}
+                  type="button"
+                  size="sm"
+                  variant={communityRoom === room ? "default" : "ghost"}
+                  onClick={() => setCommunityRoom(room)}
+                  className={`h-9 shrink-0 snap-start rounded-full px-4 ${
+                    communityRoom === room ? "shadow-sm" : "border border-border bg-background"
+                  }`}
+                  aria-pressed={communityRoom === room}
+                >
+                  {room}
+                </Button>
+              ))}
+            </div>
+          </div>
+
           {galleryQuery.isLoading ? (
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[0, 1, 2].map((item) => (
@@ -989,7 +1013,16 @@ function StudioPage() {
             </div>
           ) : (
             <div className="mt-8 border-y border-border py-10 text-center">
-              <p className="font-display text-2xl">The next inspiring room could be yours.</p>
+              <p className="font-display text-2xl">
+                {communityRoom === "All rooms"
+                  ? "The next inspiring room could be yours."
+                  : `No ${communityRoom.toLowerCase()} designs yet.`}
+              </p>
+              <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+                {communityRoom === "All rooms"
+                  ? "Create a room and share the inspiration."
+                  : `Be the first to create a ${communityRoom.toLowerCase()} for the community.`}
+              </p>
               <Button
                 className="mt-4"
                 onClick={() => document.getElementById("design-studio")?.scrollIntoView({ behavior: "smooth" })}

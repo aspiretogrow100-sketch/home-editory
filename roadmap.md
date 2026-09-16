@@ -11,3 +11,4 @@
 - [x] Compact homepage sections to reduce unnecessary scrolling
 - [x] Fit the initial “Make the room yours” studio into one desktop screen
 - [x] Add a premium four-step “How it works” journey for the DecorAI flow
+- [x] Add room-category filters to the recent community designs
