@@ -916,6 +916,7 @@ function StudioPage() {
                 <Button
                   onClick={() => generate.mutate({
                     ...(selection as DesignSelection),
+                    roomPhoto,
                     designStyle: palette
                       ? `${selection.designStyle} with a ${palette.toLowerCase()} colour palette`
                       : (selection.designStyle as string),
