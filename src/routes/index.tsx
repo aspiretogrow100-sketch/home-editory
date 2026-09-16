@@ -945,27 +945,35 @@ function StudioPage() {
         </div>
       </section>
 
-      <section className="bg-secondary/45 py-16 md:py-24" aria-labelledby="faq-heading">
-        <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
-          <div>
+      <section className="relative overflow-hidden border-t border-border bg-background py-20 md:py-28" aria-labelledby="faq-heading">
+        <div aria-hidden="true" className="absolute inset-x-0 top-0 mx-auto h-px max-w-5xl bg-primary/55" />
+        <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-semibold uppercase text-primary">Good to know</p>
-            <h2 id="faq-heading" className="mt-2 text-3xl md:text-4xl">Frequently asked questions</h2>
-            <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">
-              Clear answers about room generation, product matching and shared unlocks.
+            <h2 id="faq-heading" className="mt-4 text-4xl leading-none md:text-6xl">
+              Questions, <span className="italic text-primary">beautifully answered.</span>
+            </h2>
+            <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-muted-foreground md:text-base">
+              Everything you need to know about room generation, product matching and shared unlocks.
             </p>
           </div>
-          <Accordion type="single" collapsible className="border-t border-border">
+          <Accordion type="single" collapsible className="mx-auto mt-12 max-w-4xl border-t border-border md:mt-16">
             {FAQS.map((item, index) => (
-              <AccordionItem key={item.question} value={`faq-${index}`}>
-                <AccordionTrigger className="py-5 text-left text-base hover:no-underline md:text-lg">
-                  {item.question.replaceAll("{price}", currency(price))}
+              <AccordionItem key={item.question} value={`faq-${index}`} className="group border-border transition-colors data-[state=open]:border-primary/45">
+                <AccordionTrigger className="relative justify-center gap-5 py-7 pl-12 pr-12 text-center hover:no-underline [&>svg]:absolute [&>svg]:right-4 [&>svg]:size-5 [&>svg]:text-primary md:py-8 md:pl-20 md:pr-20 md:[&>svg]:right-7">
+                  <span className="absolute left-4 font-sans text-[0.65rem] font-semibold text-primary/70 md:left-7">
+                    0{index + 1}
+                  </span>
+                  <h3 className="text-xl leading-tight transition-colors group-hover:text-primary md:text-2xl">
+                    {item.question.replaceAll("{price}", currency(price))}
+                  </h3>
                 </AccordionTrigger>
-                <AccordionContent className="max-w-2xl pb-5 text-sm leading-6 text-muted-foreground md:text-base">
+                <AccordionContent className="mx-auto max-w-2xl px-5 pb-8 text-center text-sm leading-7 text-muted-foreground md:px-10 md:text-base">
+                  <span className="mx-auto mb-5 block h-px w-12 bg-primary/50" aria-hidden="true" />
                   {item.answer.replaceAll("{price}", currency(price))}
                 </AccordionContent>
               </AccordionItem>
             ))}
-
           </Accordion>
         </div>
       </section>

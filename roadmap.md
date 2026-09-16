@@ -7,3 +7,4 @@
 
 - [x] Redesign homepage using the recommended premium visual direction
 - [x] Apply the reference orange as the website primary color
+- [x] Redesign the FAQ as a centered premium editorial section
