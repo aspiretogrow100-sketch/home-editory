@@ -48,9 +48,22 @@ function bearerToken(): string | null {
   return token.split(".").length === 3 ? token : null;
 }
 
-async function generateRoomImage(prompt: string): Promise<string> {
+async function generateRoomImage(prompt: string, referenceImage?: string | null): Promise<string> {
   const { generateRoomImage: generate } = await import("./imageai.server");
-  return await generate(prompt);
+  return await generate(prompt, undefined, referenceImage ?? null);
+}
+
+/** Accepts only an inline image data URL of a sane size (about 8MB of base64). */
+function cleanRoomPhoto(value: unknown): string | null {
+  const photo = typeof value === "string" ? value.trim() : "";
+  if (!photo) return null;
+  if (!/^data:image\/(png|jpe?g|webp);base64,/i.test(photo)) {
+    throw new Error("Please upload a PNG, JPG or WebP photo of your room.");
+  }
+  if (photo.length > 8_000_000) {
+    throw new Error("That photo is too large. Please upload one under 6MB.");
+  }
+  return photo;
 }
 
 
