@@ -48,10 +48,14 @@ function bearerToken(): string | null {
   return token.split(".").length === 3 ? token : null;
 }
 
-async function generateRoomImage(prompt: string, referenceImage?: string | null): Promise<string> {
+async function generateRoomImage(prompt: string, referenceImages?: (string | null)[] | string | null): Promise<string> {
   const { generateRoomImage: generate } = await import("./imageai.server");
-  return await generate(prompt, undefined, referenceImage ?? null);
+  const refs = (Array.isArray(referenceImages) ? referenceImages : referenceImages ? [referenceImages] : []).filter(
+    (url): url is string => typeof url === "string" && url.length > 0,
+  );
+  return await generate(prompt, undefined, refs);
 }
+
 
 /** Accepts only an inline image data URL of a sane size (about 8MB of base64). */
 function cleanRoomPhoto(value: unknown): string | null {
