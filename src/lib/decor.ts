@@ -132,7 +132,6 @@ export const PROMPT_PLACEHOLDERS: { token: string; hint: string }[] = [
   { token: "{area}", hint: "Square feet sentence, when given" },
   { token: "{density}", hint: "Item density sentence" },
   { token: "{featured}", hint: "The exact product list to render" },
-  { token: "{labels}", hint: "Text label + layout rules for each product" },
 ];
 
 export function buildPrompt(
@@ -148,15 +147,10 @@ export function buildPrompt(
   const featured = products.length
     ? ` The ${subject} must feature these exact products, rendered faithfully to their real appearance, materials and colours: ${products
         .map((p, i) => `(${i + 1}) ${p.category}: ${p.name}${p.description ? ` — ${p.description}` : ""}`)
-        .join("; ")}. Do not invent other major ${type === "Full Room" ? "furniture" : "decor"} pieces.`
+        .join("; ")}. Do not invent other major ${type === "Full Room" ? "furniture" : "decor"} pieces. Every listed product must appear complete and fully inside the frame — never cut off, cropped or sticking out of an edge. The image must contain no text of any kind: no product names, no labels, no captions, no annotations.`
     : "";
   const density = sel.itemDensity
     ? ` Styled as "${sel.itemDensity}" — roughly ${products.length || sel.itemCount || 6} key pieces in the room.`
-    : "";
-  const labels = products.length
-    ? ` Add a short, neat text label next to each featured product naming it (${products
-        .map((p) => p.name)
-        .join(", ")}). Strict layout rules: every product and every text label must sit completely inside the image with a clear empty margin on all four sides — nothing may touch or be cut off by the top, bottom, left or right edge. Keep all labels horizontal, fully legible, not overlapping each other or the products, and pull wall-edge items slightly inward so the whole composition breathes.`
     : "";
 
   const values: Record<string, string> = {
@@ -167,7 +161,9 @@ export function buildPrompt(
     area,
     density,
     featured,
-    labels,
+    // Legacy: templates saved before labels were removed may still contain
+    // {labels} — it now renders nothing (images must be text-free).
+    labels: "",
   };
 
   const fallback =
