@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Facebook, Instagram } from "lucide-react";
 
+import logoMark from "@/assets/logo-mark.png";
 import { getSocialLinks, type SocialNetwork } from "@/lib/decor.functions";
 
 const LEGAL = [
@@ -48,7 +49,17 @@ export function Footer() {
     <footer className="mt-20 border-t border-border bg-secondary/50">
       <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-12 md:grid-cols-3">
         <div>
-          <p className="font-display text-2xl">Interior AI Designer</p>
+          <div className="flex items-center gap-2">
+            <img
+              src={logoMark}
+              alt="Interior AI Designer logo"
+              width={1024}
+              height={1024}
+              loading="lazy"
+              className="size-10 shrink-0 object-contain"
+            />
+            <p className="font-display text-2xl leading-none">Interior AI Designer</p>
+          </div>
           <p className="mt-2 max-w-xs text-sm text-muted-foreground">
             Photoreal room concepts, paired with a shoppable list of discounted Amazon finds.
           </p>
