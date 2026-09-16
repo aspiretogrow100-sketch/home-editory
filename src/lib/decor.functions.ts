@@ -323,6 +323,13 @@ export type AmazonSettingsView = {
   creatorsClientSecretHint: string | null;
 };
 
+function splitKeys(value: string | null | undefined): string[] {
+  return String(value ?? "")
+    .split(/[\s,;]+/)
+    .map((k) => k.trim())
+    .filter(Boolean);
+}
+
 function hint(value: string | null | undefined): string | null {
   if (!value) return null;
   return `••••${value.slice(-4)}`;
