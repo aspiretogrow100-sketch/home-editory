@@ -281,7 +281,7 @@ function StudioPage() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [saved, setSaved] = useState(false);
   const [communityRoom, setCommunityRoom] = useState("All rooms");
-  const [roomPhoto, setRoomPhoto] = useState<string | null>(null Sciences);
+  const [roomPhoto, setRoomPhoto] = useState<string | null>(null);
   const scrollBeforeStep = useRef(0);
 
   // Keep the page exactly where it is when moving between wizard steps.
