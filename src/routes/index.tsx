@@ -151,26 +151,26 @@ const FEATURES = [
 
 const HOW_IT_WORKS = [
   {
-    title: "Choose your space",
-    description: "Select the room, size and how fully furnished you want it to feel.",
+    title: "Pick your room",
+    description: "Choose the room you're designing — living room, bedroom, kitchen and more.",
     label: "Living room · Medium",
     icon: Ruler,
   },
   {
-    title: "Shape your vision",
-    description: "Set the style, colour palette, budget and the deals you want us to prioritise.",
+    title: "Set style & budget",
+    description: "Pick a style, colour palette and budget — we handle the deals for you.",
     label: "Warm modern · Under $1,500",
     icon: Palette,
   },
   {
-    title: "See your new room",
-    description: "DecorAI creates a photoreal concept built around every choice you made.",
+    title: "Get your design",
+    description: "In seconds, DecorAI creates a photoreal room built around every choice.",
     label: "AI design ready",
     icon: Wand2,
   },
   {
     title: "Shop the exact look",
-    description: "Open matching Amazon products, compare savings and bring the room home.",
+    description: "Open your shopping list with matching Amazon items and live savings.",
     label: "Real products · Live deals",
     icon: Search,
   },
