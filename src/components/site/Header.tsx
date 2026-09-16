@@ -1,5 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Sofa, LogOut, Shield, Heart, User as UserIcon } from "lucide-react";
+import { LogOut, Shield, Heart, User as UserIcon } from "lucide-react";
+
+import logoMark from "@/assets/logo-mark.png";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,9 +29,13 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4">
         <Link to="/" className="flex items-center gap-2">
-          <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Sofa className="size-5" />
-          </span>
+          <img
+            src={logoMark}
+            alt="Interior AI Designer logo"
+            width={1024}
+            height={1024}
+            className="size-9 shrink-0 object-contain"
+          />
           <span className="font-display text-lg leading-none whitespace-nowrap sm:text-xl">Interior AI Designer</span>
         </Link>
 
