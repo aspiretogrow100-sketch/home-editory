@@ -7,6 +7,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   Heart,
+  ImagePlus,
   Lock,
   Palette,
   Ruler,
@@ -14,6 +15,7 @@ import {
   Sparkles,
   Unlock,
   Wand2,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 
