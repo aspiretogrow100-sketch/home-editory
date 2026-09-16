@@ -150,7 +150,9 @@ export function buildPrompt(
   sel: DesignSelection,
   products: AmazonProduct[] = [],
   template?: string | null,
+  referenceCount = 0,
 ): string {
+
   const size = sel.roomSize ? `${sel.roomSize.toLowerCase()}-sized ` : "";
   const area = sel.squareFeet ? ` The room measures about ${sel.squareFeet} square feet — scale the furniture and layout to that footprint.` : "";
   const type = designTypeOf(sel);
