@@ -404,6 +404,12 @@ export const saveAmazonSettings = createServerFn({ method: "POST" })
         marketplace: marketplace.startsWith("www.") ? marketplace : `www.${marketplace}`,
         rainforestApiKey: clean(input.rainforestApiKey),
         scraperapiApiKey: clean(input.scraperapiApiKey),
+        scraperapiKeys: Array.isArray(input.scraperapiKeys)
+          ? input.scraperapiKeys.slice(0, 20).map((k) => {
+              const s = String(k ?? "").trim();
+              return s ? s.slice(0, 400) : null;
+            })
+          : null,
         paapiAccessKey: clean(input.paapiAccessKey),
         paapiSecretKey: clean(input.paapiSecretKey),
         creatorsClientId: clean(input.creatorsClientId),
