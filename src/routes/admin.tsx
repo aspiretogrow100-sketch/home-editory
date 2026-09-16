@@ -753,7 +753,22 @@ function AmazonSettingsPanel() {
         </RadioGroup>
       </div>
 
-      {form.provider === "creators" ? (
+      {form.provider === "scraperapi" ? (
+        <div className="mt-6 space-y-1.5">
+          <Label htmlFor="sa-key">ScraperAPI key</Label>
+          <Input
+            id="sa-key"
+            type="password"
+            autoComplete="off"
+            placeholder={d?.scraperapiKeyHint ?? "Paste your ScraperAPI key"}
+            value={form.scraperapiApiKey}
+            onChange={(e) => setForm({ ...form, scraperapiApiKey: e.target.value })}
+          />
+          <p className="text-xs text-muted-foreground">
+            Get it from scraperapi.com → Dashboard → API Key.
+          </p>
+        </div>
+      ) : form.provider === "creators" ? (
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="cr-id">Creators Client ID</Label>
