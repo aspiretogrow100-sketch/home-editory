@@ -44,9 +44,10 @@ export const Route = createFileRoute("/gallery")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  validateSearch: (search: Record<string, unknown>) => ({
-    room: typeof search.room === "string" && search.room ? search.room : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { room?: string } => {
+    const room = search["room"];
+    return typeof room === "string" && room ? { room } : {};
+  },
   component: GalleryPage,
 });
 
