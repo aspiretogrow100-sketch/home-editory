@@ -68,6 +68,8 @@ function summary(item: { itemCount: number; total: number; savings: number }) {
 
 function GalleryPage() {
   const { user } = useAuth();
+  const { room: roomParam } = Route.useSearch();
+  const navigate = Route.useNavigate();
   const queryClient = useQueryClient();
   const fetchGallery = useServerFn(listPublicGallery);
   const fetchPrice = useServerFn(getUnlockPrice);
@@ -100,15 +102,24 @@ function GalleryPage() {
   });
 
   const items = query.data ?? [];
+  const roomFilter = roomParam ?? "All rooms";
+  const roomOptions = useMemo(
+    () => ["All rooms", ...Array.from(new Set(items.map((i) => i.roomType))).sort()],
+    [items],
+  );
+  const setRoomFilter = (room: string) =>
+    navigate({ search: room === "All rooms" ? {} : { room }, replace: true });
 
   const visible = useMemo(() => {
-    if (tab === "unlocked") return items.filter((i) => i.isUnlocked);
+    const scoped =
+      roomFilter === "All rooms" ? items : items.filter((i) => i.roomType === roomFilter);
+    if (tab === "unlocked") return scoped.filter((i) => i.isUnlocked);
     if (tab === "popular")
-      return [...items].sort(
+      return [...scoped].sort(
         (a, b) => b.unlockCount - a.unlockCount || b.itemCount - a.itemCount,
       );
-    return items;
-  }, [items, tab]);
+    return scoped;
+  }, [items, tab, roomFilter]);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-14">
@@ -138,6 +149,26 @@ function GalleryPage() {
           </button>
         ))}
       </div>
+
+      {roomOptions.length > 1 ? (
+        <div className="mb-6 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {roomOptions.map((room) => (
+            <Button
+              key={room}
+              type="button"
+              size="sm"
+              variant={roomFilter === room ? "default" : "ghost"}
+              onClick={() => setRoomFilter(room)}
+              className={`h-9 shrink-0 rounded-full px-4 ${
+                roomFilter === room ? "shadow-sm" : "border border-border bg-background"
+              }`}
+              aria-pressed={roomFilter === room}
+            >
+              {room}
+            </Button>
+          ))}
+        </div>
+      ) : null}
 
       {query.isLoading ? (
         <div className="grid gap-6 md:grid-cols-3">
