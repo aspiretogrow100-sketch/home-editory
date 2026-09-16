@@ -373,7 +373,9 @@ export const saveAmazonSettings = createServerFn({ method: "POST" })
           ? "paapi"
           : input?.provider === "creators"
             ? "creators"
-            : "rainforest";
+            : input?.provider === "scraperapi"
+              ? "scraperapi"
+              : "rainforest";
       const trackingId = String(input?.trackingId ?? "").trim().slice(0, 60);
       const marketplace = String(input?.marketplace ?? "www.amazon.com")
         .trim()
