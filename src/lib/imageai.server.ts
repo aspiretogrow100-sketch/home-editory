@@ -36,7 +36,13 @@ function failure(status: number, detail: string, label: string): Error {
   return new Error("The design engine could not create this room. Please try again.");
 }
 
-async function generateWithLovable(prompt: string): Promise<string> {
+async function generateWithLovable(prompt: string, referenceImage?: string | null): Promise<string> {
+  const content = referenceImage
+    ? [
+        { type: "text", text: prompt },
+        { type: "image_url", image_url: { url: referenceImage } },
+      ]
+    : prompt;
   const response = await fetch(gatewayUrl(), {
     method: "POST",
     headers: {
@@ -45,7 +51,7 @@ async function generateWithLovable(prompt: string): Promise<string> {
     },
     body: JSON.stringify({
       model: "google/gemini-3.1-flash-image",
-      messages: [{ role: "user", content: prompt }],
+      messages: [{ role: "user", content }],
       modalities: ["image", "text"],
     }),
   });
