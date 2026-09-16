@@ -6,12 +6,16 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
+  BadgePercent,
+  Goal,
   Heart,
   ImagePlus,
   Lock,
   Palette,
   Ruler,
   Search,
+  ShieldCheck,
+  ShoppingBag,
   Sparkles,
   Unlock,
   Wand2,
@@ -438,11 +442,24 @@ function StudioPage() {
                   <Link to="/gallery">View real designs <ArrowUpRight /></Link>
                 </Button>
               </div>
-              <div className="mt-6 grid max-w-xl grid-cols-2 gap-y-3 border-t border-background/25 pt-4 text-background/75 sm:grid-cols-4">
-                <div><p className="text-xs font-semibold uppercase">No credit card</p><p className="mt-1 text-sm">Designing is free</p></div>
-                <div><p className="text-xs font-semibold uppercase">Your budget</p><p className="mt-1 text-sm">Rooms built to fit it</p></div>
-                <div className="sm:border-l sm:border-background/25 sm:pl-4"><p className="text-xs font-semibold uppercase">Real Amazon</p><p className="mt-1 text-sm">Live products &amp; prices</p></div>
-                <div className="sm:border-l sm:border-background/25 sm:pl-4"><p className="text-xs font-semibold uppercase">Discounts</p><p className="mt-1 text-sm">Deals surfaced first</p></div>
+              <div className="mt-7 grid max-w-xl grid-cols-2 gap-2.5 sm:grid-cols-4">
+                {[
+                  { icon: ShieldCheck, title: "No credit card", sub: "Designing is free" },
+                  { icon: Goal, title: "Your budget", sub: "Rooms built to fit it" },
+                  { icon: ShoppingBag, title: "Real Amazon", sub: "Live products & prices" },
+                  { icon: BadgePercent, title: "Discounts", sub: "Deals surfaced first" },
+                ].map(({ icon: Icon, title, sub }) => (
+                  <div
+                    key={title}
+                    className="group rounded-xl border border-background/15 bg-background/10 px-3 py-3 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-primary/50 hover:bg-background/15 hover:shadow-[0_14px_30px_-12px_rgba(0,0,0,0.55)]"
+                  >
+                    <span className="inline-flex size-8 items-center justify-center rounded-full bg-primary/20 text-primary transition duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
+                      <Icon className="size-4" strokeWidth={2.2} />
+                    </span>
+                    <p className="mt-2.5 text-[13px] font-semibold leading-tight text-background">{title}</p>
+                    <p className="mt-1 text-xs leading-snug text-background/70">{sub}</p>
+                  </div>
+                ))}
               </div>
             </div>
             <div className="hero-reveal-delayed hidden lg:block">
