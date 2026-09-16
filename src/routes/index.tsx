@@ -767,24 +767,33 @@ function StudioPage() {
             </div>
           </div>
 
+        </div>
+
+        <aside
+          className={`min-h-0 flex-col border-t border-border pt-4 lg:flex lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0 ${
+            result || generate.isPending ? "flex" : "hidden"
+          }`}
+        >
+          <p className="shrink-0 text-xs font-semibold uppercase text-primary">Your design</p>
+
           {generate.isPending ? (
-            <div className="surface-card p-6">
+            <div className="mt-3">
               <Skeleton className="aspect-[4/3] w-full rounded-lg" />
-              <p className="mt-4 text-center text-sm text-muted-foreground">
+              <p className="mt-3 text-center text-xs text-muted-foreground">
                 Styling your {selection.designStyle?.toLowerCase()} {selection.roomType?.toLowerCase()}…
               </p>
             </div>
           ) : null}
 
           {result && !generate.isPending ? (
-            <div className="space-y-6">
+            <div className="mt-3 min-h-0 space-y-4 overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable] lg:flex-1">
               <figure className="surface-card overflow-hidden">
                 <img
                   src={result.imageUrl}
                   alt={`AI generated ${selection.designStyle} ${selection.roomType} interior`}
                   className="aspect-[4/3] w-full object-cover"
                 />
-                <figcaption className="flex flex-wrap items-center gap-2 px-5 py-4 text-xs text-muted-foreground">
+                <figcaption className="flex flex-wrap items-center gap-2 px-4 py-3 text-xs text-muted-foreground">
                   <Badge variant="secondary">{selection.roomType}</Badge>
                   {selection.roomSize ? <Badge variant="secondary">{selection.roomSize}</Badge> : null}
                   {selection.itemDensity ? (
@@ -800,6 +809,7 @@ function StudioPage() {
 
               {result.generationId ? (
                 <Button
+                  className="w-full"
                   variant={saved ? "secondary" : "outline"}
                   onClick={() => save.mutate(result.generationId as string)}
                   disabled={save.isPending || saved}
@@ -810,7 +820,7 @@ function StudioPage() {
               ) : null}
 
               {result.productsSource === "mock" ? (
-                <p className="rounded-lg border border-border bg-muted/40 px-4 py-2 text-xs text-muted-foreground">
+                <p className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
                   Showing sample items — live Amazon products appear once the Amazon integration is
                   configured in the admin dashboard.
                 </p>
@@ -825,7 +835,7 @@ function StudioPage() {
               />
 
               {!user ? (
-                <p className="text-center text-sm text-muted-foreground">
+                <p className="text-center text-xs text-muted-foreground">
                   <Link to="/auth" className="text-primary underline">
                     Create a free account
                   </Link>{" "}
@@ -836,11 +846,10 @@ function StudioPage() {
               <AdSlot label="Advertisement" />
             </div>
           ) : null}
-        </div>
+        </aside>
 
-        <aside className="hidden min-h-0 lg:flex lg:flex-col lg:border-l lg:border-border lg:pl-5">
-          <p className="text-xs font-semibold uppercase text-primary">Your design</p>
-          <p className="mt-3 font-display text-xl leading-tight">Five quick choices. One room made for you.</p>
+        <aside className={`hidden min-h-0 lg:flex-col lg:border-l lg:border-border lg:pl-5 ${result || generate.isPending ? "" : "lg:flex"}`}>
+          <p className="mt-0 font-display text-xl leading-tight">Five quick choices. One room made for you.</p>
           <p className="mt-2 text-xs leading-5 text-muted-foreground">Every option shapes both the finished image and its matching shopping list.</p>
           <div className="mt-auto pt-3"><AdSlot label="Sponsored" /></div>
         </aside>
