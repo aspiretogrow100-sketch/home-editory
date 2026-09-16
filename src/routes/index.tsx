@@ -374,47 +374,50 @@ function StudioPage() {
         </div>
       </section>
 
-      <section id="design-studio" className="scroll-mt-16 border-b border-border bg-background py-10 md:py-12">
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-6 grid gap-3 md:grid-cols-[0.8fr_1.2fr] md:items-end">
+      <section
+        id="design-studio"
+        className={`scroll-mt-16 border-b border-border bg-background py-7 md:py-5 ${
+          result || generate.isPending ? "" : "md:h-[calc(100svh-4rem)]"
+        }`}
+      >
+        <div className="mx-auto flex h-full w-full max-w-7xl flex-col px-4 sm:px-6 lg:px-8">
+          <div className="mb-4 grid shrink-0 gap-2 md:grid-cols-[0.8fr_1.2fr] md:items-end">
             <div>
               <p className="text-xs font-semibold uppercase text-primary">DecorAI studio</p>
-              <h2 className="mt-1 text-3xl leading-none md:text-4xl">Make the room yours.</h2>
+              <h2 className="mt-1 text-3xl leading-none md:text-[2.15rem]">Make the room yours.</h2>
             </div>
-            <p className="max-w-xl text-sm leading-6 text-muted-foreground md:justify-self-end md:text-base">
-              Choose the room, size, style and budget. We will compose the space and match every
-              shoppable piece to your brief.
+            <p className="max-w-xl text-sm leading-5 text-muted-foreground md:justify-self-end">
+              Choose your room, style and budget. We create the space and match every shoppable piece.
             </p>
           </div>
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px]">
-        <div className="space-y-6">
-          <div className="surface-card p-5 md:p-6">
-            <div className="flex flex-wrap items-center gap-2">
+          <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
+        <div className="min-h-0 space-y-6">
+          <div className="surface-card flex h-full min-h-0 flex-col overflow-hidden p-4 md:p-5">
+            <div className="flex shrink-0 gap-2 overflow-x-auto pb-1">
               {STEPS.map((label, index) => (
-                <button
+                <Button
                   key={label}
                   type="button"
+                  size="sm"
+                  variant={index === step ? "default" : "ghost"}
                   onClick={() => setStep(index)}
-                  className={`rounded-full px-3 py-1 text-xs transition-colors ${
-                    index === step
-                      ? "bg-primary text-primary-foreground"
-                      : index < step
-                        ? "bg-accent/15 text-accent-foreground/80"
-                        : "bg-muted text-muted-foreground"
+                  className={`h-7 shrink-0 rounded-full px-3 text-xs ${
+                    index < step ? "text-accent-foreground" : ""
                   }`}
                 >
-                  {index + 1}. {label}
-                </button>
+                  <span className="font-semibold">{index + 1}</span>
+                  <span>{label}</span>
+                </Button>
               ))}
             </div>
 
-            <div className="mt-5">
+            <div className="mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable] md:pr-3">
               {optionsQuery.isLoading ? <Skeleton className="h-40 w-full rounded-lg" /> : null}
 
               {step === 0 && !optionsQuery.isLoading ? (
                 <div>
                   <h2 className="text-2xl">What would you like to design?</h2>
-                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  <div className="mt-3 grid gap-2 sm:grid-cols-3 lg:grid-cols-4">
                     {DESIGN_TYPES.map((type) => (
                       <OptionCard
                         key={type.label}
@@ -428,14 +431,14 @@ function StudioPage() {
                     ))}
                   </div>
 
-                  <h3 className="mt-8 text-xl">
+                  <h3 className="mt-5 text-xl">
                     {designType === "Full Room"
                       ? "Which room are we designing?"
                       : designType === "Wall Decor"
                         ? "Which room is this wall in?"
                         : "Which room is this piece for?"}
                   </h3>
-                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  <div className="mt-3 grid gap-2 sm:grid-cols-3 lg:grid-cols-4">
                     {options.rooms.map((room) => (
                       <OptionCard
                         key={room.id}
@@ -452,7 +455,7 @@ function StudioPage() {
                     </p>
                   ) : null}
 
-                  <div className="mt-5 max-w-sm space-y-1.5">
+                  <div className="mt-4 max-w-sm space-y-1.5">
                     <Label htmlFor="custom-room">Not listed? Type your own room</Label>
                     <Input
                       id="custom-room"
@@ -705,7 +708,7 @@ function StudioPage() {
             </div>
 
 
-            <div className="mt-6 flex items-center justify-between gap-3 border-t border-border pt-4">
+            <div className="mt-3 flex shrink-0 items-center justify-between gap-3 border-t border-border pt-3">
               <Button
                 variant="ghost"
                 onClick={() => setStep((s) => Math.max(0, s - 1))}
@@ -806,16 +809,16 @@ function StudioPage() {
           ) : null}
         </div>
 
-        <aside className="space-y-5 lg:border-l lg:border-border lg:pl-6">
+        <aside className="hidden min-h-0 lg:flex lg:flex-col lg:border-l lg:border-border lg:pl-5">
           <div>
-            <p className="text-xs font-semibold uppercase text-primary">Three simple steps</p>
-            <ol className="mt-4 space-y-4">
-              <li className="border-t border-border pt-3"><span className="text-xs text-muted-foreground">01</span><h3 className="mt-1 text-lg">Set your vision</h3><p className="mt-1 text-sm leading-5 text-muted-foreground">Choose the room, style, budget and deal preference.</p></li>
-              <li className="border-t border-border pt-3"><span className="text-xs text-muted-foreground">02</span><h3 className="mt-1 text-lg">See the design</h3><p className="mt-1 text-sm leading-5 text-muted-foreground">Receive a photoreal concept built around your choices.</p></li>
-              <li className="border-t border-border pt-3"><span className="text-xs text-muted-foreground">03</span><h3 className="mt-1 text-lg">Shop exact matches</h3><p className="mt-1 text-sm leading-5 text-muted-foreground">Unlock the Amazon list and bring the room home.</p></li>
+            <p className="text-xs font-semibold uppercase text-primary">How it works</p>
+            <ol className="mt-3 space-y-3">
+              <li className="border-t border-border pt-2"><span className="text-xs text-muted-foreground">01</span><h3 className="text-base">Set your vision</h3><p className="text-xs leading-4 text-muted-foreground">Room, style, budget and deals.</p></li>
+              <li className="border-t border-border pt-2"><span className="text-xs text-muted-foreground">02</span><h3 className="text-base">See the design</h3><p className="text-xs leading-4 text-muted-foreground">A photoreal concept made for you.</p></li>
+              <li className="border-t border-border pt-2"><span className="text-xs text-muted-foreground">03</span><h3 className="text-base">Shop the room</h3><p className="text-xs leading-4 text-muted-foreground">Open exact Amazon matches.</p></li>
             </ol>
           </div>
-          <div className="pt-3"><AdSlot label="Sponsored" /></div>
+          <div className="mt-auto pt-3"><AdSlot label="Sponsored" /></div>
         </aside>
           </div>
         </div>

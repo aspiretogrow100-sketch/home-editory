@@ -9,3 +9,4 @@
 - [x] Apply the reference orange as the website primary color
 - [x] Redesign the FAQ as a centered premium editorial section
 - [x] Compact homepage sections to reduce unnecessary scrolling
+- [x] Fit the initial “Make the room yours” studio into one desktop screen
