@@ -316,6 +316,7 @@ export type AmazonSettingsView = {
   marketplace: string;
   rainforestKeyHint: string | null;
   scraperapiKeyHint: string | null;
+  scraperapiKeyHints: string[];
   paapiAccessKeyHint: string | null;
   paapiSecretKeyHint: string | null;
   creatorsClientIdHint: string | null;
