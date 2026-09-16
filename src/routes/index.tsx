@@ -405,9 +405,7 @@ function StudioPage() {
 
       <section
         id="design-studio"
-        className={`scroll-mt-16 border-b border-border bg-background py-5 ${
-          result || generate.isPending ? "" : "h-[calc(100svh-4rem)] min-h-[560px]"
-        }`}
+        className="scroll-mt-16 border-b border-border bg-background py-5 lg:h-[calc(100svh-4rem)] lg:min-h-[600px]"
       >
         <div className="mx-auto flex h-full w-full max-w-7xl flex-col px-4 sm:px-6 lg:px-8">
           <div className="mb-4 grid shrink-0 gap-2 md:grid-cols-[0.8fr_1.2fr] md:items-end">
@@ -419,7 +417,13 @@ function StudioPage() {
               Choose your room, style and budget. We create the space and match every shoppable piece.
             </p>
           </div>
-          <div className="grid min-h-0 min-w-0 flex-1 gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
+          <div
+            className={`grid min-h-0 min-w-0 flex-1 gap-4 ${
+              result || generate.isPending
+                ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]"
+                : "lg:grid-cols-[minmax(0,1fr)_220px]"
+            }`}
+          >
         <div className="min-h-0 min-w-0 space-y-6">
           <div className="surface-card flex h-full min-h-0 min-w-0 flex-col overflow-hidden p-4 md:p-5">
             <div className="flex shrink-0 gap-2 overflow-x-auto pb-1">
@@ -767,24 +771,42 @@ function StudioPage() {
             </div>
           </div>
 
+        </div>
+
+        <aside
+          className={`min-h-0 flex-col border-t border-border pt-4 lg:flex lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0 ${
+            result || generate.isPending ? "flex" : "hidden lg:flex"
+          }`}
+        >
+          <p className="shrink-0 text-xs font-semibold uppercase text-primary">Your design</p>
+
+          {!result && !generate.isPending ? (
+            <>
+              <p className="mt-3 font-display text-xl leading-tight">Five quick choices. One room made for you.</p>
+              <p className="mt-2 text-xs leading-5 text-muted-foreground">Every option shapes both the finished image and its matching shopping list.</p>
+              <div className="mt-auto pt-3"><AdSlot label="Sponsored" /></div>
+            </>
+          ) : null}
+
+
           {generate.isPending ? (
-            <div className="surface-card p-6">
+            <div className="mt-3">
               <Skeleton className="aspect-[4/3] w-full rounded-lg" />
-              <p className="mt-4 text-center text-sm text-muted-foreground">
+              <p className="mt-3 text-center text-xs text-muted-foreground">
                 Styling your {selection.designStyle?.toLowerCase()} {selection.roomType?.toLowerCase()}…
               </p>
             </div>
           ) : null}
 
           {result && !generate.isPending ? (
-            <div className="space-y-6">
+            <div className="mt-3 min-h-0 space-y-4 overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable] lg:flex-1">
               <figure className="surface-card overflow-hidden">
                 <img
                   src={result.imageUrl}
                   alt={`AI generated ${selection.designStyle} ${selection.roomType} interior`}
                   className="aspect-[4/3] w-full object-cover"
                 />
-                <figcaption className="flex flex-wrap items-center gap-2 px-5 py-4 text-xs text-muted-foreground">
+                <figcaption className="flex flex-wrap items-center gap-2 px-4 py-3 text-xs text-muted-foreground">
                   <Badge variant="secondary">{selection.roomType}</Badge>
                   {selection.roomSize ? <Badge variant="secondary">{selection.roomSize}</Badge> : null}
                   {selection.itemDensity ? (
@@ -800,6 +822,7 @@ function StudioPage() {
 
               {result.generationId ? (
                 <Button
+                  className="w-full"
                   variant={saved ? "secondary" : "outline"}
                   onClick={() => save.mutate(result.generationId as string)}
                   disabled={save.isPending || saved}
@@ -810,7 +833,7 @@ function StudioPage() {
               ) : null}
 
               {result.productsSource === "mock" ? (
-                <p className="rounded-lg border border-border bg-muted/40 px-4 py-2 text-xs text-muted-foreground">
+                <p className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
                   Showing sample items — live Amazon products appear once the Amazon integration is
                   configured in the admin dashboard.
                 </p>
@@ -825,7 +848,7 @@ function StudioPage() {
               />
 
               {!user ? (
-                <p className="text-center text-sm text-muted-foreground">
+                <p className="text-center text-xs text-muted-foreground">
                   <Link to="/auth" className="text-primary underline">
                     Create a free account
                   </Link>{" "}
@@ -836,14 +859,8 @@ function StudioPage() {
               <AdSlot label="Advertisement" />
             </div>
           ) : null}
-        </div>
-
-        <aside className="hidden min-h-0 lg:flex lg:flex-col lg:border-l lg:border-border lg:pl-5">
-          <p className="text-xs font-semibold uppercase text-primary">Your design</p>
-          <p className="mt-3 font-display text-xl leading-tight">Five quick choices. One room made for you.</p>
-          <p className="mt-2 text-xs leading-5 text-muted-foreground">Every option shapes both the finished image and its matching shopping list.</p>
-          <div className="mt-auto pt-3"><AdSlot label="Sponsored" /></div>
         </aside>
+
           </div>
         </div>
       </section>
