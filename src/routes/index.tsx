@@ -1038,16 +1038,16 @@ function StudioPage() {
         </div>
       </section>
 
-      <section className="feature-showcase py-10 text-primary-foreground md:py-14" aria-labelledby="features-heading">
+      <section className="feature-showcase border-y border-border py-10 md:py-14" aria-labelledby="features-heading">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-5 border-b border-primary-foreground/20 pb-7 md:grid-cols-[0.55fr_1.45fr] md:items-end md:pb-8">
+          <div className="grid gap-5 border-b border-foreground/15 pb-7 md:grid-cols-[0.55fr_1.45fr] md:items-end md:pb-8">
             <div>
               <p className="text-xs font-semibold uppercase text-primary">From idea to finished room</p>
-              <p className="mt-3 max-w-xs text-sm leading-6 text-primary-foreground/60">
+              <p className="mt-3 max-w-xs text-sm leading-6 text-foreground/60">
                 One considered path from inspiration to a room you can actually bring home.
               </p>
             </div>
-            <h2 id="features-heading" className="max-w-4xl text-3xl leading-[1.02] md:text-5xl">
+            <h2 id="features-heading" className="max-w-4xl text-3xl leading-[1.02] text-foreground md:text-5xl">
               Everything you need to design and shop <span className="italic text-primary">with confidence.</span>
             </h2>
           </div>
@@ -1057,19 +1057,19 @@ function StudioPage() {
               return (
                 <article
                   key={feature.title}
-                  className="feature-item group relative border-b border-primary-foreground/20 py-6 md:min-h-60 md:border-b-0 md:border-r md:px-7 md:py-8 md:first:pl-0 md:last:border-r-0 md:last:pr-0"
+                  className="feature-item group relative border-b border-foreground/15 py-6 md:min-h-60 md:border-b-0 md:border-r md:px-7 md:py-8 md:first:pl-0 md:last:border-r-0 md:last:pr-0"
                 >
                   <div className="flex items-start justify-between gap-6">
-                    <span className="font-display text-5xl italic text-primary-foreground/12 transition-colors duration-500 group-hover:text-primary/35">
+                    <span className="font-display text-5xl italic text-primary/15 transition-colors duration-500 group-hover:text-primary/50">
                       0{index + 1}
                     </span>
-                    <span className="flex size-11 items-center justify-center rounded-full border border-primary-foreground/25 text-primary transition-colors duration-300 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
+                    <span className="flex size-11 items-center justify-center rounded-full border border-primary/30 bg-primary/8 text-primary transition-colors duration-300 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
                       <Icon className="size-5" />
                     </span>
                   </div>
                   <div className="mt-7 md:mt-10">
-                    <h3 className="text-2xl">{feature.title}</h3>
-                    <p className="mt-3 max-w-sm text-sm leading-6 text-primary-foreground/60 md:text-base">
+                    <h3 className="text-2xl text-foreground">{feature.title}</h3>
+                    <p className="mt-3 max-w-sm text-sm leading-6 text-foreground/60 md:text-base">
                       {feature.description}
                     </p>
                   </div>
