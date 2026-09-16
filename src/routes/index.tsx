@@ -405,9 +405,7 @@ function StudioPage() {
 
       <section
         id="design-studio"
-        className={`scroll-mt-16 border-b border-border bg-background py-5 ${
-          result || generate.isPending ? "" : "h-[calc(100svh-4rem)] min-h-[560px]"
-        }`}
+        className="scroll-mt-16 border-b border-border bg-background py-5 lg:h-[calc(100svh-4rem)] lg:min-h-[600px]"
       >
         <div className="mx-auto flex h-full w-full max-w-7xl flex-col px-4 sm:px-6 lg:px-8">
           <div className="mb-4 grid shrink-0 gap-2 md:grid-cols-[0.8fr_1.2fr] md:items-end">
