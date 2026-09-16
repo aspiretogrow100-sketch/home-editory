@@ -137,6 +137,12 @@ const TRUST_AUDIENCES = [
   "Interior inspiration",
 ] as const;
 
+const TRUST_STATS = [
+  { value: "100k+", label: "Images Generated" },
+  { value: "10k+", label: "Users Loved" },
+  { value: "97%+", label: "Satisfaction Rate" },
+] as const;
+
 const HOW_IT_WORKS = [
   {
     title: "Pick your room",
