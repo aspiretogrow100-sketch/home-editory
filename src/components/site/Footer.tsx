@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Facebook, Instagram } from "lucide-react";
 
 import logoFull from "@/assets/logo-full.png";
 import { getSocialLinks, type SocialNetwork } from "@/lib/decor.functions";
@@ -71,7 +70,7 @@ export function Footer() {
   const links = socialQuery.data;
 
   return (
-    <footer className="mt-20 border-t border-border bg-secondary/50">
+    <footer className="mt-20 bg-muted/60">
       <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-12 md:grid-cols-3">
         <div>
           <div className="flex items-center">
