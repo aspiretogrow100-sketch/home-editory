@@ -1,0 +1,1 @@
+ALTER TABLE public.amazon_settings ADD COLUMN IF NOT EXISTS scraperapi_api_key text;
