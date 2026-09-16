@@ -30,7 +30,7 @@ export function Header() {
           <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Sofa className="size-5" />
           </span>
-          <span className="font-display text-2xl leading-none">Interior AI Designer</span>
+          <span className="font-display text-lg leading-none whitespace-nowrap sm:text-xl">Interior AI Designer</span>
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
