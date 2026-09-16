@@ -290,10 +290,27 @@ function StudioPage() {
     setStep(next);
   }
   useEffect(() => {
-    if (scrollBeforeStep.current) {
-      window.scrollTo({ top: scrollBeforeStep.current });
-      scrollBeforeStep.current = 0;
-    }
+    const y = scrollBeforeStep.current;
+    if (!y) return undefined;
+    scrollBeforeStep.current = 0;
+    window.scrollTo({ top: y });
+    // Lock the scroll position while the next step renders — the browser
+    // otherwise scrolls to the tapped button / shifted layout.
+    const lock = () => {
+      if (window.scrollY !== y) window.scrollTo({ top: y });
+    };
+    const raf = requestAnimationFrame(lock);
+    const t1 = window.setTimeout(lock, 120);
+    const t2 = window.setTimeout(lock, 320);
+    window.addEventListener("scroll", lock, { passive: true });
+    const release = window.setTimeout(() => window.removeEventListener("scroll", lock), 500);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(release);
+      window.removeEventListener("scroll", lock);
+    };
   }, [step]);
 
   function scrollToDesignOnMobile() {
