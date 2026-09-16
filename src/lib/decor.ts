@@ -103,8 +103,7 @@ export type AmazonProduct = {
 export const DEFAULT_IMAGE_PROMPT = [
   "A professional, hyper-realistic interior design photograph of a {size}{style} {roomType}.",
   "Furnished to a {budget} budget with cohesive furniture, lighting, textiles and decor.{density}{area}{featured}",
-  "Shot on a full-frame camera, 24mm lens, soft natural daylight, realistic shadows, magazine editorial quality, no people, no watermarks. Compose with generous headroom: the entire room and all furniture must be fully visible inside the frame, with at least 10% empty margin around every edge.",
-  "{labels}",
+  "Shot on a full-frame camera, 24mm lens, soft natural daylight, realistic shadows, magazine editorial quality, no people, no watermarks, no text, no labels, no captions. Compose with generous headroom: the entire room and all furniture must be fully visible inside the frame, with at least 10% empty margin around every edge.",
 ].join(" ");
 
 /** Wall-decor prompt: one styled wall inside the real room, never a white studio backdrop. */
@@ -112,8 +111,7 @@ export const DEFAULT_WALL_PROMPT = [
   "A professional, hyper-realistic interior photograph of one decorated feature wall in a {size}{style} {roomType}.",
   "The camera faces the wall straight on, showing the real room around it — floor, existing furniture edges, natural daylight and realistic shadows. Never a plain white studio background, never a product cut-out or collage.{area}{featured}",
   "Mount and arrange the wall pieces on the wall exactly as they would hang in a real home, balanced and correctly scaled, within a {budget} budget.",
-  "Shot on a full-frame camera, 35mm lens, magazine editorial quality, no people, no watermarks. Every wall piece must be fully visible inside the frame with at least 10% empty margin on all four sides.",
-  "{labels}",
+  "Shot on a full-frame camera, 35mm lens, magazine editorial quality, no people, no watermarks, no text, no labels, no captions. Every wall piece must be fully visible inside the frame with at least 10% empty margin on all four sides — never cropped by an edge.",
 ].join(" ");
 
 /** Single-item prompt: the chosen piece styled in a real room corner, no white background. */
@@ -121,8 +119,7 @@ export const DEFAULT_SINGLE_PROMPT = [
   "A professional, hyper-realistic interior photograph of a single {style} decor piece styled inside a real {size}{roomType}.",
   "The piece is the hero of the frame but sits in a genuine lived-in setting — real wall, floor, soft natural daylight, realistic shadows and gentle depth of field. Never a plain white studio background, never a cut-out product shot.{area}{featured}",
   "Keep it faithful to the real product's shape, materials and colours, correctly scaled for the space, within a {budget} budget.",
-  "Shot on a full-frame camera, 50mm lens, magazine editorial quality, no people, no watermarks. The piece must be fully visible inside the frame with at least 10% empty margin on all four sides.",
-  "{labels}",
+  "Shot on a full-frame camera, 50mm lens, magazine editorial quality, no people, no watermarks, no text, no labels, no captions. The piece must be fully visible inside the frame with at least 10% empty margin on all four sides — never cropped by an edge.",
 ].join(" ");
 
 
