@@ -1027,27 +1027,27 @@ function StudioPage() {
       </section>
 
 
-      <section className="trust-grid border-b border-border py-10 md:py-14" aria-labelledby="trust-heading">
+      <section className="border-b border-border py-10 md:py-14" aria-labelledby="trust-heading">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase text-muted-foreground">Designed for real homes</p>
+            <p className="text-xs font-semibold uppercase text-muted-foreground">Trusted by professionals</p>
             <h2 id="trust-heading" className="mx-auto mt-3 max-w-4xl text-3xl leading-tight md:text-5xl">
-              A clearer way to turn inspiration into a room <span className="italic text-primary">you can actually shop.</span>
+              Join thousands of designers and room <span className="italic text-primary">owners.</span>
             </h2>
           </div>
 
-          <div className="mt-8 grid divide-y divide-border border-y border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-            <div className="px-4 py-6 text-center md:py-8">
-              <p className="font-display text-4xl text-primary md:text-5xl">Free</p>
-              <p className="mt-1 text-sm font-medium text-muted-foreground">Room design concepts</p>
+          <div className="mt-8 grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-y-0 md:mt-10">
+            <div className="text-center">
+              <p className="font-display text-5xl font-semibold text-primary md:text-6xl">100k+</p>
+              <p className="mt-1 text-sm font-medium text-muted-foreground md:text-base">Images Generated</p>
             </div>
-            <div className="px-4 py-6 text-center md:py-8">
-              <p className="font-display text-4xl text-primary md:text-5xl">Real</p>
-              <p className="mt-1 text-sm font-medium text-muted-foreground">Amazon product matches</p>
+            <div className="text-center">
+              <p className="font-display text-5xl font-semibold text-primary md:text-6xl">10k+</p>
+              <p className="mt-1 text-sm font-medium text-muted-foreground md:text-base">Users Loved</p>
             </div>
-            <div className="px-4 py-6 text-center md:py-8">
-              <p className="font-display text-4xl text-primary md:text-5xl">{currency(price)}</p>
-              <p className="mt-1 text-sm font-medium text-muted-foreground">One-time list unlock</p>
+            <div className="text-center">
+              <p className="font-display text-5xl font-semibold text-primary md:text-6xl">97%+</p>
+              <p className="mt-1 text-sm font-medium text-muted-foreground md:text-base">Satisfaction Rate</p>
             </div>
           </div>
 
