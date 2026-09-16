@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -281,7 +281,26 @@ function StudioPage() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [saved, setSaved] = useState(false);
   const [communityRoom, setCommunityRoom] = useState("All rooms");
-  const [roomPhoto, setRoomPhoto] = useState<string | null>(null);
+  const [roomPhoto, setRoomPhoto] = useState<string | null>(null Sciences);
+  const scrollBeforeStep = useRef(0);
+
+  // Keep the page exactly where it is when moving between wizard steps.
+  function goToStep(next: number | ((s: number) => number)) {
+    scrollBeforeStep.current = window.scrollY;
+    setStep(next);
+  }
+  useEffect(() => {
+    if (scrollBeforeStep.current) {
+      window.scrollTo({ top: scrollBeforeStep.current });
+      scrollBeforeStep.current = 0;
+    }
+  }, [step]);
+
+  function scrollToDesignOnMobile() {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      document.getElementById("design-studio")?.scrollIntoView({ behavior: "smooth" });
+    }
+  }
 
   async function handleRoomPhoto(file: File | undefined) {
     if (!file) return;
