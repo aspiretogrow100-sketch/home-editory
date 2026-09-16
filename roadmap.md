@@ -1,15 +1,11 @@
 # Roadmap
 
-- [x] Add live recent community feed below the generator
-- [x] Add three feature highlights
-- [x] Add five-question interactive FAQ
-- [x] Verify desktop and mobile behavior
+## Done
+- Unlock card: totals + Unlock button now render in normal flow below the blurred list — visible for any product count (verified via Playwright screenshot).
+- ScraperAPI multi-key failover: paste several keys comma-separated in Admin → Amazon settings; on 401/402/403/429 or quota-style errors the next key is tried automatically.
 
-- [x] Redesign homepage using the recommended premium visual direction
-- [x] Apply the reference orange as the website primary color
-- [x] Redesign the FAQ as a centered premium editorial section
-- [x] Compact homepage sections to reduce unnecessary scrolling
-- [x] Fit the initial “Make the room yours” studio into one desktop screen
-- [x] Add a premium four-step “How it works” journey for the DecorAI flow
-- [x] Add room-category filters to the recent community designs
-- [x] Add a claim-safe trust section for DecorAI shoppers
+## Open
+- Custom domain add/verify on Paddle; Paddle dashboard product name "DecorAI" rename (user side).
+- Publish pending: new footer, hero, unlock card, multi-key support go live on publish.
+- logo-full.png file delivery to user (offered, not delivered).
+- Stats strip numbers (100k+/10k+/97%+) are placeholders — swap for real numbers on request.

@@ -93,26 +93,55 @@ function scraperapiCountry(marketplace: string): string {
   return map[m] ?? "us";
 }
 
+function scraperapiKeys(cfg: AmazonConfig): string[] {
+  return (cfg.scraperapiApiKey ?? "")
+    .split(/[\s,;]+/)
+    .map((k) => k.trim())
+    .filter(Boolean);
+}
+
+function isScraperapiKeyError(status: number, body: string): boolean {
+  if ([401, 402, 403, 429].includes(status)) return true;
+  return /credit|quota|exceeded|limit|unauthor|invalid api key|forbidden|expired/i.test(body);
+}
+
 async function scraperapiSearch(cfg: AmazonConfig, term: string): Promise<ScraperApiItem[]> {
+  const keys = scraperapiKeys(cfg);
+  if (keys.length === 0) throw new Error("ScraperAPI key is missing — add it in Admin → Amazon settings.");
+
   const url = new URL("https://api.scraperapi.com/structured/amazon/search");
-  url.searchParams.set("api_key", cfg.scraperapiApiKey!);
   url.searchParams.set("query", term);
   url.searchParams.set("country", scraperapiCountry(cfg.marketplace));
   url.searchParams.set("tld", cfg.marketplace.replace(/^www\.amazon\./, ""));
-  const res = await fetch(url);
-  const raw = await res.text();
-  if (!res.ok) {
-    console.error("[amazon] scraperapi error", res.status, raw.slice(0, 500));
-    throw new Error(`ScraperAPI returned ${res.status}: ${raw.slice(0, 200)}`);
-  }
-  const json = (() => {
+
+  let lastError = "";
+  for (const [i, key] of keys.entries()) {
+    url.searchParams.set("api_key", key);
+    let res: Response;
+    let raw: string;
     try {
-      return JSON.parse(raw) as { results?: ScraperApiItem[] };
-    } catch {
-      return {} as { results?: ScraperApiItem[] };
+      res = await fetch(url);
+      raw = await res.text();
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : String(error);
+      continue;
     }
-  })();
-  return json.results ?? [];
+    if (!res.ok || isScraperapiKeyError(res.status, raw.slice(0, 500))) {
+      console.error("[amazon] scraperapi key", i + 1, "failed", res.status, raw.slice(0, 300));
+      lastError = `ScraperAPI returned ${res.status}: ${raw.slice(0, 200)}`;
+      if (i < keys.length - 1) continue;
+      throw new Error(lastError);
+    }
+    const json = (() => {
+      try {
+        return JSON.parse(raw) as { results?: ScraperApiItem[] };
+      } catch {
+        return {} as { results?: ScraperApiItem[] };
+      }
+    })();
+    return json.results ?? [];
+  }
+  throw new Error(lastError || "ScraperAPI request failed.");
 }
 
 function scraperapiToProduct(
