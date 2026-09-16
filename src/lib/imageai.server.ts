@@ -137,8 +137,15 @@ async function generateWithReplicate(prompt: string, key: string, model: string)
   return await urlToDataUrl(output);
 }
 
-export async function generateRoomImage(prompt: string, cfg?: AiConfig): Promise<string> {
+export async function generateRoomImage(
+  prompt: string,
+  cfg?: AiConfig,
+  referenceImage?: string | null,
+): Promise<string> {
   const config = cfg ?? (await loadAiConfig());
+  // Redesigning a user's own room photo needs an image-input model. Only the
+  // built-in Lovable AI model supports it here, so fall back to it for photos.
+  if (referenceImage) return await generateWithLovable(prompt, referenceImage);
   if (config.provider === "openai") {
     if (!config.openaiApiKey) throw new Error("Add an OpenAI API key in Admin → AI generator settings.");
     return await generateWithOpenai(prompt, config.openaiApiKey);
