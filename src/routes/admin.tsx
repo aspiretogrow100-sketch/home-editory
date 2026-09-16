@@ -1085,7 +1085,7 @@ function SocialLinksPanel() {
             <Label htmlFor={`social-${key}`}>{SOCIAL_LABELS[key]}</Label>
             <Input
               id={`social-${key}`}
-              placeholder={`https://www.${key}.com/decorai`}
+              placeholder={`https://www.${key}.com/interioraidesigner`}
               value={form[key]}
               onChange={(event) => setForm({ ...form, [key]: event.target.value })}
             />
