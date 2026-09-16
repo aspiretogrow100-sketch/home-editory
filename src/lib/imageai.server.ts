@@ -151,7 +151,19 @@ export async function generateRoomImage(
   // Reference images (the user's own room photo and the real product photos)
   // need an image-input model. Only the built-in Lovable AI model supports it
   // here, so fall back to it whenever references are present.
-  if (refs.length) return await generateWithLovable(prompt, refs);
+  if (refs.length) {
+    // Remote product photos (Amazon CDN) are often not fetchable by the model,
+    // so inline them ourselves and drop the ones that fail.
+    const inlined = await inlineReferences(refs);
+    if (inlined.length) {
+      try {
+        return await generateWithLovable(prompt, inlined);
+      } catch (error) {
+        console.error("[decorai] reference-image generation failed, retrying without references", error);
+      }
+    }
+    return await generateWithLovable(prompt);
+  }
   if (config.provider === "openai") {
     if (!config.openaiApiKey) throw new Error("Add an OpenAI API key in Admin → AI generator settings.");
     return await generateWithOpenai(prompt, config.openaiApiKey);
