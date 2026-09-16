@@ -241,6 +241,27 @@ function OptionCard({
   );
 }
 
+/** Reads a room photo and shrinks it in the browser so uploads stay small and fast. */
+async function readRoomPhoto(file: File): Promise<string> {
+  if (!/^image\/(png|jpe?g|webp)$/i.test(file.type)) {
+    throw new Error("Please choose a PNG, JPG or WebP photo.");
+  }
+  if (file.size > 25 * 1024 * 1024) throw new Error("That photo is too large. Please pick a smaller one.");
+  const bitmap = await createImageBitmap(file);
+  const max = 1280;
+  const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
+  const width = Math.round(bitmap.width * scale);
+  const height = Math.round(bitmap.height * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("We couldn't read that photo. Please try another one.");
+  ctx.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close();
+  return canvas.toDataURL("image/jpeg", 0.85);
+}
+
 function StudioPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
