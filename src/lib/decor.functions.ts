@@ -392,6 +392,7 @@ export const saveAmazonSettings = createServerFn({ method: "POST" })
         trackingId,
         marketplace: marketplace.startsWith("www.") ? marketplace : `www.${marketplace}`,
         rainforestApiKey: clean(input.rainforestApiKey),
+        scraperapiApiKey: clean(input.scraperapiApiKey),
         paapiAccessKey: clean(input.paapiAccessKey),
         paapiSecretKey: clean(input.paapiSecretKey),
         creatorsClientId: clean(input.creatorsClientId),
