@@ -425,21 +425,34 @@ function StudioPage() {
         <div className="min-h-0 min-w-0 space-y-6">
           <div className="surface-card flex h-full min-h-0 min-w-0 flex-col overflow-hidden p-4 md:p-5">
             <div className="flex shrink-0 gap-2 overflow-x-auto pb-1">
-              {STEPS.map((label, index) => (
-                <Button
-                  key={label}
-                  type="button"
-                  size="sm"
-                  variant={index === step ? "default" : "ghost"}
-                  onClick={() => setStep(index)}
-                  className={`h-7 shrink-0 rounded-full px-3 text-xs ${
-                    index < step ? "text-accent-foreground" : ""
-                  }`}
-                >
-                  <span className="font-semibold">{index + 1}</span>
-                  <span>{label}</span>
-                </Button>
-              ))}
+              {STEPS.map((label, index) => {
+                const done = index < step;
+                const active = index === step;
+                return (
+                  <Button
+                    key={label}
+                    type="button"
+                    size="sm"
+                    variant={active ? "default" : done ? "secondary" : "outline"}
+                    onClick={() => setStep(index)}
+                    aria-current={active ? "step" : undefined}
+                    className="h-7 shrink-0 gap-1.5 rounded-full border px-3 text-xs font-medium"
+                  >
+                    <span
+                      className={`flex size-4 items-center justify-center rounded-full text-[10px] font-bold ${
+                        active
+                          ? "bg-primary-foreground text-primary"
+                          : done
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted-foreground/15 text-muted-foreground"
+                      }`}
+                    >
+                      {done ? "✓" : index + 1}
+                    </span>
+                    <span>{label}</span>
+                  </Button>
+                );
+              })}
             </div>
 
             <div className="mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable] md:pr-3">
