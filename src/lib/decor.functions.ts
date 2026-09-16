@@ -268,10 +268,17 @@ export const generateDesign = createServerFn({ method: "POST" })
       .select("setting_value")
       .eq("setting_key", "image_prompt_template")
       .maybeSingle();
+    // Real product photos are attached as references so the render shows the
+    // exact items in the shopping list (room photo first, when the user gave one).
+    const productRefs = products
+      .map((p) => p.image)
+      .filter((url): url is string => typeof url === "string" && /^https?:\/\//.test(url))
+      .slice(0, 8);
     const dataUrl = await generateRoomImage(
-      buildPrompt(data, products, promptSetting?.setting_value ?? null),
-      data.roomPhoto ?? null,
+      buildPrompt(data, products, promptSetting?.setting_value ?? null, productRefs.length),
+      [data.roomPhoto ?? null, ...productRefs],
     );
+
     const base: GenerationResult = {
       generationId: null,
       imageUrl: dataUrl,
