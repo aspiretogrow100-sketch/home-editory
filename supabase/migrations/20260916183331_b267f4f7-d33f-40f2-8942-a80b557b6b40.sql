@@ -1,0 +1,2 @@
+ALTER TABLE public.amazon_settings DROP CONSTRAINT IF EXISTS amazon_settings_provider_check;
+ALTER TABLE public.amazon_settings ADD CONSTRAINT amazon_settings_provider_check CHECK (provider IN ('rainforest','paapi','creators','scraperapi'));
