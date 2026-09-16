@@ -105,10 +105,8 @@ export function Footer() {
               ) : (
                 <span
                   key={key}
-                  aria-label={label}
                   title={label}
                   className={className}
-                  aria-hidden
                 >
                   <Icon className="size-7" />
                 </span>
