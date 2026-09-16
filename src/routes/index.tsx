@@ -128,6 +128,12 @@ export const Route = createFileRoute("/")({
 
 const STEPS = ["Type & Room", "Size", "Style", "Budget / Colour", "Deals"] as const;
 
+const HERO_DEALS = [
+  { name: "Linen 3-seater sofa, terracotta", was: 649, now: 479, off: "26% off" },
+  { name: "Walnut oval coffee table", was: 210, now: 164, off: "22% off" },
+  { name: "Arched rattan floor lamp", was: 95, now: 72, off: "24% off" },
+] as const;
+
 const TRUST_AUDIENCES = [
   "Homeowners",
   "Renters",
