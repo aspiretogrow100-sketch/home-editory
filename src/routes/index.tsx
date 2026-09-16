@@ -6,14 +6,11 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
-  BookmarkCheck,
   Heart,
-  Image as ImageIcon,
   Lock,
   Palette,
   Ruler,
   Search,
-  ShoppingBag,
   Sparkles,
   Unlock,
   Wand2,
@@ -130,24 +127,6 @@ export const Route = createFileRoute("/")({
 });
 
 const STEPS = ["Type & Room", "Size", "Style", "Budget / Colour", "Deals"] as const;
-
-const FEATURES = [
-  {
-    title: "AI Photorealistic Renders",
-    description: "High-quality room designs created around your style, space and budget in seconds.",
-    icon: ImageIcon,
-  },
-  {
-    title: "Direct Amazon Shopping",
-    description: "One-click access to the exact matching items selected for your finished room.",
-    icon: ShoppingBag,
-  },
-  {
-    title: "Save & Unlock",
-    description: "Save favourites and benefit from shopping lists unlocked by the DecorAI community.",
-    icon: BookmarkCheck,
-  },
-] as const;
 
 const TRUST_AUDIENCES = [
   "Homeowners",
@@ -1047,48 +1026,6 @@ function StudioPage() {
         </div>
       </section>
 
-      <section className="feature-showcase border-y border-border py-10 md:py-14" aria-labelledby="features-heading">
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-5 border-b border-foreground/15 pb-7 md:grid-cols-[0.55fr_1.45fr] md:items-end md:pb-8">
-            <div>
-              <p className="text-xs font-semibold uppercase text-primary">From idea to finished room</p>
-              <p className="mt-3 max-w-xs text-sm leading-6 text-foreground/60">
-                One considered path from inspiration to a room you can actually bring home.
-              </p>
-            </div>
-            <h2 id="features-heading" className="max-w-4xl text-3xl leading-[1.02] text-foreground md:text-5xl">
-              Everything you need to design and shop <span className="italic text-primary">with confidence.</span>
-            </h2>
-          </div>
-          <div className="grid md:grid-cols-3">
-            {FEATURES.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <article
-                  key={feature.title}
-                  className="feature-item group relative border-b border-foreground/15 py-6 md:min-h-60 md:border-b-0 md:border-r md:px-7 md:py-8 md:first:pl-0 md:last:border-r-0 md:last:pr-0"
-                >
-                  <div className="flex items-start justify-between gap-6">
-                    <span className="font-display text-5xl italic text-primary/15 transition-colors duration-500 group-hover:text-primary/50">
-                      0{index + 1}
-                    </span>
-                    <span className="flex size-11 items-center justify-center rounded-full border border-primary/30 bg-primary/8 text-primary transition-colors duration-300 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
-                      <Icon className="size-5" />
-                    </span>
-                  </div>
-                  <div className="mt-7 md:mt-10">
-                    <h3 className="text-2xl text-foreground">{feature.title}</h3>
-                    <p className="mt-3 max-w-sm text-sm leading-6 text-foreground/60 md:text-base">
-                      {feature.description}
-                    </p>
-                  </div>
-                  <span aria-hidden="true" className="absolute bottom-0 left-0 h-px w-0 bg-primary transition-all duration-500 group-hover:w-full" />
-                </article>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
       <section className="trust-grid border-b border-border py-10 md:py-14" aria-labelledby="trust-heading">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
