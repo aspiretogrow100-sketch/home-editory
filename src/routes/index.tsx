@@ -10,6 +10,9 @@ import {
   Heart,
   Image as ImageIcon,
   Lock,
+  Palette,
+  Ruler,
+  Search,
   ShoppingBag,
   Sparkles,
   Unlock,
@@ -51,6 +54,7 @@ import {
 } from "@/lib/decor.functions";
 import { saveRoom } from "@/lib/saved.functions";
 import heroJapandiMain from "@/assets/hero-japandi-main.jpg";
+import heroBedroom from "@/assets/hero-bedroom.jpg";
 
 
 export const Route = createFileRoute("/")({
@@ -142,6 +146,33 @@ const FEATURES = [
     title: "Save & Unlock",
     description: "Save favourites and benefit from shopping lists unlocked by the DecorAI community.",
     icon: BookmarkCheck,
+  },
+] as const;
+
+const HOW_IT_WORKS = [
+  {
+    title: "Choose your space",
+    description: "Select the room, size and how fully furnished you want it to feel.",
+    label: "Living room · Medium",
+    icon: Ruler,
+  },
+  {
+    title: "Shape your vision",
+    description: "Set the style, colour palette, budget and the deals you want us to prioritise.",
+    label: "Warm modern · Under $1,500",
+    icon: Palette,
+  },
+  {
+    title: "See your new room",
+    description: "DecorAI creates a photoreal concept built around every choice you made.",
+    label: "AI design ready",
+    icon: Wand2,
+  },
+  {
+    title: "Shop the exact look",
+    description: "Open matching Amazon products, compare savings and bring the room home.",
+    label: "Real products · Live deals",
+    icon: Search,
   },
 ] as const;
 
@@ -810,17 +841,86 @@ function StudioPage() {
         </div>
 
         <aside className="hidden min-h-0 lg:flex lg:flex-col lg:border-l lg:border-border lg:pl-5">
-          <div>
-            <p className="text-xs font-semibold uppercase text-primary">How it works</p>
-            <ol className="mt-3 space-y-3">
-              <li className="border-t border-border pt-2"><span className="text-xs text-muted-foreground">01</span><h3 className="text-base">Set your vision</h3><p className="text-xs leading-4 text-muted-foreground">Room, style, budget and deals.</p></li>
-              <li className="border-t border-border pt-2"><span className="text-xs text-muted-foreground">02</span><h3 className="text-base">See the design</h3><p className="text-xs leading-4 text-muted-foreground">A photoreal concept made for you.</p></li>
-              <li className="border-t border-border pt-2"><span className="text-xs text-muted-foreground">03</span><h3 className="text-base">Shop the room</h3><p className="text-xs leading-4 text-muted-foreground">Open exact Amazon matches.</p></li>
-            </ol>
-          </div>
+          <p className="text-xs font-semibold uppercase text-primary">Your design</p>
+          <p className="mt-3 font-display text-xl leading-tight">Five quick choices. One room made for you.</p>
+          <p className="mt-2 text-xs leading-5 text-muted-foreground">Every option shapes both the finished image and its matching shopping list.</p>
           <div className="mt-auto pt-3"><AdSlot label="Sponsored" /></div>
         </aside>
           </div>
+        </div>
+      </section>
+
+      <section className="border-b border-border bg-background py-10 md:py-14" aria-labelledby="how-it-works-heading">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase text-primary">From idea to Amazon</p>
+            <h2 id="how-it-works-heading" className="mt-2 text-4xl leading-none md:text-5xl">
+              Your room, reimagined <span className="italic text-primary">in four steps.</span>
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground md:text-base">
+              No design experience needed. Choose what matters and DecorAI handles the visualisation and product matching.
+            </p>
+          </div>
+
+          <ol className="-mx-4 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4">
+            {HOW_IT_WORKS.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <li key={item.title} className="group min-w-[84%] snap-center sm:min-w-0">
+                  <div className="surface-card overflow-hidden transition-transform duration-300 group-hover:-translate-y-1">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-muted p-4">
+                      {index === 2 ? (
+                        <img src={heroBedroom} alt="Photoreal bedroom created by DecorAI" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]" />
+                      ) : index === 3 ? (
+                        <div className="absolute inset-0 grid grid-cols-[0.9fr_1.1fr]">
+                          <img src={heroJapandiMain} alt="DecorAI room paired with Amazon products" loading="lazy" className="h-full w-full object-cover" />
+                          <div className="flex flex-col justify-center gap-2 bg-card p-3">
+                            {["Accent chair", "Floor lamp", "Wool rug"].map((product, productIndex) => (
+                              <div key={product} className="flex items-center gap-2 rounded-md border border-border bg-background p-2">
+                                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-semibold text-primary">{productIndex + 1}</span>
+                                <span className="min-w-0 truncate text-[10px] font-medium">{product}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex h-full flex-col justify-center rounded-md border border-border bg-card p-3 shadow-sm">
+                          {index === 0 ? (
+                            <div className="grid grid-cols-2 gap-2">
+                              {["Living room", "Bedroom", "Dining room", "Home office"].map((room, roomIndex) => (
+                                <span key={room} className={`rounded-md border p-2 text-[10px] font-medium ${roomIndex === 0 ? "border-primary bg-primary/10 text-primary" : "border-border bg-background"}`}>{room}</span>
+                              ))}
+                            </div>
+                          ) : (
+                            <>
+                              <p className="text-xs font-semibold">Warm modern</p>
+                              <div className="mt-3 flex gap-2">
+                                {["bg-primary", "bg-accent", "bg-secondary", "bg-foreground"].map((tone) => <span key={tone} className={`size-8 rounded-full border-2 border-card ring-1 ring-border ${tone}`} />)}
+                              </div>
+                              <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-muted"><span className="block h-full w-2/3 rounded-full bg-primary" /></div>
+                              <div className="mt-2 flex justify-between text-[10px] text-muted-foreground"><span>$500</span><span>$1,500</span><span>$3,000</span></div>
+                            </>
+                          )}
+                        </div>
+                      )}
+                      <span className="absolute left-6 top-6 flex size-9 items-center justify-center rounded-full bg-foreground text-xs font-semibold text-background shadow-sm">
+                        <Icon className="size-4" />
+                      </span>
+                      {index === 2 ? <span className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-background/90 px-3 py-1.5 text-[10px] font-semibold text-foreground shadow-sm backdrop-blur">Design generated</span> : null}
+                    </div>
+                  </div>
+                  <div className="mt-4 grid grid-cols-[auto_minmax(0,1fr)] gap-3">
+                    <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">{index + 1}</span>
+                    <div className="min-w-0">
+                      <h3 className="text-xl leading-tight">{item.title}</h3>
+                      <p className="mt-2 text-sm leading-5 text-muted-foreground">{item.description}</p>
+                      <p className="mt-3 text-[10px] font-semibold uppercase text-primary">{item.label}</p>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
         </div>
       </section>
 
