@@ -603,6 +603,65 @@ function StudioPage() {
                     </p>
                   </div>
 
+                  <div className="mt-6 rounded-xl border border-primary/25 bg-primary/5 p-4">
+                    <h3 className="text-lg">Use my room photo</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Optional — upload a photo and we redesign that exact room, keeping your walls,
+                      windows and layout. No photo? We&apos;ll create the room for you.
+                    </p>
+
+                    {roomPhoto ? (
+                      <div className="mt-3 flex items-center gap-3">
+                        <img
+                          src={roomPhoto}
+                          alt="Your room photo"
+                          className="size-20 rounded-lg object-cover"
+                        />
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium">Photo ready</p>
+                          <div className="flex gap-2">
+                            <Label
+                              htmlFor="room-photo"
+                              className="cursor-pointer text-xs font-medium text-primary underline"
+                            >
+                              Replace
+                            </Label>
+                            <button
+                              type="button"
+                              onClick={() => setRoomPhoto(null)}
+                              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                            >
+                              <X className="size-3" /> Remove
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <Label
+                        htmlFor="room-photo"
+                        className="mt-3 flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium hover:border-primary"
+                      >
+                        <ImagePlus className="size-4" /> Upload a photo
+                      </Label>
+                    )}
+
+                    <input
+                      id="room-photo"
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      className="hidden"
+                      onChange={(event) => {
+                        void handleRoomPhoto(event.target.files?.[0]);
+                        event.target.value = "";
+                      }}
+                    />
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Best results: a bright, tidy photo taken from a corner of the room.
+                    </p>
+                  </div>
+
+
+
                   {designType !== "Full Room" ? (
                     <div className="mt-8">
                       <h3 className="text-xl">
