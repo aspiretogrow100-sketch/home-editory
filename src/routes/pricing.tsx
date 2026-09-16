@@ -10,13 +10,13 @@ import { getUnlockPrice } from "@/lib/decor.functions";
 export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
-      { title: "Pricing — Pay Only To Unlock Shopping Links | DecorAI" },
+      { title: "Pricing — Pay Only To Unlock Shopping Links | Interior AI Designer" },
       {
         name: "description",
         content:
-          "Generating room designs is free on DecorAI. Pay a small one-time fee only when you unlock a room's Amazon shopping links.",
+          "Generating room designs is free on Interior AI Designer. Pay a small one-time fee only when you unlock a room's Amazon shopping links.",
       },
-      { property: "og:title", content: "DecorAI Pricing" },
+      { property: "og:title", content: "Interior AI Designer Pricing" },
       {
         property: "og:description",
         content: "Free AI room designs. Small one-time fee to unlock shopping links.",

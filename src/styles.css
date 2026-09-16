@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * DecorAI design system — warm editorial.
+ * Interior AI Designer design system — warm editorial.
  * Cream paper, clay ink, terracotta accent, sage secondary.
  * All colors are oklch semantic tokens. Never hardcode colors in components.
  */

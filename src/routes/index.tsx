@@ -57,13 +57,13 @@ import heroBedroom from "@/assets/hero-bedroom.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "DecorAI — Design Your Room With AI, Shop It On Amazon" },
+      { title: "Interior AI Designer — Design Your Room With AI, Shop It On Amazon" },
       {
         name: "description",
         content:
-          "Pick a room, style and budget. DecorAI generates a photoreal interior and a discounted Amazon shopping list to match.",
+          "Pick a room, style and budget. Interior AI Designer generates a photoreal interior and a discounted Amazon shopping list to match.",
       },
-      { property: "og:title", content: "DecorAI — Design Your Room With AI" },
+      { property: "og:title", content: "Interior AI Designer — Design Your Room With AI" },
       {
         property: "og:description",
         content: "Photoreal AI interiors plus a shoppable, discounted Amazon product list.",
@@ -158,7 +158,7 @@ const HOW_IT_WORKS = [
   },
   {
     title: "Get your design",
-    description: "In seconds, DecorAI creates a photoreal room built around every choice.",
+    description: "In seconds, Interior AI Designer creates a photoreal room built around every choice.",
     label: "AI design ready",
     icon: Wand2,
   },
@@ -362,7 +362,7 @@ function StudioPage() {
       <section className="relative min-h-[520px] overflow-hidden border-b border-border md:min-h-[600px] md:h-[72vh] md:max-h-[700px]">
         <img
           src={heroJapandiMain}
-          alt="Sunlit Japandi living room generated with DecorAI"
+          alt="Sunlit Japandi living room generated with Interior AI Designer"
           width={1024}
           height={1280}
           fetchPriority="high"
@@ -412,7 +412,7 @@ function StudioPage() {
         <div className="mx-auto flex h-full w-full max-w-7xl flex-col px-4 sm:px-6 lg:px-8">
           <div className="mb-4 grid shrink-0 gap-2 md:grid-cols-[0.8fr_1.2fr] md:items-end">
             <div>
-              <p className="text-xs font-semibold uppercase text-primary">DecorAI studio</p>
+              <p className="text-xs font-semibold uppercase text-primary">Interior AI Designer studio</p>
               <h2 className="mt-1 text-3xl leading-none md:text-[2.15rem]">Make the room yours.</h2>
             </div>
             <p className="max-w-xl text-sm leading-5 text-muted-foreground md:justify-self-end">
@@ -856,7 +856,7 @@ function StudioPage() {
               Your room, reimagined <span className="italic text-primary">in four steps.</span>
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground md:text-base">
-              No design experience needed. Choose what matters and DecorAI handles the visualisation and product matching.
+              No design experience needed. Choose what matters and Interior AI Designer handles the visualisation and product matching.
             </p>
           </div>
 
@@ -868,10 +868,10 @@ function StudioPage() {
                   <div className="surface-card overflow-hidden transition-transform duration-300 group-hover:-translate-y-1">
                     <div className="relative aspect-[4/3] overflow-hidden bg-muted p-4">
                       {index === 2 ? (
-                        <img src={heroBedroom} alt="Photoreal bedroom created by DecorAI" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]" />
+                        <img src={heroBedroom} alt="Photoreal bedroom created by Interior AI Designer" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]" />
                       ) : index === 3 ? (
                         <div className="absolute inset-0 grid grid-cols-[0.9fr_1.1fr]">
-                          <img src={heroJapandiMain} alt="DecorAI room paired with Amazon products" loading="lazy" className="h-full w-full object-cover" />
+                          <img src={heroJapandiMain} alt="Interior AI Designer room paired with Amazon products" loading="lazy" className="h-full w-full object-cover" />
                           <div className="flex flex-col justify-center gap-2 bg-card p-3">
                             {["Accent chair", "Floor lamp", "Wool rug"].map((product, productIndex) => (
                               <div key={product} className="flex items-center gap-2 rounded-md border border-border bg-background p-2">
@@ -931,7 +931,7 @@ function StudioPage() {
                 Recent rooms to inspire yours
               </h2>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                Explore fresh spaces from the DecorAI community while you shape your own.
+                Explore fresh spaces from the Interior AI Designer community while you shape your own.
               </p>
             </div>
             <Button asChild variant="outline" className="hidden shrink-0 sm:inline-flex">
@@ -978,7 +978,7 @@ function StudioPage() {
                     <div className="overflow-hidden">
                       <img
                         src={item.imageUrl}
-                        alt={`${item.designStyle} ${item.roomType} created by the DecorAI community`}
+                        alt={`${item.designStyle} ${item.roomType} created by the Interior AI Designer community`}
                         loading="lazy"
                         className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
                       />
