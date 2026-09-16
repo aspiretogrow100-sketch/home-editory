@@ -639,6 +639,11 @@ function AmazonSettingsPanel() {
     creatorsClientSecret: "",
   });
 
+  // One row per ScraperAPI key. `hint` = masked key already stored on the server.
+  const [saKeys, setSaKeys] = useState<{ hint: string | null; value: string }[]>([
+    { hint: null, value: "" },
+  ]);
+
   useEffect(() => {
     if (settings.data) {
       setForm((f) => ({
@@ -647,11 +652,21 @@ function AmazonSettingsPanel() {
         trackingId: settings.data.trackingId,
         marketplace: settings.data.marketplace,
       }));
+      const hints = settings.data.scraperapiKeyHints ?? [];
+      setSaKeys(
+        hints.length ? hints.map((h) => ({ hint: h, value: "" })) : [{ hint: null, value: "" }],
+      );
     }
   }, [settings.data]);
 
   const saveMutation = useMutation({
-    mutationFn: () => save({ data: form }),
+    mutationFn: () =>
+      save({
+        data: {
+          ...form,
+          scraperapiKeys: saKeys.map((k) => (k.value.trim() ? k.value.trim() : null)),
+        },
+      }),
     onSuccess: () => {
       toast.success("Amazon settings saved.");
       setForm((f) => ({
