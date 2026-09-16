@@ -139,6 +139,28 @@ async function generateWithReplicate(prompt: string, key: string, model: string)
   return await urlToDataUrl(output);
 }
 
+async function inlineReferences(urls: string[]): Promise<string[]> {
+  const results = await Promise.all(
+    urls.map(async (url) => {
+      if (url.startsWith("data:")) return url;
+      try {
+        const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+        if (!res.ok) return null;
+        const type = res.headers.get("content-type") ?? "image/jpeg";
+        if (!type.startsWith("image/")) return null;
+        const buffer = new Uint8Array(await res.arrayBuffer());
+        if (!buffer.length || buffer.length > 4_000_000) return null;
+        let binary = "";
+        for (let i = 0; i < buffer.length; i += 1) binary += String.fromCharCode(buffer[i]!);
+        return `data:${type};base64,${btoa(binary)}`;
+      } catch {
+        return null;
+      }
+    }),
+  );
+  return results.filter((v): v is string => Boolean(v));
+}
+
 export async function generateRoomImage(
   prompt: string,
   cfg?: AiConfig,
@@ -151,7 +173,19 @@ export async function generateRoomImage(
   // Reference images (the user's own room photo and the real product photos)
   // need an image-input model. Only the built-in Lovable AI model supports it
   // here, so fall back to it whenever references are present.
-  if (refs.length) return await generateWithLovable(prompt, refs);
+  if (refs.length) {
+    // Remote product photos (Amazon CDN) are often not fetchable by the model,
+    // so inline them ourselves and drop the ones that fail.
+    const inlined = await inlineReferences(refs);
+    if (inlined.length) {
+      try {
+        return await generateWithLovable(prompt, inlined);
+      } catch (error) {
+        console.error("[decorai] reference-image generation failed, retrying without references", error);
+      }
+    }
+    return await generateWithLovable(prompt);
+  }
   if (config.provider === "openai") {
     if (!config.openaiApiKey) throw new Error("Add an OpenAI API key in Admin → AI generator settings.");
     return await generateWithOpenai(prompt, config.openaiApiKey);
