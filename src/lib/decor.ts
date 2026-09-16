@@ -150,7 +150,9 @@ export function buildPrompt(
   sel: DesignSelection,
   products: AmazonProduct[] = [],
   template?: string | null,
+  referenceCount = 0,
 ): string {
+
   const size = sel.roomSize ? `${sel.roomSize.toLowerCase()}-sized ` : "";
   const area = sel.squareFeet ? ` The room measures about ${sel.squareFeet} square feet — scale the furniture and layout to that footprint.` : "";
   const type = designTypeOf(sel);
@@ -192,11 +194,16 @@ export function buildPrompt(
     : type === "Full Room" && template?.trim()
       ? template
       : fallback;
-  return source
+  const references = referenceCount
+    ? ` ${sel.roomPhoto ? "The first attached photograph is the room to redesign. The remaining" : "The"} ${referenceCount} attached photograph${referenceCount === 1 ? " is a photo" : "s are photos"} of the real product${referenceCount === 1 ? "" : "s"} to place in the scene, in the same order as the list above. Reproduce each one exactly as shown — identical shape, proportions, material, texture, colour and details — and do not substitute a similar-looking alternative. Place them naturally in the space at correct real-world scale, all of them fully visible inside the frame, and add no other major pieces.`
+    : "";
+  return `${source
     .replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? values[key]! : match))
+    .trim()}${references}`
     .replace(/[ \t]+/g, " ")
     .trim();
 }
+
 
 const GENERIC_SLOTS = [
   { category: "Furniture", item: "furniture centerpiece" },

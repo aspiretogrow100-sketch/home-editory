@@ -36,13 +36,15 @@ function failure(status: number, detail: string, label: string): Error {
   return new Error("The design engine could not create this room. Please try again.");
 }
 
-async function generateWithLovable(prompt: string, referenceImage?: string | null): Promise<string> {
-  const content = referenceImage
+async function generateWithLovable(prompt: string, referenceImages?: string[] | null): Promise<string> {
+  const images = (referenceImages ?? []).filter(Boolean);
+  const content = images.length
     ? [
         { type: "text", text: prompt },
-        { type: "image_url", image_url: { url: referenceImage } },
+        ...images.map((url) => ({ type: "image_url", image_url: { url } })),
       ]
     : prompt;
+
   const response = await fetch(gatewayUrl(), {
     method: "POST",
     headers: {
@@ -140,12 +142,16 @@ async function generateWithReplicate(prompt: string, key: string, model: string)
 export async function generateRoomImage(
   prompt: string,
   cfg?: AiConfig,
-  referenceImage?: string | null,
+  referenceImages?: string[] | string | null,
 ): Promise<string> {
   const config = cfg ?? (await loadAiConfig());
-  // Redesigning a user's own room photo needs an image-input model. Only the
-  // built-in Lovable AI model supports it here, so fall back to it for photos.
-  if (referenceImage) return await generateWithLovable(prompt, referenceImage);
+  const refs = (Array.isArray(referenceImages) ? referenceImages : referenceImages ? [referenceImages] : []).filter(
+    Boolean,
+  );
+  // Reference images (the user's own room photo and the real product photos)
+  // need an image-input model. Only the built-in Lovable AI model supports it
+  // here, so fall back to it whenever references are present.
+  if (refs.length) return await generateWithLovable(prompt, refs);
   if (config.provider === "openai") {
     if (!config.openaiApiKey) throw new Error("Add an OpenAI API key in Admin → AI generator settings.");
     return await generateWithOpenai(prompt, config.openaiApiKey);
@@ -156,3 +162,4 @@ export async function generateRoomImage(
   }
   return await generateWithLovable(prompt);
 }
+
