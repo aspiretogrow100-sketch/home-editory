@@ -277,6 +277,17 @@ function StudioPage() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [saved, setSaved] = useState(false);
   const [communityRoom, setCommunityRoom] = useState("All rooms");
+  const [roomPhoto, setRoomPhoto] = useState<string | null>(null);
+
+  async function handleRoomPhoto(file: File | undefined) {
+    if (!file) return;
+    try {
+      setRoomPhoto(await readRoomPhoto(file));
+      toast.success("Photo added — we'll redesign this exact room.");
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
+  }
 
   const priceQuery = useQuery({
     queryKey: ["unlock-price"],
