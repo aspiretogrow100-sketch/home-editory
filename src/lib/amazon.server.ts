@@ -3,12 +3,13 @@ import { createHash, createHmac } from "crypto";
 import type { AmazonProduct, DesignSelection } from "./decor";
 import { budgetTargetFor, productQueriesFor } from "./decor";
 
-export type AmazonProvider = "rainforest" | "paapi" | "creators";
+export type AmazonProvider = "rainforest" | "paapi" | "creators" | "scraperapi";
 
 export type AmazonConfig = {
   provider: AmazonProvider;
   trackingId: string | null;
   rainforestApiKey: string | null;
+  scraperapiApiKey: string | null;
   paapiAccessKey: string | null;
   paapiSecretKey: string | null;
   creatorsClientId: string | null;
@@ -19,12 +20,20 @@ export type AmazonConfig = {
 export async function loadAmazonConfig(): Promise<AmazonConfig> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data } = await supabaseAdmin.from("amazon_settings").select("*").eq("id", 1).maybeSingle();
-  const provider =
-    data?.provider === "paapi" ? "paapi" : data?.provider === "creators" ? "creators" : "rainforest";
+  const row = (data ?? null) as (Record<string, string | null> & { provider?: string }) | null;
+  const provider: AmazonProvider =
+    row?.provider === "paapi"
+      ? "paapi"
+      : row?.provider === "creators"
+        ? "creators"
+        : row?.provider === "scraperapi"
+          ? "scraperapi"
+          : "rainforest";
   return {
     provider,
     trackingId: data?.tracking_id ?? null,
     rainforestApiKey: data?.rainforest_api_key ?? null,
+    scraperapiApiKey: row?.["scraperapi_api_key"] ?? null,
     paapiAccessKey: data?.paapi_access_key ?? null,
     paapiSecretKey: data?.paapi_secret_key ?? null,
     creatorsClientId: data?.creators_client_id ?? null,
@@ -37,7 +46,102 @@ export function isAmazonConfigured(cfg: AmazonConfig): boolean {
   if (!cfg.trackingId) return false;
   if (cfg.provider === "rainforest") return Boolean(cfg.rainforestApiKey);
   if (cfg.provider === "creators") return Boolean(cfg.creatorsClientId && cfg.creatorsClientSecret);
+  if (cfg.provider === "scraperapi") return Boolean(cfg.scraperapiApiKey);
   return Boolean(cfg.paapiAccessKey && cfg.paapiSecretKey);
+}
+
+// ---------- ScraperAPI (structured Amazon search) ----------
+
+type ScraperApiItem = {
+  asin?: string;
+  name?: string;
+  title?: string;
+  image?: string;
+  url?: string;
+  price?: number | string;
+  price_string?: string;
+  original_price?: { price?: number | string } | number | string;
+  stars?: number;
+  rating?: number;
+};
+
+function toNumber(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const n = Number(value.replace(/[^0-9.]/g, ""));
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }
+  return null;
+}
+
+function scraperapiCountry(marketplace: string): string {
+  const m = marketplace.replace(/^www\./, "");
+  const map: Record<string, string> = {
+    "amazon.com": "us",
+    "amazon.ca": "ca",
+    "amazon.co.uk": "uk",
+    "amazon.de": "de",
+    "amazon.fr": "fr",
+    "amazon.it": "it",
+    "amazon.es": "es",
+    "amazon.in": "in",
+    "amazon.co.jp": "jp",
+    "amazon.com.au": "au",
+    "amazon.com.br": "br",
+    "amazon.com.mx": "mx",
+  };
+  return map[m] ?? "us";
+}
+
+async function scraperapiSearch(cfg: AmazonConfig, term: string): Promise<ScraperApiItem[]> {
+  const url = new URL("https://api.scraperapi.com/structured/amazon/search");
+  url.searchParams.set("api_key", cfg.scraperapiApiKey!);
+  url.searchParams.set("query", term);
+  url.searchParams.set("country", scraperapiCountry(cfg.marketplace));
+  url.searchParams.set("tld", cfg.marketplace.replace(/^www\.amazon\./, ""));
+  const res = await fetch(url);
+  const raw = await res.text();
+  if (!res.ok) {
+    console.error("[amazon] scraperapi error", res.status, raw.slice(0, 500));
+    throw new Error(`ScraperAPI returned ${res.status}: ${raw.slice(0, 200)}`);
+  }
+  const json = (() => {
+    try {
+      return JSON.parse(raw) as { results?: ScraperApiItem[] };
+    } catch {
+      return {} as { results?: ScraperApiItem[] };
+    }
+  })();
+  return json.results ?? [];
+}
+
+function scraperapiToProduct(
+  item: ScraperApiItem,
+  category: string,
+  cfg: AmazonConfig,
+): AmazonProduct | null {
+  const price = toNumber(item.price) ?? toNumber(item.price_string);
+  const name = item.name ?? item.title;
+  if (!item.asin || !name || !price) return null;
+  const orig =
+    typeof item.original_price === "object" && item.original_price
+      ? toNumber(item.original_price.price)
+      : toNumber(item.original_price);
+  const listPrice = orig && orig > price ? orig : price;
+  const percent = listPrice > price ? Math.round(((listPrice - price) / listPrice) * 100) : 0;
+  return {
+    asin: item.asin,
+    name: String(name).slice(0, 160),
+    category,
+    price,
+    listPrice,
+    discountLabel: percent > 0 ? `${percent}% OFF` : "Deal",
+    discountPercent: percent,
+    rating: item.stars ?? item.rating ?? 0,
+    image: item.image ?? null,
+    description: null,
+    url: affiliateUrl(cfg.marketplace, item.asin, cfg.trackingId),
+  };
 }
 
 
@@ -454,6 +558,11 @@ export async function fetchAmazonProducts(
         if (cfg.provider === "creators") {
           const items = await creatorsSearch(cfg, query, minPrice, cap, minDiscount || null);
           candidates = items.map((i) => paapiToProduct(i, category, cfg)).filter(Boolean) as AmazonProduct[];
+        } else if (cfg.provider === "scraperapi") {
+          const items = await scraperapiSearch(cfg, query);
+          candidates = items
+            .map((i) => scraperapiToProduct(i, category, cfg))
+            .filter(Boolean) as AmazonProduct[];
         } else if (cfg.provider === "paapi") {
           const items = await paapiSearch(cfg, query, minPrice, cap, minDiscount || null);
           candidates = items.map((i) => paapiToProduct(i, category, cfg)).filter(Boolean) as AmazonProduct[];

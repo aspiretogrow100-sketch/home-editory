@@ -311,10 +311,11 @@ export const generateDesign = createServerFn({ method: "POST" })
 // ---------- Amazon integration settings (admin only; secrets never leave the server) ----------
 
 export type AmazonSettingsView = {
-  provider: "rainforest" | "paapi" | "creators";
+  provider: "rainforest" | "paapi" | "creators" | "scraperapi";
   trackingId: string;
   marketplace: string;
   rainforestKeyHint: string | null;
+  scraperapiKeyHint: string | null;
   paapiAccessKeyHint: string | null;
   paapiSecretKeyHint: string | null;
   creatorsClientIdHint: string | null;
@@ -345,6 +346,7 @@ export const getAmazonSettings = createServerFn({ method: "POST" })
       trackingId: cfg.trackingId ?? "",
       marketplace: cfg.marketplace,
       rainforestKeyHint: hint(cfg.rainforestApiKey),
+      scraperapiKeyHint: hint(cfg.scraperapiApiKey),
       paapiAccessKeyHint: hint(cfg.paapiAccessKey),
       paapiSecretKeyHint: hint(cfg.paapiSecretKey),
       creatorsClientIdHint: hint(cfg.creatorsClientId),
@@ -360,6 +362,7 @@ export const saveAmazonSettings = createServerFn({ method: "POST" })
       trackingId: string;
       marketplace: string;
       rainforestApiKey?: string;
+      scraperapiApiKey?: string;
       paapiAccessKey?: string;
       paapiSecretKey?: string;
       creatorsClientId?: string;
@@ -370,7 +373,9 @@ export const saveAmazonSettings = createServerFn({ method: "POST" })
           ? "paapi"
           : input?.provider === "creators"
             ? "creators"
-            : "rainforest";
+            : input?.provider === "scraperapi"
+              ? "scraperapi"
+              : "rainforest";
       const trackingId = String(input?.trackingId ?? "").trim().slice(0, 60);
       const marketplace = String(input?.marketplace ?? "www.amazon.com")
         .trim()
@@ -387,6 +392,7 @@ export const saveAmazonSettings = createServerFn({ method: "POST" })
         trackingId,
         marketplace: marketplace.startsWith("www.") ? marketplace : `www.${marketplace}`,
         rainforestApiKey: clean(input.rainforestApiKey),
+        scraperapiApiKey: clean(input.scraperapiApiKey),
         paapiAccessKey: clean(input.paapiAccessKey),
         paapiSecretKey: clean(input.paapiSecretKey),
         creatorsClientId: clean(input.creatorsClientId),
@@ -403,6 +409,8 @@ export const saveAmazonSettings = createServerFn({ method: "POST" })
       marketplace: data.marketplace,
     };
     if (data.rainforestApiKey) patch.rainforest_api_key = data.rainforestApiKey;
+    if (data.scraperapiApiKey)
+      (patch as Record<string, unknown>)["scraperapi_api_key"] = data.scraperapiApiKey;
     if (data.paapiAccessKey) patch.paapi_access_key = data.paapiAccessKey;
     if (data.paapiSecretKey) patch.paapi_secret_key = data.paapiSecretKey;
     if (data.creatorsClientId) patch.creators_client_id = data.creatorsClientId;

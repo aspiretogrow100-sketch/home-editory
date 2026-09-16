@@ -51,6 +51,7 @@ export type Database = {
           paapi_secret_key: string | null
           provider: string
           rainforest_api_key: string | null
+          scraperapi_api_key: string | null
           tracking_id: string | null
           updated_at: string
         }
@@ -63,6 +64,7 @@ export type Database = {
           paapi_secret_key?: string | null
           provider?: string
           rainforest_api_key?: string | null
+          scraperapi_api_key?: string | null
           tracking_id?: string | null
           updated_at?: string
         }
@@ -75,6 +77,7 @@ export type Database = {
           paapi_secret_key?: string | null
           provider?: string
           rainforest_api_key?: string | null
+          scraperapi_api_key?: string | null
           tracking_id?: string | null
           updated_at?: string
         }

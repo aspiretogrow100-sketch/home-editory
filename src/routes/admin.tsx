@@ -628,10 +628,11 @@ function AmazonSettingsPanel() {
   });
 
   const [form, setForm] = useState({
-    provider: "rainforest" as "rainforest" | "paapi" | "creators",
+    provider: "rainforest" as "rainforest" | "paapi" | "creators" | "scraperapi",
     trackingId: "",
     marketplace: "www.amazon.com",
     rainforestApiKey: "",
+    scraperapiApiKey: "",
     paapiAccessKey: "",
     paapiSecretKey: "",
     creatorsClientId: "",
@@ -656,6 +657,7 @@ function AmazonSettingsPanel() {
       setForm((f) => ({
         ...f,
         rainforestApiKey: "",
+        scraperapiApiKey: "",
         paapiAccessKey: "",
         paapiSecretKey: "",
         creatorsClientId: "",
@@ -714,10 +716,19 @@ function AmazonSettingsPanel() {
         <RadioGroup
           value={form.provider}
           onValueChange={(v) =>
-            setForm({ ...form, provider: v as "rainforest" | "paapi" | "creators" })
+            setForm({ ...form, provider: v as typeof form.provider })
           }
-          className="grid gap-3 sm:grid-cols-3"
+          className="grid gap-3 sm:grid-cols-2"
         >
+          <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-4">
+            <RadioGroupItem value="scraperapi" id="p-scraperapi" className="mt-0.5" />
+            <span>
+              <span className="block text-sm font-medium">ScraperAPI</span>
+              <span className="block text-xs text-muted-foreground">
+                One API key, generous free tier — recommended.
+              </span>
+            </span>
+          </label>
           <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-4">
             <RadioGroupItem value="creators" id="p-creators" className="mt-0.5" />
             <span>
@@ -742,7 +753,22 @@ function AmazonSettingsPanel() {
         </RadioGroup>
       </div>
 
-      {form.provider === "creators" ? (
+      {form.provider === "scraperapi" ? (
+        <div className="mt-6 space-y-1.5">
+          <Label htmlFor="sa-key">ScraperAPI key</Label>
+          <Input
+            id="sa-key"
+            type="password"
+            autoComplete="off"
+            placeholder={d?.scraperapiKeyHint ?? "Paste your ScraperAPI key"}
+            value={form.scraperapiApiKey}
+            onChange={(e) => setForm({ ...form, scraperapiApiKey: e.target.value })}
+          />
+          <p className="text-xs text-muted-foreground">
+            Get it from scraperapi.com → Dashboard → API Key.
+          </p>
+        </div>
+      ) : form.provider === "creators" ? (
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="cr-id">Creators Client ID</Label>
