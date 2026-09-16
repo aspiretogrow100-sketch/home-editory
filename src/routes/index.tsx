@@ -1027,27 +1027,27 @@ function StudioPage() {
       </section>
 
 
-      <section className="border-b border-border py-10 md:py-14" aria-labelledby="trust-heading">
+      <section className="trust-grid border-b border-border py-10 md:py-14" aria-labelledby="trust-heading">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase text-muted-foreground">Why DecorAI</p>
+            <p className="text-xs font-semibold uppercase text-muted-foreground">Designed for real homes</p>
             <h2 id="trust-heading" className="mx-auto mt-3 max-w-4xl text-3xl leading-tight md:text-5xl">
-              A clearer way to turn inspiration into a room you can actually <span className="italic text-primary">shop.</span>
+              A clearer way to turn inspiration into a room <span className="italic text-primary">you can actually shop.</span>
             </h2>
           </div>
 
-          <div className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-4 md:mt-10 md:grid-cols-3">
-            <div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
-              <p className="font-display text-4xl font-semibold text-primary md:text-5xl">Free</p>
-              <p className="mt-2 text-sm font-medium text-muted-foreground md:text-base">Room design concepts, no account or card needed.</p>
+          <div className="mt-8 grid divide-y divide-border border-y border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+            <div className="px-4 py-6 text-center md:py-8">
+              <p className="font-display text-4xl text-primary md:text-5xl">Free</p>
+              <p className="mt-1 text-sm font-medium text-muted-foreground">Room design concepts</p>
             </div>
-            <div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
-              <p className="font-display text-4xl font-semibold text-primary md:text-5xl">Real</p>
-              <p className="mt-2 text-sm font-medium text-muted-foreground md:text-base">Amazon product matches with live prices and savings.</p>
+            <div className="px-4 py-6 text-center md:py-8">
+              <p className="font-display text-4xl text-primary md:text-5xl">Real</p>
+              <p className="mt-1 text-sm font-medium text-muted-foreground">Amazon product matches</p>
             </div>
-            <div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
-              <p className="font-display text-4xl font-semibold text-primary md:text-5xl">{currency(price)}</p>
-              <p className="mt-2 text-sm font-medium text-muted-foreground md:text-base">One-time unlock for your itemized shopping list.</p>
+            <div className="px-4 py-6 text-center md:py-8">
+              <p className="font-display text-4xl text-primary md:text-5xl">{currency(price)}</p>
+              <p className="mt-1 text-sm font-medium text-muted-foreground">One-time list unlock</p>
             </div>
           </div>
 
@@ -1063,33 +1063,6 @@ function StudioPage() {
           </div>
         </div>
       </section>
-
-      <section className="border-b border-border py-10 md:py-14" aria-labelledby="trusted-heading">
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <div className="text-center">
-            <p className="text-xs font-semibold uppercase text-muted-foreground">Trusted by professionals</p>
-            <h2 id="trusted-heading" className="mx-auto mt-3 max-w-4xl text-3xl leading-tight md:text-5xl">
-              Join thousands of designers and room <span className="italic text-primary">owners.</span>
-            </h2>
-          </div>
-
-          <div className="mt-8 grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-y-0 md:mt-10">
-            <div className="text-center">
-              <p className="font-display text-5xl font-semibold text-primary md:text-6xl">100k+</p>
-              <p className="mt-1 text-sm font-medium text-muted-foreground md:text-base">Images Generated</p>
-            </div>
-            <div className="text-center">
-              <p className="font-display text-5xl font-semibold text-primary md:text-6xl">10k+</p>
-              <p className="mt-1 text-sm font-medium text-muted-foreground md:text-base">Users Loved</p>
-            </div>
-            <div className="text-center">
-              <p className="font-display text-5xl font-semibold text-primary md:text-6xl">97%+</p>
-              <p className="mt-1 text-sm font-medium text-muted-foreground md:text-base">Satisfaction Rate</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
 
       <section className="relative overflow-hidden border-t border-border bg-background py-12 md:py-16" aria-labelledby="faq-heading">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 mx-auto h-px max-w-5xl bg-primary/55" />
