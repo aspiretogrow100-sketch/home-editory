@@ -348,6 +348,7 @@ export const getAmazonSettings = createServerFn({ method: "POST" })
       marketplace: cfg.marketplace,
       rainforestKeyHint: hint(cfg.rainforestApiKey),
       scraperapiKeyHint: hint(cfg.scraperapiApiKey),
+      scraperapiKeyHints: splitKeys(cfg.scraperapiApiKey).map((k) => hint(k) ?? ""),
       paapiAccessKeyHint: hint(cfg.paapiAccessKey),
       paapiSecretKeyHint: hint(cfg.paapiSecretKey),
       creatorsClientIdHint: hint(cfg.creatorsClientId),
