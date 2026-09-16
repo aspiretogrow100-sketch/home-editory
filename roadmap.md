@@ -5,4 +5,4 @@
 - [x] Add five-question interactive FAQ
 - [x] Verify desktop and mobile behavior
 
-- [ ] Redesign homepage using the recommended premium visual direction
+- [x] Redesign homepage using the recommended premium visual direction

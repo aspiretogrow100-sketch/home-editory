@@ -48,6 +48,9 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <Button asChild size="sm" className="hidden sm:inline-flex">
+            <a href="/#design-studio">Start designing</a>
+          </Button>
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

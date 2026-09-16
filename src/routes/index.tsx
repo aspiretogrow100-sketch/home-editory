@@ -50,8 +50,6 @@ import {
   type GenerationResult,
 } from "@/lib/decor.functions";
 import { saveRoom } from "@/lib/saved.functions";
-import heroBedroom from "@/assets/hero-bedroom.jpg";
-import heroDining from "@/assets/hero-dining.jpg";
 import heroJapandiMain from "@/assets/hero-japandi-main.jpg";
 
 
@@ -332,90 +330,65 @@ function StudioPage() {
 
   return (
     <div>
-      <section className="hero-panel overflow-hidden border-b border-border">
-        <div className="mx-auto grid w-full max-w-7xl items-center gap-12 px-4 py-10 sm:px-6 md:py-14 lg:grid-cols-[0.86fr_1.14fr] lg:gap-16 lg:px-8 lg:py-16">
-          <div className="hero-reveal max-w-xl">
-            <Badge variant="outline" className="mb-6 border-primary/30 bg-background/75 px-3 py-1.5 backdrop-blur-sm">
-              <Sparkles className="size-3.5 text-primary" /> AI-powered interior studio
+      <section className="relative min-h-[620px] overflow-hidden border-b border-border md:min-h-[calc(100vh-4rem)] md:max-h-[860px]">
+        <img
+          src={heroJapandiMain}
+          alt="Sunlit Japandi living room generated with DecorAI"
+          width={1024}
+          height={1280}
+          fetchPriority="high"
+          className="absolute inset-0 h-full w-full object-cover object-center"
+        />
+        <div className="hero-image-shade absolute inset-0" />
+        <div className="relative mx-auto flex min-h-[620px] w-full max-w-7xl items-end px-4 pb-12 pt-24 sm:px-6 md:min-h-[calc(100vh-4rem)] md:max-h-[860px] md:items-center md:pb-20 lg:px-8">
+          <div className="hero-reveal max-w-2xl text-background">
+            <Badge className="mb-6 border-background/25 bg-foreground/45 text-background shadow-none backdrop-blur-md hover:bg-foreground/45">
+              <Sparkles className="size-3.5 text-primary" /> AI interior design + real product matches
             </Badge>
-            <h1 className="text-5xl leading-[0.98] sm:text-6xl md:text-7xl lg:text-[4.75rem]">
-              Design your <span className="italic text-primary">dream room</span> in seconds.
+            <h1 className="text-5xl leading-[0.94] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
+              Design the room.<br />
+              <span className="italic text-primary">Shop the look.</span>
             </h1>
-            <p className="mt-6 max-w-lg text-base leading-7 text-muted-foreground md:text-lg">
-              Choose your style and budget. DecorAI creates a photoreal interior, then finds the
-              pieces to bring it home for less.
+            <p className="mt-6 max-w-xl text-base leading-7 text-background/80 md:text-lg">
+              Create a photoreal interior around your space, style and budget—then discover the
+              matching pieces on Amazon.
             </p>
-
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Button
                 size="lg"
-                className="h-12 rounded-md px-7 text-base shadow-[var(--shadow-lift)]"
+                className="h-12 px-7 text-base shadow-[var(--shadow-lift)]"
                 onClick={() => document.getElementById("design-studio")?.scrollIntoView({ behavior: "smooth" })}
               >
-                Start Designing Now <ArrowRight className="size-4" />
+                Start designing <ArrowRight />
               </Button>
-              <Link
-                to="/gallery"
-                className="inline-flex h-12 items-center justify-center rounded-md border border-border bg-background/70 px-7 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
-              >
-                Explore the gallery
-              </Link>
+              <Button asChild variant="outline" size="lg" className="h-12 border-background/35 bg-background/10 px-7 text-background shadow-none backdrop-blur-md hover:bg-background hover:text-foreground">
+                <Link to="/gallery">View real designs <ArrowUpRight /></Link>
+              </Button>
             </div>
-
-            <div className="mt-8 flex items-center gap-3 border-t border-border pt-6 text-sm text-muted-foreground">
-              <span aria-hidden="true" className="text-primary">★★★★★</span>
-              <span>Join thousands designing their dream rooms</span>
-            </div>
-          </div>
-
-          <div className="hero-reveal-delayed relative mx-auto w-full max-w-2xl pb-8 pl-4 sm:pl-10 lg:pb-10">
-            <figure className="relative ml-auto aspect-[4/5] w-[82%] overflow-hidden rounded-lg border border-border bg-muted shadow-[var(--shadow-hero)]">
-              <img
-                src={heroJapandiMain}
-                alt="Sunlit Japandi living room generated with DecorAI"
-                width={1024}
-                height={1280}
-                fetchPriority="high"
-                className="h-full w-full object-cover"
-              />
-              <figcaption className="absolute bottom-4 left-4 flex items-center gap-2 rounded-md border border-background/40 bg-foreground/85 px-3 py-2 text-xs font-medium text-background backdrop-blur-md sm:bottom-6 sm:left-6">
-                <Sparkles className="size-3.5 text-primary" /> Japandi · Warm &amp; Natural
-              </figcaption>
-            </figure>
-
-            <figure className="hero-float absolute left-0 top-[9%] w-[39%] overflow-hidden rounded-lg border-4 border-background bg-muted shadow-[var(--shadow-lift)]">
-              <img
-                src={heroBedroom}
-                alt="Warm modern bedroom generated with DecorAI"
-                width={960}
-                height={688}
-                loading="lazy"
-                className="aspect-[4/3] w-full object-cover"
-              />
-            </figure>
-
-            <figure className="hero-float-delayed absolute bottom-0 right-[4%] w-[43%] overflow-hidden rounded-lg border-4 border-background bg-muted shadow-[var(--shadow-lift)]">
-              <img
-                src={heroDining}
-                alt="Modern dining room generated with DecorAI"
-                width={960}
-                height={688}
-                loading="lazy"
-                className="aspect-[4/3] w-full object-cover"
-              />
-            </figure>
-
-            <div className="absolute right-0 top-[12%] rounded-md border border-border bg-card/90 px-3 py-2 shadow-[var(--shadow-soft)] backdrop-blur-md sm:px-4 sm:py-3">
-              <p className="text-[10px] font-semibold uppercase text-muted-foreground">AI curated</p>
-              <p className="mt-0.5 text-sm font-medium text-foreground">Ready in seconds</p>
+            <div className="mt-9 grid max-w-xl grid-cols-3 border-t border-background/25 pt-5 text-background/75">
+              <div><p className="text-xs font-semibold uppercase">Create</p><p className="mt-1 text-sm">Photoreal rooms</p></div>
+              <div className="border-l border-background/25 pl-4"><p className="text-xs font-semibold uppercase">Match</p><p className="mt-1 text-sm">Real products</p></div>
+              <div className="border-l border-background/25 pl-4"><p className="text-xs font-semibold uppercase">Shop</p><p className="mt-1 text-sm">Direct on Amazon</p></div>
             </div>
           </div>
         </div>
       </section>
 
-      <div id="design-studio" className="mx-auto grid w-full max-w-6xl scroll-mt-20 gap-8 px-4 py-12 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <section id="design-studio" className="scroll-mt-16 border-b border-border bg-background py-14 md:py-20">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-9 grid gap-4 md:grid-cols-[0.8fr_1.2fr] md:items-end">
+            <div>
+              <p className="text-xs font-semibold uppercase text-primary">DecorAI studio</p>
+              <h2 className="mt-2 text-4xl leading-none md:text-5xl">Make the room yours.</h2>
+            </div>
+            <p className="max-w-xl text-sm leading-6 text-muted-foreground md:justify-self-end md:text-base">
+              Choose the room, size, style and budget. We will compose the space and match every
+              shoppable piece to your brief.
+            </p>
+          </div>
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div className="space-y-8">
-          <div className="surface-card p-6">
+          <div className="surface-card p-5 md:p-8">
             <div className="flex flex-wrap items-center gap-2">
               {STEPS.map((label, index) => (
                 <button
@@ -833,19 +806,20 @@ function StudioPage() {
           ) : null}
         </div>
 
-        <aside className="space-y-6">
-          <AdSlot label="Sponsored" format="rectangle" />
-          <div className="surface-card p-5">
-            <h3 className="text-lg">How it works</h3>
-            <ol className="mt-3 space-y-3 text-sm text-muted-foreground">
-              <li>1. Choose room, style, budget and the discount you want.</li>
-              <li>2. We render a photoreal interior built to those constraints.</li>
-              <li>3. Unlock the matching Amazon list and shop the exact look.</li>
+        <aside className="space-y-6 lg:border-l lg:border-border lg:pl-7">
+          <div>
+            <p className="text-xs font-semibold uppercase text-primary">Three simple steps</p>
+            <ol className="mt-5 space-y-6">
+              <li className="border-t border-border pt-4"><span className="text-xs text-muted-foreground">01</span><h3 className="mt-1 text-xl">Set your vision</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">Choose the room, style, budget and deal preference.</p></li>
+              <li className="border-t border-border pt-4"><span className="text-xs text-muted-foreground">02</span><h3 className="mt-1 text-xl">See the design</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">Receive a photoreal concept built around your choices.</p></li>
+              <li className="border-t border-border pt-4"><span className="text-xs text-muted-foreground">03</span><h3 className="mt-1 text-xl">Shop exact matches</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">Unlock the Amazon list and bring the room home.</p></li>
             </ol>
           </div>
-          <AdSlot label="Advertisement" format="rectangle" />
+          <div className="pt-3"><AdSlot label="Sponsored" /></div>
         </aside>
-      </div>
+          </div>
+        </div>
+      </section>
 
       <section className="border-y border-border bg-card/45 py-14 md:py-20" aria-labelledby="community-heading">
         <div className="mx-auto w-full max-w-6xl px-4">
