@@ -1049,18 +1049,19 @@ function StudioPage() {
           </div>
 
           {galleryQuery.isLoading ? (
-            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {[0, 1, 2].map((item) => (
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+              {[0, 1, 2, 3, 4, 5].map((item) => (
                 <Skeleton key={item} className="aspect-[4/3] w-full rounded-lg" />
               ))}
             </div>
           ) : recentRooms.length ? (
-            <div className="-mx-4 mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
               {recentRooms.map((item) => (
                 <Link
                   key={item.id}
                   to="/gallery"
-                  className="surface-card group min-w-[82%] snap-start overflow-hidden transition-shadow hover:shadow-[var(--shadow-lift)] sm:min-w-0"
+                  search={{ room: communityRoom === "All rooms" ? undefined : communityRoom }}
+                  className="surface-card group overflow-hidden transition-shadow hover:shadow-[var(--shadow-lift)]"
                   aria-label={`View ${item.designStyle} ${item.roomType} in the gallery`}
                 >
                   {item.imageUrl ? (
@@ -1069,27 +1070,21 @@ function StudioPage() {
                         src={item.imageUrl}
                         alt={`${item.designStyle} ${item.roomType} created by the Interior AI Designer community`}
                         loading="lazy"
-                        className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
+                        className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                       />
                     </div>
                   ) : (
                     <div className="aspect-[4/3] bg-muted" />
                   )}
-                  <div className="p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h3 className="text-xl leading-tight">{item.designStyle} {item.roomType}</h3>
-                        <p className="mt-1 text-xs leading-5 text-muted-foreground">{roomSummary(item)}</p>
-                      </div>
-                      <ArrowUpRight className="mt-1 size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
+                  <div className="p-2.5">
+                    <div className="flex items-start justify-between gap-1.5">
+                      <h3 className="text-sm leading-tight">{item.designStyle} {item.roomType}</h3>
+                      <ArrowUpRight className="mt-0.5 size-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
                     </div>
-                    <Badge
-                      variant={item.isUnlocked ? "secondary" : "outline"}
-                      className="mt-3"
-                    >
+                    <p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
                       {item.isUnlocked ? <Unlock className="size-3" /> : <Lock className="size-3" />}
-                      {item.isUnlocked ? "Unlocked" : `Locked · ${currency(price)}`}
-                    </Badge>
+                      {item.isUnlocked ? "Unlocked" : currency(price)}
+                    </p>
                   </div>
                 </Link>
               ))}
