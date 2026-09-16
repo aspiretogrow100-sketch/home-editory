@@ -294,6 +294,8 @@ function StudioPage() {
     queryFn: () => fetchGallery(),
   });
 
+  const gallerySearch: { room?: string } =
+    communityRoom === "All rooms" ? {} : { room: communityRoom };
   const communityRooms = ["All rooms", ...options.rooms.map((room) => room.label)];
   const recentRooms = (galleryQuery.data ?? [])
     .filter((room) => communityRoom === "All rooms" || room.roomType === communityRoom)
@@ -1024,7 +1026,7 @@ function StudioPage() {
               </p>
             </div>
             <Button asChild variant="outline" className="hidden shrink-0 sm:inline-flex">
-              <Link to="/gallery" search={{ room: communityRoom === "All rooms" ? undefined : communityRoom }}>View all rooms <ArrowUpRight /></Link>
+              <Link to="/gallery" search={gallerySearch}>View all rooms <ArrowUpRight /></Link>
             </Button>
           </div>
 
@@ -1060,7 +1062,7 @@ function StudioPage() {
                 <Link
                   key={item.id}
                   to="/gallery"
-                  search={{ room: communityRoom === "All rooms" ? undefined : communityRoom }}
+                  search={gallerySearch}
                   className="surface-card group overflow-hidden transition-shadow hover:shadow-[var(--shadow-lift)]"
                   aria-label={`View ${item.designStyle} ${item.roomType} in the gallery`}
                 >
@@ -1111,7 +1113,7 @@ function StudioPage() {
           )}
 
           <Button asChild variant="outline" className="mt-5 w-full sm:hidden">
-            <Link to="/gallery" search={{ room: communityRoom === "All rooms" ? undefined : communityRoom }}>View all rooms <ArrowUpRight /></Link>
+            <Link to="/gallery" search={gallerySearch}>View all rooms <ArrowUpRight /></Link>
           </Button>
         </div>
       </section>
