@@ -408,12 +408,10 @@ function StudioPage() {
         className="scroll-mt-16 border-b border-border bg-background py-5 lg:h-[calc(100svh-4rem)] lg:min-h-[600px]"
       >
         <div className="mx-auto flex h-full w-full max-w-7xl flex-col px-4 sm:px-6 lg:px-8">
-          <div className="mb-4 grid shrink-0 gap-2 md:grid-cols-[0.8fr_1.2fr] md:items-end">
-            <div>
-              <p className="text-xs font-semibold uppercase text-primary">Interior AI Designer studio</p>
-              <h2 className="mt-1 text-3xl leading-none md:text-[2.15rem]">Make the room yours.</h2>
-            </div>
-            <p className="max-w-xl text-sm leading-5 text-muted-foreground md:justify-self-end">
+          <div className="mb-4 shrink-0">
+            <p className="text-xs font-semibold uppercase text-primary">Interior AI Designer studio</p>
+            <h2 className="mt-1 text-3xl leading-none md:text-[2.15rem]">Make the room yours.</h2>
+            <p className="mt-2 max-w-xl text-sm leading-5 text-muted-foreground">
               Choose your room, style and budget. We create the space and match every shoppable piece.
             </p>
           </div>
