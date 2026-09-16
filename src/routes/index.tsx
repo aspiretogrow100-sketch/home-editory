@@ -1024,7 +1024,7 @@ function StudioPage() {
               </p>
             </div>
             <Button asChild variant="outline" className="hidden shrink-0 sm:inline-flex">
-              <Link to="/gallery">View all rooms <ArrowUpRight /></Link>
+              <Link to="/gallery" search={{ room: communityRoom === "All rooms" ? undefined : communityRoom }}>View all rooms <ArrowUpRight /></Link>
             </Button>
           </div>
 
@@ -1111,7 +1111,7 @@ function StudioPage() {
           )}
 
           <Button asChild variant="outline" className="mt-5 w-full sm:hidden">
-            <Link to="/gallery">View all rooms <ArrowUpRight /></Link>
+            <Link to="/gallery" search={{ room: communityRoom === "All rooms" ? undefined : communityRoom }}>View all rooms <ArrowUpRight /></Link>
           </Button>
         </div>
       </section>
