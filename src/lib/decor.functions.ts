@@ -426,8 +426,19 @@ export const saveAmazonSettings = createServerFn({ method: "POST" })
       marketplace: data.marketplace,
     };
     if (data.rainforestApiKey) patch.rainforest_api_key = data.rainforestApiKey;
-    if (data.scraperapiApiKey)
+    if (data.scraperapiKeys) {
+      const { loadAmazonConfig } = await import("./amazon.server");
+      const existing = splitKeys((await loadAmazonConfig()).scraperapiApiKey);
+      const merged = data.scraperapiKeys
+        .map((k, i) => k ?? existing[i] ?? "")
+        .map((k) => k.trim())
+        .filter(Boolean);
+      (patch as Record<string, unknown>)["scraperapi_api_key"] = merged.length
+        ? merged.join(",")
+        : null;
+    } else if (data.scraperapiApiKey) {
       (patch as Record<string, unknown>)["scraperapi_api_key"] = data.scraperapiApiKey;
+    }
     if (data.paapiAccessKey) patch.paapi_access_key = data.paapiAccessKey;
     if (data.paapiSecretKey) patch.paapi_secret_key = data.paapiSecretKey;
     if (data.creatorsClientId) patch.creators_client_id = data.creatorsClientId;
