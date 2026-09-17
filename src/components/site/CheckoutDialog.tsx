@@ -60,11 +60,15 @@ export function CheckoutDialog({
 
   const settledRef = useRef(false);
   const quietRef = useRef(false);
+  const checkoutGenerationRef = useRef<string | null>(null);
 
   const settle = useMutation({
-    mutationFn: (transactionId: string) =>
-      confirm({ data: { generationId: String(generationId), transactionId } }),
-    onSuccess: async () => {
+    mutationFn: (payment: { transactionId: string; generationId: string }) =>
+      confirm({ data: payment }),
+    onSuccess: async (result) => {
+      // A delayed Paddle event from an older checkout must not unlock or error
+      // against the design currently shown in the dialog.
+      if (!result.unlocked) return;
       settledRef.current = true;
       paddleClose();
       toast.success("Payment received — your Amazon links are unlocked.");
@@ -88,30 +92,34 @@ export function CheckoutDialog({
     environment: info?.environment ?? "sandbox",
     clientToken: info?.clientToken ?? null,
     onCompleted: (transactionId) => {
-      if (settledRef.current) return;
+      const checkoutGenerationId = checkoutGenerationRef.current;
+      if (settledRef.current || !checkoutGenerationId) return;
       quietRef.current = false;
-      settle.mutate(transactionId);
+      settle.mutate({ transactionId, generationId: checkoutGenerationId });
     },
     // Safety net: if the completed event never reaches us, verify on close.
     onClosed: (transactionId) => {
-      if (!transactionId || settledRef.current) return;
+      const checkoutGenerationId = checkoutGenerationRef.current;
+      if (!transactionId || settledRef.current || !checkoutGenerationId) return;
       quietRef.current = true;
-      settle.mutate(transactionId);
+      settle.mutate({ transactionId, generationId: checkoutGenerationId });
     },
   });
 
   const openPaddle = () => {
+    const checkoutGenerationId = generationId?.trim();
     const paddle = typeof window === "undefined" ? undefined : window.Paddle;
-    if (!paddle || !info?.priceId) {
+    if (!paddle || !info?.priceId || !checkoutGenerationId) {
       toast.error("Checkout is still loading. Please try again in a second.");
       return;
     }
     settledRef.current = false;
     quietRef.current = false;
     resetPaddle();
+    checkoutGenerationRef.current = checkoutGenerationId;
     paddle.Checkout.open({
       items: [{ priceId: info.priceId, quantity: 1 }],
-      customData: { generation_id: generationId, user_id: user?.id ?? null },
+      customData: { generation_id: checkoutGenerationId, user_id: user?.id ?? null },
       ...(user?.email ? { customer: { email: user.email } } : {}),
       settings: { displayMode: "overlay", theme: "light", allowLogout: false },
     });

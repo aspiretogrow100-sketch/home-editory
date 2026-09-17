@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 type PaddleCheckoutEvent = {
   name?: string;
-  data?: { transaction_id?: string; id?: string; status?: string };
+  data?: { transaction_id?: string; status?: string };
 };
 
 type PaddleInstance = {
@@ -78,7 +78,10 @@ export function usePaddle(options: {
         instance.Initialize({
           token: clientToken,
           eventCallback: (event) => {
-            const id = event.data?.transaction_id ?? event.data?.id ?? null;
+            // Paddle event `data.id` is not guaranteed to be a transaction id.
+            // Only retain the explicit transaction id so an unrelated event can
+            // never overwrite the payment that belongs to this checkout.
+            const id = event.data?.transaction_id ?? null;
             if (id) lastTransaction.current = id;
             const name = event.name ?? "";
             if (name === "checkout.completed" || name === "checkout.payment.completed") {
