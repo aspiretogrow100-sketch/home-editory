@@ -923,6 +923,7 @@ function StudioPage() {
                             budgetRange: budget.label,
                             budgetAmount: budget.amount,
                           }));
+                          scrollToWizardSection("colour-palette-choice");
                         }}
                       />
                     ))}
