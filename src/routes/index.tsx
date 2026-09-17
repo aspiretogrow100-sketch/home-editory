@@ -923,6 +923,7 @@ function StudioPage() {
                             budgetRange: budget.label,
                             budgetAmount: budget.amount,
                           }));
+                          scrollToWizardSection("colour-palette-choice");
                         }}
                       />
                     ))}
@@ -949,7 +950,7 @@ function StudioPage() {
                   </div>
 
                   {options.palettes.length ? (
-                    <div className="mt-8">
+                    <div id="colour-palette-choice" className="mt-8 scroll-mt-20">
                       <h3 className="text-base sm:text-xl">Colour palette</h3>
                       <p className="mt-1 text-sm text-muted-foreground">Optional — sets the mood of your room.</p>
                       <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-4 sm:grid-cols-4 sm:gap-3">
