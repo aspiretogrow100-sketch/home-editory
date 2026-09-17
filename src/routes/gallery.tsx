@@ -230,10 +230,10 @@ function GalleryPage() {
       )}
 
       <Dialog open={Boolean(active)} onOpenChange={(open) => !open && setActive(null)}>
-        <DialogContent className="max-h-[85vh] w-[calc(100vw-2rem)] max-w-3xl overflow-x-hidden overflow-y-auto">
+        <DialogContent className="flex h-[92dvh] max-h-[92dvh] w-[calc(100vw-1rem)] max-w-5xl flex-col gap-0 overflow-hidden p-0 sm:w-[calc(100vw-2rem)]">
           {active ? (
             <>
-              <DialogHeader>
+              <DialogHeader className="shrink-0 px-4 pb-3 pt-5 pr-12 sm:px-6 sm:pb-4 sm:pt-6 sm:pr-14">
                 <DialogTitle>
                   {active.designStyle} {active.roomType}
                 </DialogTitle>
@@ -244,49 +244,53 @@ function GalleryPage() {
               </DialogHeader>
 
               {active.imageUrl ? (
-                <img
-                  src={active.imageUrl}
-                  alt={`${active.designStyle} ${active.roomType}`}
-                  className="block h-auto max-h-[65vh] w-full max-w-full rounded-lg bg-muted object-contain"
-                />
+                <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-muted sm:mx-6 sm:rounded-lg">
+                  <img
+                    src={active.imageUrl}
+                    alt={`${active.designStyle} ${active.roomType}`}
+                    className="block h-full w-full object-contain"
+                  />
+                </div>
               ) : null}
 
               {active.isUnlocked ? (
-                <ul className="divide-y divide-border">
-                  {active.products.map((product) => (
-                    <li
-                      key={product.asin ?? product.name}
-                      className="flex items-center justify-between gap-3 py-3"
-                    >
-                      {product.image ? (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          loading="lazy"
-                          className="size-12 shrink-0 rounded-full border border-border bg-background object-cover"
-                        />
-                      ) : (
-                        <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground">
-                          <ImageIcon className="size-4" />
-                        </span>
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">{product.name}</p>
-                        <p className="text-xs text-muted-foreground">{product.category}</p>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-3">
-                        <span className="text-sm font-semibold">{currency(product.price)}</span>
-                        <Button asChild size="sm" variant="outline">
-                          <a href={product.url} target="_blank" rel="noopener noreferrer nofollow">
-                            Buy <ExternalLink className="size-3.5" />
-                          </a>
-                        </Button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                <div className="max-h-[26dvh] shrink-0 overflow-y-auto overscroll-contain px-4 pb-4 sm:px-6 sm:pb-6">
+                  <ul className="divide-y divide-border">
+                    {active.products.map((product) => (
+                      <li
+                        key={product.asin ?? product.name}
+                        className="flex items-center justify-between gap-3 py-3"
+                      >
+                        {product.image ? (
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            loading="lazy"
+                            className="size-12 shrink-0 rounded-full border border-border bg-background object-cover"
+                          />
+                        ) : (
+                          <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground">
+                            <ImageIcon className="size-4" />
+                          </span>
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium">{product.name}</p>
+                          <p className="text-xs text-muted-foreground">{product.category}</p>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-3">
+                          <span className="text-sm font-semibold">{currency(product.price)}</span>
+                          <Button asChild size="sm" variant="outline">
+                            <a href={product.url} target="_blank" rel="noopener noreferrer nofollow">
+                              Buy <ExternalLink className="size-3.5" />
+                            </a>
+                          </Button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ) : (
-                <div className="space-y-4 rounded-lg border border-dashed border-border p-5 text-center">
+                <div className="mx-4 mb-4 mt-4 shrink-0 space-y-4 rounded-lg border border-dashed border-border p-5 text-center sm:mx-6 sm:mb-6">
                   <Lock className="mx-auto size-6 text-muted-foreground" />
                   <div>
                     <p className="font-display text-xl">{active.itemCount} items in this look</p>
