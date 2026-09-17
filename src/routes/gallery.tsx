@@ -230,7 +230,7 @@ function GalleryPage() {
       )}
 
       <Dialog open={Boolean(active)} onOpenChange={(open) => !open && setActive(null)}>
-        <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+        <DialogContent className="max-h-[85vh] w-[calc(100vw-2rem)] max-w-3xl overflow-x-hidden overflow-y-auto">
           {active ? (
             <>
               <DialogHeader>
@@ -247,7 +247,7 @@ function GalleryPage() {
                 <img
                   src={active.imageUrl}
                   alt={`${active.designStyle} ${active.roomType}`}
-                  className="aspect-[4/3] w-full rounded-lg object-cover"
+                  className="block h-auto max-h-[65vh] w-full max-w-full rounded-lg bg-muted object-contain"
                 />
               ) : null}
 
