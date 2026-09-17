@@ -338,6 +338,19 @@ function StudioPage() {
     }
   }
 
+  function scrollToWizardSection(id: string) {
+    window.requestAnimationFrame(() => {
+      const target = document.getElementById(id);
+      if (!target) return;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      target.scrollIntoView({
+        behavior: reduceMotion ? "auto" : "smooth",
+        block: "start",
+        inline: "nearest",
+      });
+    });
+  }
+
   async function handleRoomPhoto(file: File | undefined) {
     if (!file) return;
     try {
@@ -651,7 +664,10 @@ function StudioPage() {
                         label={room.label}
                         hint={room.hint ?? undefined}
                         selected={selection.roomType === room.label}
-                        onClick={() => setSelection((s) => ({ ...s, roomType: room.label }))}
+                        onClick={() => {
+                          setSelection((s) => ({ ...s, roomType: room.label }));
+                          scrollToWizardSection("room-photo-choice");
+                        }}
                       />
                     ))}
                   </div>
@@ -677,7 +693,10 @@ function StudioPage() {
                     </p>
                   </div>
 
-                  <div className="mt-5 rounded-xl border border-primary/25 bg-primary/5 p-3 sm:mt-6 sm:p-4">
+                  <div
+                    id="room-photo-choice"
+                    className="mt-5 scroll-mt-20 rounded-xl border border-primary/25 bg-primary/5 p-3 sm:mt-6 sm:p-4"
+                  >
                     <h3 className="text-base sm:text-lg">Use my room photo</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
                       Optional — upload a photo and we redesign that exact room, keeping your walls,
@@ -792,17 +811,20 @@ function StudioPage() {
                         label={size.label}
                         hint={size.hint ?? undefined}
                         selected={selection.roomSize === size.label}
-                        onClick={() =>
+                        onClick={() => {
                           setSelection((s) => ({
                             ...s,
                             roomSize: s.roomSize === size.label ? null : size.label,
-                          }))
-                        }
+                          }));
+                          scrollToWizardSection(
+                            designType === "Single Item" ? "exact-area-choice" : "room-fullness-choice",
+                          );
+                        }}
                       />
                     ))}
                   </div>
                   {options.densities.length && designType !== "Single Item" ? (
-                    <div className="mt-8">
+                    <div id="room-fullness-choice" className="mt-8 scroll-mt-20">
                       <h3 className="text-base sm:text-xl">How full should the room be?</h3>
                       <p className="mt-1 text-sm text-muted-foreground">
                         Sets how many products we shop for.
@@ -827,7 +849,7 @@ function StudioPage() {
                     </div>
                   ) : null}
 
-                  <div className="mt-5 max-w-xs space-y-1.5">
+                  <div id="exact-area-choice" className="mt-5 max-w-xs scroll-mt-20 space-y-1.5">
                     <Label htmlFor="sqft">Exact area (square feet)</Label>
                     <Input
                       id="sqft"
