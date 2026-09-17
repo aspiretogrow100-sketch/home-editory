@@ -107,5 +107,10 @@ export function usePaddle(options: {
     }
   };
 
-  return { paddle, ready: Boolean(paddle), error, close, lastTransaction };
+  /** Forget the previous checkout so a stale transaction is never reused. */
+  const reset = () => {
+    lastTransaction.current = null;
+  };
+
+  return { paddle, ready: Boolean(paddle), error, close, reset, lastTransaction };
 }
