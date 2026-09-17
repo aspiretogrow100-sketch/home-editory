@@ -34,7 +34,7 @@ export function Header() {
             alt="Interior AI Designer logo"
             width={1536}
             height={512}
-            className="h-12 w-auto shrink-0 object-contain"
+            className="h-auto w-44 shrink-0 object-contain"
           />
         </Link>
 
