@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { CreditCard, ShieldCheck } from "lucide-react";
@@ -58,10 +58,14 @@ export function CheckoutDialog({
   const info = infoQuery.data;
   const paddleEnabled = Boolean(info?.enabled && generationId);
 
+  const settledRef = useRef(false);
+
   const settle = useMutation({
     mutationFn: (transactionId: string) =>
       confirm({ data: { generationId: String(generationId), transactionId } }),
     onSuccess: async () => {
+      settledRef.current = true;
+      paddleClose();
       toast.success("Payment received — your Amazon links are unlocked.");
       await onPaid?.();
       onOpenChange(false);
@@ -69,11 +73,21 @@ export function CheckoutDialog({
     onError: (error: Error) => toast.error(error.message),
   });
 
-  const { ready, error } = usePaddle({
+  const {
+    ready,
+    error,
+    close: paddleClose,
+  } = usePaddle({
     enabled: paddleEnabled && open,
     environment: info?.environment ?? "sandbox",
     clientToken: info?.clientToken ?? null,
-    onCompleted: (transactionId) => settle.mutate(transactionId),
+    onCompleted: (transactionId) => {
+      if (!settledRef.current) settle.mutate(transactionId);
+    },
+    // Safety net: if the completed event never reaches us, verify on close.
+    onClosed: (transactionId) => {
+      if (transactionId && !settledRef.current) settle.mutate(transactionId);
+    },
   });
 
   const openPaddle = () => {
