@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 type PaddleCheckoutEvent = {
   name?: string;
-  data?: { transaction_id?: string; id?: string };
+  data?: { transaction_id?: string; id?: string; status?: string };
 };
 
 type PaddleInstance = {
@@ -48,18 +48,24 @@ function loadScript(): Promise<PaddleInstance> {
 /**
  * Loads Paddle.js on demand and keeps one initialized instance.
  * `onCompleted` receives the Paddle transaction id after a successful checkout.
+ * `onClosed` fires when the overlay is dismissed, with the last known transaction id
+ * (used as a safety net when the completed event never reaches us).
  */
 export function usePaddle(options: {
   enabled: boolean;
   environment: "sandbox" | "production";
   clientToken: string | null;
   onCompleted: (transactionId: string) => void;
+  onClosed?: (transactionId: string | null) => void;
 }) {
   const { enabled, environment, clientToken } = options;
   const [paddle, setPaddle] = useState<PaddleInstance | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const lastTransaction = useRef<string | null>(null);
   const completedRef = useRef(options.onCompleted);
   completedRef.current = options.onCompleted;
+  const closedRef = useRef(options.onClosed);
+  closedRef.current = options.onClosed;
 
   useEffect(() => {
     if (!enabled || !clientToken) return;
@@ -72,9 +78,13 @@ export function usePaddle(options: {
         instance.Initialize({
           token: clientToken,
           eventCallback: (event) => {
-            if (event.name === "checkout.completed") {
-              const id = event.data?.transaction_id ?? event.data?.id;
-              if (id) completedRef.current(id);
+            const id = event.data?.transaction_id ?? event.data?.id ?? null;
+            if (id) lastTransaction.current = id;
+            const name = event.name ?? "";
+            if (name === "checkout.completed" || name === "checkout.payment.completed") {
+              if (lastTransaction.current) completedRef.current(lastTransaction.current);
+            } else if (name === "checkout.closed") {
+              closedRef.current?.(lastTransaction.current);
             }
           },
         });
@@ -89,5 +99,13 @@ export function usePaddle(options: {
     };
   }, [enabled, clientToken, environment]);
 
-  return { paddle, ready: Boolean(paddle), error };
+  const close = () => {
+    try {
+      window.Paddle?.Checkout.close?.();
+    } catch {
+      /* overlay already gone */
+    }
+  };
+
+  return { paddle, ready: Boolean(paddle), error, close, lastTransaction };
 }
