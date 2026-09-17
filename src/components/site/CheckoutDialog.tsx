@@ -59,6 +59,7 @@ export function CheckoutDialog({
   const paddleEnabled = Boolean(info?.enabled && generationId);
 
   const settledRef = useRef(false);
+  const quietRef = useRef(false);
 
   const settle = useMutation({
     mutationFn: (transactionId: string) =>
@@ -70,23 +71,32 @@ export function CheckoutDialog({
       await onPaid?.();
       onOpenChange(false);
     },
-    onError: (error: Error) => toast.error(error.message),
+    onError: (error: Error) => {
+      // The close-time safety net can hit an unrelated/older payment; stay quiet then.
+      if (quietRef.current) return;
+      toast.error(error.message);
+    },
   });
 
   const {
     ready,
     error,
     close: paddleClose,
+    reset: resetPaddle,
   } = usePaddle({
     enabled: paddleEnabled && open,
     environment: info?.environment ?? "sandbox",
     clientToken: info?.clientToken ?? null,
     onCompleted: (transactionId) => {
-      if (!settledRef.current) settle.mutate(transactionId);
+      if (settledRef.current) return;
+      quietRef.current = false;
+      settle.mutate(transactionId);
     },
     // Safety net: if the completed event never reaches us, verify on close.
     onClosed: (transactionId) => {
-      if (transactionId && !settledRef.current) settle.mutate(transactionId);
+      if (!transactionId || settledRef.current) return;
+      quietRef.current = true;
+      settle.mutate(transactionId);
     },
   });
 
@@ -96,6 +106,9 @@ export function CheckoutDialog({
       toast.error("Checkout is still loading. Please try again in a second.");
       return;
     }
+    settledRef.current = false;
+    quietRef.current = false;
+    resetPaddle();
     paddle.Checkout.open({
       items: [{ priceId: info.priceId, quantity: 1 }],
       customData: { generation_id: generationId, user_id: user?.id ?? null },
