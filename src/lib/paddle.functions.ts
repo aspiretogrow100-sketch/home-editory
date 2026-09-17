@@ -121,11 +121,17 @@ export const savePaddleSettings = createServerFn({ method: "POST" })
 export const confirmPaddlePayment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { generationId: string; transactionId: string }) => {
-    if (!input?.generationId) throw new Error("Missing design reference.");
-    if (!input?.transactionId) throw new Error("Missing payment reference.");
+    const generationId = String(input?.generationId ?? "").trim();
+    const transactionId = String(input?.transactionId ?? "").trim();
+    if (!generationId || generationId === "null" || generationId === "undefined") {
+      throw new Error("Missing design reference.");
+    }
+    if (!transactionId || transactionId === "null" || transactionId === "undefined") {
+      throw new Error("Missing payment reference.");
+    }
     return {
-      generationId: String(input.generationId),
-      transactionId: String(input.transactionId),
+      generationId,
+      transactionId,
     };
   })
   .handler(async ({ data, context }) => {
@@ -152,7 +158,12 @@ export const confirmPaddlePayment = createServerFn({ method: "POST" })
 
     const paidFor = String(transaction.customData?.["generation_id"] ?? "");
     if (paidFor && paidFor !== data.generationId) {
-      throw new Error("This payment belongs to a different design.");
+      console.warn("[paddle] ignored stale checkout confirmation", {
+        requestedGenerationId: data.generationId,
+        paidGenerationId: paidFor,
+        transactionId: transaction.id,
+      });
+      return { unlocked: false, amount: 0, reason: "design_mismatch" as const };
     }
 
     const amount = transaction.total ?? (await unlockPriceFallback());
