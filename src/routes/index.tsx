@@ -7,6 +7,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   BadgePercent,
+  Clock3,
   Goal,
   Heart,
   ImagePlus,
@@ -282,6 +283,7 @@ function StudioPage() {
   const [saved, setSaved] = useState(false);
   const [communityRoom, setCommunityRoom] = useState("All rooms");
   const [roomPhoto, setRoomPhoto] = useState<string | null>(null);
+  const [generationProgress, setGenerationProgress] = useState(0);
   const stepTransition = useRef<{ scrollY: number; actionsTop: number | null; keepActions: boolean } | null>(null);
   const wizardActionsRef = useRef<HTMLDivElement>(null);
 
@@ -416,7 +418,12 @@ function StudioPage() {
 
   const generate = useMutation({
     mutationFn: (input: DesignSelection) => runGenerate({ data: input }),
+    onMutate: () => {
+      setGenerationProgress(7);
+      setResult(null);
+    },
     onSuccess: (data) => {
+      setGenerationProgress(100);
       setResult(data);
       setSaved(false);
       scrollToDesignOnMobile();
@@ -426,6 +433,27 @@ function StudioPage() {
     },
     onError: (error: Error) => toast.error(error.message),
   });
+
+  useEffect(() => {
+    if (!generate.isPending) return undefined;
+    const timer = window.setInterval(() => {
+      setGenerationProgress((current) => {
+        if (current >= 94) return current;
+        const remaining = 94 - current;
+        return Math.min(94, current + Math.max(0.35, remaining * 0.045));
+      });
+    }, 700);
+    return () => window.clearInterval(timer);
+  }, [generate.isPending]);
+
+  const generationStatus =
+    generationProgress < 32
+      ? "Finding products for your budget"
+      : generationProgress < 66
+        ? "Styling your room with exact matches"
+        : generationProgress < 90
+          ? "Rendering light, colour and detail"
+          : "Adding the finishing touches";
 
   const runSaveRoom = useServerFn(saveRoom);
   const save = useMutation({
@@ -1046,11 +1074,34 @@ function StudioPage() {
 
 
           {generate.isPending ? (
-            <div className="mt-3">
-              <Skeleton className="aspect-[4/3] w-full rounded-lg" />
-              <p className="mt-3 text-center text-xs text-muted-foreground">
-                Styling your {selection.designStyle?.toLowerCase()} {selection.roomType?.toLowerCase()}…
-              </p>
+            <div className="mt-3 overflow-hidden rounded-lg border border-primary/20 bg-primary/5">
+              <div className="flex aspect-[4/3] w-full flex-col items-center justify-center px-5 text-center">
+                <span className="flex size-11 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Sparkles className="size-5 animate-pulse" />
+                </span>
+                <p className="mt-4 font-display text-xl leading-tight">
+                  Creating your {selection.roomType?.toLowerCase()}
+                </p>
+                <p className="mt-1.5 min-h-5 text-xs text-muted-foreground" aria-live="polite">
+                  {generationStatus}
+                </p>
+                <div className="mt-5 w-full max-w-sm">
+                  <div className="mb-2 flex items-center justify-between gap-3 text-xs">
+                    <span className="flex items-center gap-1.5 font-medium text-foreground">
+                      <Clock3 className="size-3.5 text-primary" /> Designing your room
+                    </span>
+                    <span className="tabular-nums text-muted-foreground">
+                      {Math.round(generationProgress)}%
+                    </span>
+                  </div>
+                  <progress
+                    className="design-progress block h-2.5 w-full overflow-hidden rounded-full"
+                    value={generationProgress}
+                    max="100"
+                    aria-label="Design generation progress"
+                  />
+                </div>
+              </div>
             </div>
           ) : null}
 
