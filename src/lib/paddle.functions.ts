@@ -140,7 +140,12 @@ export const confirmPaddlePayment = createServerFn({ method: "POST" })
     const cfg = await loadPaddleConfig();
     if (!cfg.apiKey) throw new Error("Payments are not configured yet.");
 
-    const transaction = await fetchPaddleTransaction(data.transactionId, cfg);
+    let transaction = await fetchPaddleTransaction(data.transactionId, cfg);
+    // Paddle can take a moment to settle; give it two more looks before giving up.
+    for (let attempt = 0; attempt < 2 && !isPaidStatus(transaction.status); attempt += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      transaction = await fetchPaddleTransaction(data.transactionId, cfg);
+    }
     if (!isPaidStatus(transaction.status)) {
       throw new Error("This payment is not complete yet. Please try again in a moment.");
     }
