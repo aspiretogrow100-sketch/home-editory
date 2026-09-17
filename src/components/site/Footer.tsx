@@ -80,7 +80,7 @@ export function Footer() {
               width={1536}
               height={512}
               loading="lazy"
-              className="h-12 w-auto object-contain"
+              className="h-auto w-44 object-contain"
             />
           </div>
           <p className="mt-2 max-w-xs text-sm text-muted-foreground">
