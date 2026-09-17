@@ -91,7 +91,8 @@ export async function fetchPaddleTransaction(
 }
 
 export function isPaidStatus(status: string): boolean {
-  return status === "completed" || status === "paid";
+  // Paddle briefly reports "billed" right after a card checkout succeeds.
+  return status === "completed" || status === "paid" || status === "billed";
 }
 
 /** Paddle-Signature: ts=<unix>;h1=<hmac sha256 of `${ts}:${rawBody}`> */
