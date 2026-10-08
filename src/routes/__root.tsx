@@ -38,7 +38,8 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: { error: unknown; reset: () => void }) {
+  const message = error instanceof Error ? error.message : String(error);
   console.error(error);
   const router = useRouter();
   useEffect(() => {
