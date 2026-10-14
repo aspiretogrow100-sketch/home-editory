@@ -161,7 +161,7 @@ export function CheckoutDialog({
               <ShieldCheck className="size-4 shrink-0" />
               Secure checkout — we never see your card details.
             </p>
-            {whopEnabled && paddleEnabled && paddleError ? (
+            {whopEnabled && paddleEnabled && error ? (
               <p className="text-xs text-destructive">
                 Paddle could not load. Use Whop or refresh and try again.
               </p>
