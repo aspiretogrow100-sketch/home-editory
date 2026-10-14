@@ -161,26 +161,32 @@ export function CheckoutDialog({
               <ShieldCheck className="size-4 shrink-0" />
               Secure checkout — we never see your card details.
             </p>
-            {paddleEnabled && error ? (
+            {whopEnabled && paddleEnabled && paddleError ? (
               <p className="text-xs text-destructive">
-                Checkout could not load. Please refresh and try again.
+                Paddle could not load. Use Whop or refresh and try again.
               </p>
             ) : null}
-            {paddleEnabled ? (
-              <Button className="w-full" onClick={openPaddle} disabled={processing || !ready}>
-                <CreditCard className="size-4" />
-                {processing ? "Confirming…" : ready ? `Pay ${label} with Paddle` : "Loading checkout…"}
-              </Button>
-            ) : null}
             {whopEnabled ? (
-              <Button
-                className="w-full"
-                variant={paddleEnabled ? "outline" : "default"}
-                onClick={() => whop.mutate()}
-                disabled={whop.isPending || processing}
-              >
+              <Button className="w-full" onClick={() => whop.mutate()} disabled={whop.isPending || processing}>
                 <CreditCard className="size-4" />
                 {whop.isPending ? "Opening Whop…" : `Pay ${label} with Whop`}
+              </Button>
+            ) : null}
+            {paddleEnabled ? (
+              <Button
+                className="w-full"
+                variant={whopEnabled ? "outline" : "default"}
+                onClick={openPaddle}
+                disabled={processing || !ready}
+              >
+                <CreditCard className="size-4" />
+                {processing
+                  ? "Confirming…"
+                  : ready
+                    ? whopEnabled
+                      ? `Or pay ${label} with card (Paddle)`
+                      : `Pay ${label} with Paddle`
+                    : "Loading checkout…"}
               </Button>
             ) : null}
           </div>
