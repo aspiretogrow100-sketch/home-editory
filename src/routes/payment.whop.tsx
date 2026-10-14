@@ -6,7 +6,12 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { confirmWhopPayment } from "@/lib/whop.functions";
 
-type Search = { gen?: string; payment?: string; payment_id?: string; status?: string };
+type Search = {
+  gen?: string | undefined;
+  payment?: string | undefined;
+  payment_id?: string | undefined;
+  status?: string | undefined;
+};
 
 export const Route = createFileRoute("/payment/whop")({
   validateSearch: (s: Record<string, unknown>): Search => ({
