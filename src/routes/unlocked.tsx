@@ -51,7 +51,7 @@ function UnlockedPage() {
   if (!user)
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
-        <h1 className="text-3xl">Unlocked</h1>
+        <h1 className="text-3xl">My Unlocked</h1>
         <p className="mt-2 text-sm text-muted-foreground">Sign in to see the designs you unlocked.</p>
         <Button asChild className="mt-6"><Link to="/auth">Sign in</Link></Button>
       </div>
@@ -60,7 +60,7 @@ function UnlockedPage() {
   const items = query.data ?? [];
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-14">
-      <h1 className="text-4xl">Unlocked</h1>
+      <h1 className="text-4xl">My Unlocked</h1>
       <p className="mt-2 text-sm text-muted-foreground">Designs you paid to unlock, with their shopping links.</p>
       <div className="mt-8">
         {query.isLoading ? (
