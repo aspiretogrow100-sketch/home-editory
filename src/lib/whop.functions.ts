@@ -104,7 +104,7 @@ export const createWhopCheckout = createServerFn({ method: "POST" })
  */
 export const confirmWhopPayment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { paymentId?: string; generationId: string }) => {
+  .inputValidator((input: { paymentId?: string | undefined; generationId: string }) => {
     const paymentId = String(input?.paymentId ?? "").trim().slice(0, 100);
     const generationId = String(input?.generationId ?? "").trim();
     if (!generationId) throw new Error("Missing design reference.");
