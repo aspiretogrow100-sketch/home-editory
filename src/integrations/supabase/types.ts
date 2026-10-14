@@ -345,6 +345,30 @@ export type Database = {
         }
         Relationships: []
       }
+      whop_settings: {
+        Row: {
+          api_key: string | null
+          enabled: boolean
+          id: number
+          plan_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          api_key?: string | null
+          enabled?: boolean
+          id?: number
+          plan_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          api_key?: string | null
+          enabled?: boolean
+          id?: number
+          plan_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       wizard_options: {
         Row: {
           amount: number | null
