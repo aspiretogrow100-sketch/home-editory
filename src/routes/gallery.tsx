@@ -254,27 +254,6 @@ function GalleryPage() {
               {active.isUnlocked ? (
                 <ProductGrid products={active.products} />
               ) : (
-                          <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground">
-                            <ImageIcon className="size-4" />
-                          </span>
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium">{product.name}</p>
-                          <p className="text-xs text-muted-foreground">{product.category}</p>
-                        </div>
-                        <div className="flex shrink-0 items-center gap-3">
-                          <span className="text-sm font-semibold">{currency(product.price)}</span>
-                          <Button asChild size="sm" variant="outline">
-                            <a href={product.url} target="_blank" rel="noopener noreferrer nofollow">
-                              Buy <ExternalLink className="size-3.5" />
-                            </a>
-                          </Button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : (
                 <div className="mx-4 mb-4 mt-4 shrink-0 space-y-4 rounded-lg border border-dashed border-border p-5 text-center sm:mx-6 sm:mb-6">
                   <Lock className="mx-auto size-6 text-muted-foreground" />
                   <div>
