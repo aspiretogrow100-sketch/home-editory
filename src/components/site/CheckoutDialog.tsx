@@ -18,6 +18,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePaddle } from "@/hooks/usePaddle";
 import { currency } from "@/lib/decor";
 import { confirmPaddlePayment, getPaddleCheckoutInfo } from "@/lib/paddle.functions";
+import { createWhopCheckout, getWhopCheckoutInfo } from "@/lib/whop.functions";
 
 type Props = {
   open: boolean;
@@ -57,6 +58,22 @@ export function CheckoutDialog({
 
   const info = infoQuery.data;
   const paddleEnabled = Boolean(info?.enabled && generationId);
+
+  const loadWhopInfo = useServerFn(getWhopCheckoutInfo);
+  const startWhop = useServerFn(createWhopCheckout);
+  const whopInfo = useQuery({
+    queryKey: ["whop-checkout-info"],
+    queryFn: () => loadWhopInfo(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const whopEnabled = Boolean(whopInfo.data?.enabled && generationId);
+  const whop = useMutation({
+    mutationFn: () => startWhop({ data: { generationId: generationId ?? "" } }),
+    onSuccess: ({ url }) => {
+      window.location.href = url;
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
   const settledRef = useRef(false);
   const quietRef = useRef(false);
@@ -138,22 +155,34 @@ export function CheckoutDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {paddleEnabled ? (
+        {paddleEnabled || whopEnabled ? (
           <div className="space-y-3">
             <p className="flex items-center gap-2 rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
               <ShieldCheck className="size-4 shrink-0" />
-              Secure checkout by Paddle. Cards, PayPal and Apple Pay supported — we never see your
-              card details.
+              Secure checkout — we never see your card details.
             </p>
-            {error ? (
+            {paddleEnabled && error ? (
               <p className="text-xs text-destructive">
                 Checkout could not load. Please refresh and try again.
               </p>
             ) : null}
-            <Button className="w-full" onClick={openPaddle} disabled={processing || !ready}>
-              <CreditCard className="size-4" />
-              {processing ? "Confirming…" : ready ? `Pay ${label}` : "Loading checkout…"}
-            </Button>
+            {paddleEnabled ? (
+              <Button className="w-full" onClick={openPaddle} disabled={processing || !ready}>
+                <CreditCard className="size-4" />
+                {processing ? "Confirming…" : ready ? `Pay ${label} with Paddle` : "Loading checkout…"}
+              </Button>
+            ) : null}
+            {whopEnabled ? (
+              <Button
+                className="w-full"
+                variant={paddleEnabled ? "outline" : "default"}
+                onClick={() => whop.mutate()}
+                disabled={whop.isPending || processing}
+              >
+                <CreditCard className="size-4" />
+                {whop.isPending ? "Opening Whop…" : `Pay ${label} with Whop`}
+              </Button>
+            ) : null}
           </div>
         ) : (
           <>

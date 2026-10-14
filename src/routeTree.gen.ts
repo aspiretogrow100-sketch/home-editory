@@ -20,6 +20,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RefundRouteImport } from './routes/refund'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as PaymentWhopRouteImport } from './routes/payment.whop'
 import { Route as ApiPublicPaddleWebhookRouteImport } from './routes/api/public/paddle-webhook'
 
 const IndexRoute = IndexRouteImport.update({
@@ -77,6 +78,11 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PaymentWhopRoute = PaymentWhopRouteImport.update({
+  id: '/payment/whop',
+  path: '/payment/whop',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPaddleWebhookRoute = ApiPublicPaddleWebhookRouteImport.update({
   id: '/api/public/paddle-webhook',
   path: '/api/public/paddle-webhook',
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/refund': typeof RefundRoute
   '/saved': typeof SavedRoute
   '/terms': typeof TermsRoute
+  '/payment/whop': typeof PaymentWhopRoute
   '/api/public/paddle-webhook': typeof ApiPublicPaddleWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/refund': typeof RefundRoute
   '/saved': typeof SavedRoute
   '/terms': typeof TermsRoute
+  '/payment/whop': typeof PaymentWhopRoute
   '/api/public/paddle-webhook': typeof ApiPublicPaddleWebhookRoute
 }
 export interface FileRoutesById {
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/refund': typeof RefundRoute
   '/saved': typeof SavedRoute
   '/terms': typeof TermsRoute
+  '/payment/whop': typeof PaymentWhopRoute
   '/api/public/paddle-webhook': typeof ApiPublicPaddleWebhookRoute
 }
 export interface FileRouteTypes {
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/refund'
     | '/saved'
     | '/terms'
+    | '/payment/whop'
     | '/api/public/paddle-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/refund'
     | '/saved'
     | '/terms'
+    | '/payment/whop'
     | '/api/public/paddle-webhook'
   id:
     | '__root__'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/refund'
     | '/saved'
     | '/terms'
+    | '/payment/whop'
     | '/api/public/paddle-webhook'
   fileRoutesById: FileRoutesById
 }
@@ -183,6 +195,7 @@ export interface RootRouteChildren {
   RefundRoute: typeof RefundRoute
   SavedRoute: typeof SavedRoute
   TermsRoute: typeof TermsRoute
+  PaymentWhopRoute: typeof PaymentWhopRoute
   ApiPublicPaddleWebhookRoute: typeof ApiPublicPaddleWebhookRoute
 }
 
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/payment/whop': {
+      id: '/payment/whop'
+      path: '/payment/whop'
+      fullPath: '/payment/whop'
+      preLoaderRoute: typeof PaymentWhopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/paddle-webhook': {
       id: '/api/public/paddle-webhook'
       path: '/api/public/paddle-webhook'
@@ -287,6 +307,7 @@ const rootRouteChildren: RootRouteChildren = {
   RefundRoute: RefundRoute,
   SavedRoute: SavedRoute,
   TermsRoute: TermsRoute,
+  PaymentWhopRoute: PaymentWhopRoute,
   ApiPublicPaddleWebhookRoute: ApiPublicPaddleWebhookRoute,
 }
 export const routeTree = rootRouteImport

@@ -42,6 +42,7 @@ import {
   testAmazonConnection,
 } from "@/lib/decor.functions";
 import { getPaddleSettings, savePaddleSettings } from "@/lib/paddle.functions";
+import { getWhopSettings, saveWhopSettings } from "@/lib/whop.functions";
 
 function AiSettingsPanel() {
   const queryClient = useQueryClient();
@@ -309,6 +310,82 @@ function PaddlePanel() {
   );
 }
 
+function WhopPanel() {
+  const load = useServerFn(getWhopSettings);
+  const save = useServerFn(saveWhopSettings);
+  const queryClient = useQueryClient();
+  const settings = useQuery({ queryKey: ["whop-settings"], queryFn: () => load() });
+  const [form, setForm] = useState({ enabled: false, planId: "", apiKey: "" });
+
+  useEffect(() => {
+    if (settings.data) {
+      setForm((f) => ({ ...f, enabled: settings.data.enabled, planId: settings.data.planId ?? "" }));
+    }
+  }, [settings.data]);
+
+  const saveMutation = useMutation({
+    mutationFn: () => save({ data: form }),
+    onSuccess: () => {
+      toast.success("Whop settings saved.");
+      setForm((f) => ({ ...f, apiKey: "" }));
+      queryClient.invalidateQueries({ queryKey: ["whop-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["whop-checkout-info"] });
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  return (
+    <div className="surface-card mt-4 max-w-2xl p-6">
+      <h2 className="text-2xl">Whop payments</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Turn on to show a "Pay with Whop" button next to Paddle. Needs your Whop API key and the plan
+        ID of a one-time unlock plan.
+      </p>
+      <div className="mt-6 space-y-4">
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.enabled}
+            onChange={(e) => setForm({ ...form, enabled: e.target.checked })}
+          />
+          Show Whop at checkout
+        </label>
+        <div className="space-y-1.5">
+          <Label htmlFor="whop-plan">Plan ID</Label>
+          <Input
+            id="whop-plan"
+            placeholder="plan_xxxxxxxxxxxxx"
+            value={form.planId}
+            onChange={(e) => setForm({ ...form, planId: e.target.value })}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="whop-api">API key</Label>
+          <Input
+            id="whop-api"
+            type="password"
+            autoComplete="off"
+            placeholder={settings.data?.apiKeyHint ?? "Company API key"}
+            value={form.apiKey}
+            onChange={(e) => setForm({ ...form, apiKey: e.target.value })}
+          />
+          <p className="text-xs text-muted-foreground">
+            Leave empty to keep the saved key. Used only on the server to create checkouts and verify
+            payments.
+          </p>
+        </div>
+      </div>
+      <Button
+        className="mt-6"
+        onClick={() => saveMutation.mutate()}
+        disabled={saveMutation.isPending || settings.isLoading}
+      >
+        {saveMutation.isPending ? "Saving..." : "Save changes"}
+      </Button>
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
@@ -526,6 +603,7 @@ function AdminPage() {
 
         <TabsContent value="paddle">
           <PaddlePanel />
+          <WhopPanel />
         </TabsContent>
 
         <TabsContent value="amazon">
