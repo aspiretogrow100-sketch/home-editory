@@ -78,7 +78,7 @@ function WhopReturn() {
             </Button>
           ) : null}
           <Button asChild variant="outline">
-            <Link to="/unlocked" search={{}}>All unlocked</Link>
+            <Link to="/unlocked" search={{}}>My Unlocked</Link>
           </Button>
           <Button asChild variant="outline">
             <Link to="/gallery">Gallery</Link>

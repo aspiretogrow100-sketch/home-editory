@@ -71,7 +71,7 @@ export function Header() {
                   <Heart className="size-4" /> My Saved
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => navigate({ to: "/unlocked" })}>
-                  <Unlock className="size-4" /> Unlocked
+                  <Unlock className="size-4" /> My Unlocked
                 </DropdownMenuItem>
                 {isAdmin ? (
                   <DropdownMenuItem onSelect={() => navigate({ to: "/admin" })}>
