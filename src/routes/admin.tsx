@@ -191,6 +191,7 @@ function PaddlePanel() {
   });
 
   const [form, setForm] = useState({
+    enabled: false,
     environment: "sandbox" as "sandbox" | "production",
     clientToken: "",
     priceId: "",
@@ -202,6 +203,7 @@ function PaddlePanel() {
     if (settings.data) {
       setForm((f) => ({
         ...f,
+        enabled: settings.data.enabled,
         environment: settings.data.environment,
         clientToken: settings.data.clientToken ?? "",
         priceId: settings.data.priceId ?? "",
@@ -229,6 +231,14 @@ function PaddlePanel() {
       </p>
 
       <div className="mt-6 space-y-4">
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.enabled}
+            onChange={(e) => setForm({ ...form, enabled: e.target.checked })}
+          />
+          Show Paddle at checkout
+        </label>
         <div className="space-y-2">
           <Label>Mode</Label>
           <RadioGroup

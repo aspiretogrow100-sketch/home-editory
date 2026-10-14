@@ -9,6 +9,7 @@ export type PaddleConfig = {
   apiKey: string | null;
   priceId: string | null;
   webhookSecret: string | null;
+  showAtCheckout: boolean;
 };
 
 export const EMPTY_PADDLE_CONFIG: PaddleConfig = {
@@ -17,6 +18,7 @@ export const EMPTY_PADDLE_CONFIG: PaddleConfig = {
   apiKey: null,
   priceId: null,
   webhookSecret: null,
+  showAtCheckout: false,
 };
 
 function clean(value: string | null | undefined): string | null {
@@ -27,7 +29,7 @@ function clean(value: string | null | undefined): string | null {
 export async function loadPaddleConfig(): Promise<PaddleConfig> {
   const { data, error } = await supabaseAdmin
     .from("paddle_settings")
-    .select("environment, client_token, api_key, price_id, webhook_secret")
+    .select("environment, client_token, api_key, price_id, webhook_secret, enabled")
     .eq("id", 1)
     .maybeSingle();
 
@@ -40,6 +42,7 @@ export async function loadPaddleConfig(): Promise<PaddleConfig> {
     apiKey: clean(data.api_key),
     priceId: clean(data.price_id),
     webhookSecret: clean(data.webhook_secret),
+    showAtCheckout: Boolean(data.enabled),
   };
 }
 
