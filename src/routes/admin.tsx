@@ -338,8 +338,8 @@ function WhopPanel() {
     <div className="surface-card mt-4 max-w-2xl p-6">
       <h2 className="text-2xl">Whop payments</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Turn on to show a "Pay with Whop" button next to Paddle. Needs your Whop API key and the plan
-        ID of a one-time unlock plan.
+        Whop is the main checkout — buyers pay here first. Turn it on and add your Whop API key plus
+        the plan ID of a one-time unlock plan. Paddle stays as a backup payment option.
       </p>
       <div className="mt-6 space-y-4">
         <label className="flex items-center gap-2 text-sm">
