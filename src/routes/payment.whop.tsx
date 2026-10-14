@@ -71,9 +71,14 @@ function WhopReturn() {
       </h1>
       <p className="mt-3 text-muted-foreground">{!user && !loading ? "Please sign in to finish unlocking." : message}</p>
       {state !== "working" ? (
-        <div className="mt-6 flex gap-3">
-          <Button asChild>
-            <Link to="/saved">My designs</Link>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          {state === "done" ? (
+            <Button asChild>
+              <Link to="/unlocked" search={{ gen: search.gen }}>View my unlocked design</Link>
+            </Button>
+          ) : null}
+          <Button asChild variant="outline">
+            <Link to="/unlocked" search={{}}>All unlocked</Link>
           </Button>
           <Button asChild variant="outline">
             <Link to="/gallery">Gallery</Link>
