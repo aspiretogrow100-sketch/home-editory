@@ -13,6 +13,7 @@ export type PaddleCheckoutInfo = {
 };
 
 export type PaddleSettingsView = {
+  enabled: boolean;
   environment: "sandbox" | "production";
   clientToken: string | null;
   priceId: string | null;
@@ -46,7 +47,7 @@ export const getPaddleCheckoutInfo = createServerFn({ method: "GET" }).handler(
     const { loadPaddleConfig } = await import("./paddle.server");
     const cfg = await loadPaddleConfig();
     return {
-      enabled: Boolean(cfg.clientToken && cfg.priceId && cfg.apiKey),
+      enabled: Boolean(cfg.showAtCheckout && cfg.clientToken && cfg.priceId && cfg.apiKey),
       environment: cfg.environment,
       clientToken: cfg.clientToken,
       priceId: cfg.priceId,
@@ -64,6 +65,7 @@ export const getPaddleSettings = createServerFn({ method: "POST" })
     const proto = host.startsWith("localhost") ? "http" : "https";
     const origin = host ? `${proto}://${host}` : "";
     return {
+      enabled: cfg.showAtCheckout,
       environment: cfg.environment,
       clientToken: cfg.clientToken,
       priceId: cfg.priceId,
@@ -77,6 +79,7 @@ export const savePaddleSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
     (input: {
+      enabled?: boolean;
       environment?: string;
       clientToken?: string;
       priceId?: string;
@@ -88,6 +91,7 @@ export const savePaddleSettings = createServerFn({ method: "POST" })
         return s ? s.slice(0, 400) : null; // empty = keep the saved value
       };
       return {
+        enabled: Boolean(input?.enabled),
         environment: input?.environment === "production" ? "production" : "sandbox",
         clientToken: clean(input?.clientToken),
         priceId: clean(input?.priceId),
@@ -100,7 +104,7 @@ export const savePaddleSettings = createServerFn({ method: "POST" })
     await assertAdmin(context as never);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const patch: Record<string, unknown> = { id: 1, environment: data.environment };
+    const patch: Record<string, unknown> = { id: 1, environment: data.environment, enabled: data.enabled };
     if (data.clientToken) patch["client_token"] = data.clientToken;
     if (data.priceId) patch["price_id"] = data.priceId;
     if (data.apiKey) patch["api_key"] = data.apiKey;
