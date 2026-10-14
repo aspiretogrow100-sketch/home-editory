@@ -2,9 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { ExternalLink, Image as ImageIcon, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import { toast } from "sonner";
 
+import { ProductGrid } from "@/components/site/ProductGrid";
 import { AdSlot } from "@/components/site/AdSlot";
 import { CheckoutDialog } from "@/components/site/CheckoutDialog";
 import { Badge } from "@/components/ui/badge";
@@ -243,52 +244,15 @@ function GalleryPage() {
                 </DialogDescription>
               </DialogHeader>
 
+              <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-4 pb-6 sm:px-6">
               {active.imageUrl ? (
-                <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-muted sm:mx-6 sm:rounded-lg">
-                  <img
-                    src={active.imageUrl}
-                    alt={`${active.designStyle} ${active.roomType}`}
-                    className="block h-full w-full object-contain"
-                  />
+                <div className="mx-auto mb-7 flex h-[30dvh] min-h-36 max-h-72 w-full max-w-2xl items-center justify-center">
+                  <img src={active.imageUrl} alt={`${active.designStyle} ${active.roomType}`} className="block h-full w-full object-contain" />
                 </div>
               ) : null}
 
               {active.isUnlocked ? (
-                <div className="max-h-[26dvh] shrink-0 overflow-y-auto overscroll-contain px-4 pb-4 sm:px-6 sm:pb-6">
-                  <ul className="divide-y divide-border">
-                    {active.products.map((product) => (
-                      <li
-                        key={product.asin ?? product.name}
-                        className="flex items-center justify-between gap-3 py-3"
-                      >
-                        {product.image ? (
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            loading="lazy"
-                            className="size-12 shrink-0 rounded-full border border-border bg-background object-cover"
-                          />
-                        ) : (
-                          <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground">
-                            <ImageIcon className="size-4" />
-                          </span>
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium">{product.name}</p>
-                          <p className="text-xs text-muted-foreground">{product.category}</p>
-                        </div>
-                        <div className="flex shrink-0 items-center gap-3">
-                          <span className="text-sm font-semibold">{currency(product.price)}</span>
-                          <Button asChild size="sm" variant="outline">
-                            <a href={product.url} target="_blank" rel="noopener noreferrer nofollow">
-                              Buy <ExternalLink className="size-3.5" />
-                            </a>
-                          </Button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <ProductGrid products={active.products} />
               ) : (
                 <div className="mx-4 mb-4 mt-4 shrink-0 space-y-4 rounded-lg border border-dashed border-border p-5 text-center sm:mx-6 sm:mb-6">
                   <Lock className="mx-auto size-6 text-muted-foreground" />
@@ -309,6 +273,7 @@ function GalleryPage() {
                   )}
                 </div>
               )}
+              </div>
             </>
           ) : null}
         </DialogContent>

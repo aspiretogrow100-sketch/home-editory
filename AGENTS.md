@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Use the shared ProductGrid for studio results and design-detail dialogs so product imagery and purchase controls stay consistent across views.

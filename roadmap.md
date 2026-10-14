@@ -1,6 +1,7 @@
 # Roadmap
 
 ## Done
+- Generated design presentation: full room image above a shared product-image grid in Studio, Gallery details and My Unlocked.
 - Unlock card: totals + Unlock button now render in normal flow below the blurred list — visible for any product count (verified via Playwright screenshot).
 - ScraperAPI multi-key failover: paste several keys comma-separated in Admin → Amazon settings; on 401/402/403/429 or quota-style errors the next key is tried automatically.
 

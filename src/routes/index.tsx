@@ -1111,7 +1111,7 @@ function StudioPage() {
                 <img
                   src={result.imageUrl}
                   alt={`AI generated ${selection.designStyle} ${selection.roomType} interior`}
-                  className="aspect-[4/3] w-full object-cover"
+                  className="max-h-72 w-full object-contain"
                 />
                 <figcaption className="flex flex-wrap items-center gap-2 px-4 py-3 text-xs text-muted-foreground">
                   <Badge variant="secondary">{selection.roomType}</Badge>
