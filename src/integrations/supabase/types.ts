@@ -192,6 +192,7 @@ export type Database = {
         Row: {
           api_key: string | null
           client_token: string | null
+          enabled: boolean
           environment: string
           id: number
           price_id: string | null
@@ -201,6 +202,7 @@ export type Database = {
         Insert: {
           api_key?: string | null
           client_token?: string | null
+          enabled?: boolean
           environment?: string
           id?: number
           price_id?: string | null
@@ -210,6 +212,7 @@ export type Database = {
         Update: {
           api_key?: string | null
           client_token?: string | null
+          enabled?: boolean
           environment?: string
           id?: number
           price_id?: string | null

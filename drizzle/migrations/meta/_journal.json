@@ -8,6 +8,13 @@
       "when": 1791969802729,
       "tag": "0000_whop_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791972996342,
+      "tag": "0001_paddle_enabled_toggle",
+      "breakpoints": true
     }
   ]
 }
