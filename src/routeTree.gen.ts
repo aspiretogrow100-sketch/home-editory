@@ -20,6 +20,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RefundRouteImport } from './routes/refund'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as UnlockedRouteImport } from './routes/unlocked'
 import { Route as PaymentWhopRouteImport } from './routes/payment.whop'
 import { Route as ApiPublicPaddleWebhookRouteImport } from './routes/api/public/paddle-webhook'
 
@@ -78,6 +79,11 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UnlockedRoute = UnlockedRouteImport.update({
+  id: '/unlocked',
+  path: '/unlocked',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PaymentWhopRoute = PaymentWhopRouteImport.update({
   id: '/payment/whop',
   path: '/payment/whop',
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/refund': typeof RefundRoute
   '/saved': typeof SavedRoute
   '/terms': typeof TermsRoute
+  '/unlocked': typeof UnlockedRoute
   '/payment/whop': typeof PaymentWhopRoute
   '/api/public/paddle-webhook': typeof ApiPublicPaddleWebhookRoute
 }
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/refund': typeof RefundRoute
   '/saved': typeof SavedRoute
   '/terms': typeof TermsRoute
+  '/unlocked': typeof UnlockedRoute
   '/payment/whop': typeof PaymentWhopRoute
   '/api/public/paddle-webhook': typeof ApiPublicPaddleWebhookRoute
 }
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/refund': typeof RefundRoute
   '/saved': typeof SavedRoute
   '/terms': typeof TermsRoute
+  '/unlocked': typeof UnlockedRoute
   '/payment/whop': typeof PaymentWhopRoute
   '/api/public/paddle-webhook': typeof ApiPublicPaddleWebhookRoute
 }
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
     | '/refund'
     | '/saved'
     | '/terms'
+    | '/unlocked'
     | '/payment/whop'
     | '/api/public/paddle-webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -164,6 +174,7 @@ export interface FileRouteTypes {
     | '/refund'
     | '/saved'
     | '/terms'
+    | '/unlocked'
     | '/payment/whop'
     | '/api/public/paddle-webhook'
   id:
@@ -179,6 +190,7 @@ export interface FileRouteTypes {
     | '/refund'
     | '/saved'
     | '/terms'
+    | '/unlocked'
     | '/payment/whop'
     | '/api/public/paddle-webhook'
   fileRoutesById: FileRoutesById
@@ -195,6 +207,7 @@ export interface RootRouteChildren {
   RefundRoute: typeof RefundRoute
   SavedRoute: typeof SavedRoute
   TermsRoute: typeof TermsRoute
+  UnlockedRoute: typeof UnlockedRoute
   PaymentWhopRoute: typeof PaymentWhopRoute
   ApiPublicPaddleWebhookRoute: typeof ApiPublicPaddleWebhookRoute
 }
@@ -278,6 +291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/unlocked': {
+      id: '/unlocked'
+      path: '/unlocked'
+      fullPath: '/unlocked'
+      preLoaderRoute: typeof UnlockedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/payment/whop': {
       id: '/payment/whop'
       path: '/payment/whop'
@@ -307,6 +327,7 @@ const rootRouteChildren: RootRouteChildren = {
   RefundRoute: RefundRoute,
   SavedRoute: SavedRoute,
   TermsRoute: TermsRoute,
+  UnlockedRoute: UnlockedRoute,
   PaymentWhopRoute: PaymentWhopRoute,
   ApiPublicPaddleWebhookRoute: ApiPublicPaddleWebhookRoute,
 }

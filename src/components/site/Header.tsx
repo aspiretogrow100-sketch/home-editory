@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, Shield, Heart, User as UserIcon } from "lucide-react";
+import { LogOut, Shield, Heart, Unlock, User as UserIcon } from "lucide-react";
 
 import logoFull from "@/assets/logo-full.png";
 
@@ -69,6 +69,9 @@ export function Header() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={() => navigate({ to: "/saved" })}>
                   <Heart className="size-4" /> My Saved
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => navigate({ to: "/unlocked" })}>
+                  <Unlock className="size-4" /> Unlocked
                 </DropdownMenuItem>
                 {isAdmin ? (
                   <DropdownMenuItem onSelect={() => navigate({ to: "/admin" })}>

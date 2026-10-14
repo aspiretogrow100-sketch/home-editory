@@ -121,3 +121,52 @@ export const deleteSavedRoom = createServerFn({ method: "POST" })
     if (error) throw new Error("Could not remove this saved design.");
     return { deleted: true };
   });
+
+export type UnlockedDesign = {
+  generationId: string;
+  roomType: string;
+  style: string;
+  budget: string;
+  imageUrl: string | null;
+  products: AmazonProduct[];
+  unlockedAt: string;
+};
+
+/** Designs the signed-in user personally paid to unlock. */
+export const listUnlockedDesigns = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<UnlockedDesign[]> => {
+    const { supabase, userId } = context;
+    const { data: txs } = await supabase
+      .from("transactions")
+      .select("generation_id, created_at")
+      .eq("user_id", userId)
+      .eq("payment_status", "completed")
+      .order("created_at", { ascending: false });
+    const seen = new Map<string, string>();
+    for (const t of txs ?? []) if (t.generation_id && !seen.has(t.generation_id)) seen.set(t.generation_id, t.created_at);
+    const ids = [...seen.keys()];
+    if (!ids.length) return [];
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: gens } = await supabaseAdmin.from("generations").select("*").in("id", ids);
+    const paths = (gens ?? []).map((g) => g.image_url).filter(Boolean) as string[];
+    const signedMap = new Map<string, string>();
+    if (paths.length) {
+      const { data: signed } = await supabaseAdmin.storage.from("designs").createSignedUrls(paths, 60 * 60);
+      for (const e of signed ?? []) if (e.path && e.signedUrl) signedMap.set(e.path, e.signedUrl);
+    }
+    const byId = new Map((gens ?? []).map((g) => [g.id, g]));
+    return ids
+      .map((id) => byId.get(id))
+      .filter((g): g is NonNullable<typeof g> => Boolean(g))
+      .map((g) => ({
+        generationId: g.id,
+        roomType: g.room_type,
+        style: g.design_style,
+        budget: g.budget_range,
+        imageUrl: g.image_url ? (signedMap.get(g.image_url) ?? null) : null,
+        products: (g.amazon_products as unknown as AmazonProduct[]) ?? [],
+        unlockedAt: seen.get(g.id)!,
+      }));
+  });
