@@ -45,17 +45,14 @@ function WhopReturn() {
   useEffect(() => {
     if (started.current || loading || !user) return;
     const paymentId = search.payment ?? search.payment_id;
-    if (search.status && search.status !== "succeeded") {
-      setState("error");
-      setMessage("The payment was not completed. You have not been charged.");
-      return;
-    }
-    if (!paymentId || !search.gen) {
+    if (!search.gen) {
       setState("error");
       setMessage("Payment reference missing. If you were charged, contact us with your Whop receipt.");
       return;
     }
     started.current = true;
+    // Always ask Whop directly — the URL status is not reliable (e.g. coupon checkouts).
+    const declined = search.status === "failed" || search.status === "canceled";
     confirm({ data: { paymentId, generationId: search.gen } })
       .then(() => {
         setState("done");
@@ -63,7 +60,7 @@ function WhopReturn() {
       })
       .catch((e: Error) => {
         setState("error");
-        setMessage(e.message);
+        setMessage(declined ? "The payment was not completed. You have not been charged." : e.message);
       });
   }, [user, loading, search, confirm]);
 

@@ -96,50 +96,74 @@ export const createWhopCheckout = createServerFn({ method: "POST" })
     return { url };
   });
 
-/** Verifies a Whop payment with Whop's API before unlocking the design. */
+/**
+ * Verifies a Whop payment with Whop's API before unlocking the design.
+ * The payment ID from the return URL is optional: Whop does not always append it
+ * (e.g. 100% coupon checkouts), so we fall back to finding a paid payment whose
+ * metadata matches this design and this user.
+ */
 export const confirmWhopPayment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { paymentId: string; generationId: string }) => {
-    const paymentId = String(input?.paymentId ?? "").trim();
+  .inputValidator((input: { paymentId?: string | undefined; generationId: string }) => {
+    const paymentId = String(input?.paymentId ?? "").trim().slice(0, 100);
     const generationId = String(input?.generationId ?? "").trim();
-    if (!paymentId || !generationId) throw new Error("Missing payment reference.");
+    if (!generationId) throw new Error("Missing design reference.");
     return { paymentId, generationId };
   })
   .handler(async ({ data, context }) => {
     const cfg = await loadWhop();
     if (!cfg.apiKey) throw new Error("Whop is not configured yet.");
+    const headers = { Authorization: `Bearer ${cfg.apiKey}` };
+
+    const belongs = (p: Record<string, unknown>) => {
+      const meta = (p["metadata"] as Record<string, unknown> | null) ?? {};
+      return (
+        String(meta["generation_id"] ?? "") === data.generationId &&
+        String(meta["user_id"] ?? "") === context.userId
+      );
+    };
 
     let payment: Record<string, unknown> | null = null;
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-      const res = await fetch(`${WHOP_API}/payments/${encodeURIComponent(data.paymentId)}`, {
-        headers: { Authorization: `Bearer ${cfg.apiKey}` },
-      });
-      payment = (await res.json().catch(() => null)) as Record<string, unknown> | null;
-      if (res.ok && payment && isPaid(payment)) break;
-      await new Promise((r) => setTimeout(r, 2000));
+    for (let attempt = 0; attempt < 3 && !payment; attempt += 1) {
+      if (attempt > 0) await new Promise((r) => setTimeout(r, 2000));
+      if (data.paymentId) {
+        const res = await fetch(`${WHOP_API}/payments/${encodeURIComponent(data.paymentId)}`, { headers });
+        const p = (await res.json().catch(() => null)) as Record<string, unknown> | null;
+        if (res.ok && p && isPaid(p)) payment = p;
+      }
+      if (!payment) {
+        const res = await fetch(`${WHOP_API}/payments?first=25`, { headers });
+        const body = (await res.json().catch(() => null)) as { data?: Record<string, unknown>[] } | null;
+        if (!res.ok) console.error("[whop] list payments failed", res.status, JSON.stringify(body)?.slice(0, 300));
+        payment = body?.data?.find((p) => isPaid(p) && belongs(p)) ?? null;
+      }
     }
-    if (!payment || !isPaid(payment)) {
+    if (!payment) {
       throw new Error("This payment is not complete yet. Please try again in a moment.");
     }
-
-    const meta = (payment["metadata"] as Record<string, unknown> | null) ?? {};
-    const paidFor = String(meta["generation_id"] ?? "");
-    if (paidFor !== data.generationId) {
+    if (!belongs(payment)) {
       throw new Error("This payment does not belong to this design.");
     }
 
-    const { applyPaddleUnlock, unlockPriceFallback } = await import("./paddle.server");
-    const total = Number(payment["total"] ?? payment["usd_total"]);
-    const amount = Number.isFinite(total) && total > 0 ? total : await unlockPriceFallback();
+    const { applyPaddleUnlock } = await import("./paddle.server");
     await applyPaddleUnlock({
       generationId: data.generationId,
       transactionId: String(payment["id"] ?? data.paymentId),
       userId: context.userId,
-      amount,
+      amount: paidAmount(payment),
     });
     return { unlocked: true };
   });
 
+/** Only a settled payment counts — "open/blocked" payments also carry paid_at. */
 function isPaid(p: Record<string, unknown>) {
-  return p["status"] === "paid" || p["substatus"] === "succeeded" || Boolean(p["paid_at"]);
+  return p["status"] === "paid" && p["substatus"] !== "blocked";
+}
+
+/** Whop returns totals as { amount: "5.00" }; coupons can make it 0. */
+function paidAmount(p: Record<string, unknown>) {
+  const raw = p["usd_total"] ?? p["total"];
+  const value = typeof raw === "object" && raw ? (raw as Record<string, unknown>)["amount"] : raw;
+  const n = Number(value);
+  return Number.isFinite(n) && n >= 0 ? n : 0;
 }
