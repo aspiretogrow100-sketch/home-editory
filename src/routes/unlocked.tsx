@@ -2,8 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { ExternalLink, Unlock } from "lucide-react";
+import { Unlock } from "lucide-react";
 
+import { ProductGrid } from "@/components/site/ProductGrid";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -95,35 +96,21 @@ function UnlockedPage() {
       </div>
 
       <Dialog open={Boolean(active)} onOpenChange={(o) => !o && setActive(null)}>
-        <DialogContent className="flex max-h-[92dvh] flex-col sm:max-w-2xl">
+        <DialogContent className="flex h-[92dvh] max-h-[92dvh] w-[calc(100vw-1rem)] flex-col overflow-hidden sm:max-w-5xl">
           {active ? (
             <>
               <DialogHeader className="shrink-0">
                 <DialogTitle>{active.style} {active.roomType}</DialogTitle>
                 <DialogDescription>{active.budget} · {active.products.length} items</DialogDescription>
               </DialogHeader>
-              {active.imageUrl ? (
-                <img src={active.imageUrl} alt={`${active.style} ${active.roomType}`} className="max-h-[45dvh] w-full rounded-lg object-contain" />
-              ) : null}
-              <ul className="min-h-0 flex-1 divide-y divide-border overflow-y-auto">
-                {active.products.map((p) => (
-                  <li key={p.asin ?? p.name} className="flex items-center justify-between gap-3 py-3">
-                    <div className="flex min-w-0 items-center gap-3">
-                      {p.image ? <img src={p.image} alt="" className="size-12 shrink-0 rounded object-contain" /> : null}
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-medium">{p.name}</p>
-                        <p className="text-xs text-muted-foreground">{p.category}</p>
-                      </div>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-3">
-                      <span className="text-sm font-semibold">{currency(p.price)}</span>
-                      <Button asChild size="sm" variant="outline">
-                        <a href={p.url} target="_blank" rel="noopener noreferrer nofollow">Buy <ExternalLink className="size-3.5" /></a>
-                      </Button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain">
+                {active.imageUrl ? (
+                  <div className="mx-auto mb-7 flex h-[30dvh] min-h-36 max-h-72 w-full max-w-2xl items-center justify-center">
+                    <img src={active.imageUrl} alt={`${active.style} ${active.roomType}`} className="h-full w-full object-contain" />
+                  </div>
+                ) : null}
+                <ProductGrid products={active.products} />
+              </div>
             </>
           ) : null}
         </DialogContent>
