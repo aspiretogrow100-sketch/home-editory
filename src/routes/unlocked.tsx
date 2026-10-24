@@ -18,9 +18,9 @@ export const Route = createFileRoute("/unlocked")({
   }),
   head: () => ({
     meta: [
-      { title: "My Unlocked Designs — Interior AI Designer" },
+      { title: "My Unlocked Designs — Home Editory" },
       { name: "description", content: "The room designs you unlocked, with their full Amazon shopping links." },
-      { property: "og:title", content: "My Unlocked Designs — Interior AI Designer" },
+      { property: "og:title", content: "My Unlocked Designs — Home Editory" },
       { property: "og:description", content: "Your unlocked AI room designs and shopping links." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

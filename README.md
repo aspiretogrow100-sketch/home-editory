@@ -1,10 +1,10 @@
-# Interior AI Designer
+# Home Editory
 
 Implement exactly the screenshot and nothing else
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live app**: https://interioraidesigner.lovable.app
+**Live app**: https://homeeditory.top
 
 ## Build with Lovable
 

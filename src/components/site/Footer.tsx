@@ -76,7 +76,7 @@ export function Footer() {
           <div className="flex items-center">
             <img
               src={logoFull}
-              alt="Interior AI Designer logo"
+              alt="Home Editory logo"
               width={1536}
               height={512}
               loading="lazy"
@@ -150,7 +150,7 @@ export function Footer() {
       </div>
       <div className="border-t border-border/70 px-4 py-6 text-center text-xs text-muted-foreground">
         <p>
-          © {new Date().getFullYear()} Interior AI Designer. As an Amazon Associate we may earn from qualifying
+          © {new Date().getFullYear()} Home Editory. As an Amazon Associate we may earn from qualifying
           purchases. Product prices and availability are illustrative.
         </p>
       </div>

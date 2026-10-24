@@ -30,16 +30,16 @@ import {
 export const Route = createFileRoute("/gallery")({
   head: () => ({
     meta: [
-      { title: "Inspiration Gallery — Interior AI Designer" },
+      { title: "Inspiration Gallery — Home Editory" },
       {
         name: "description",
         content:
-          "Browse AI-generated room designs created by the Interior AI Designer community for interior inspiration.",
+          "Browse AI-generated room designs created by the Home Editory community for interior inspiration.",
       },
-      { property: "og:title", content: "Inspiration Gallery — Interior AI Designer" },
+      { property: "og:title", content: "Inspiration Gallery — Home Editory" },
       {
         property: "og:description",
-        content: "A public feed of AI interior designs made with Interior AI Designer.",
+        content: "A public feed of AI interior designs made with Home Editory.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -126,7 +126,7 @@ function GalleryPage() {
     <div className="mx-auto w-full max-w-6xl px-4 py-14">
       <h1 className="text-4xl">Inspiration gallery</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Rooms designed by the Interior AI Designer community. Once anyone unlocks a design, its shopping list
+        Rooms designed by the Home Editory community. Once anyone unlocks a design, its shopping list
         stays open for everyone.
       </p>
 
@@ -199,7 +199,7 @@ function GalleryPage() {
               {item.imageUrl ? (
                 <img
                   src={item.imageUrl}
-                  alt={`${item.designStyle} ${item.roomType} generated with Interior AI Designer`}
+                  alt={`${item.designStyle} ${item.roomType} generated with Home Editory`}
                   className="aspect-[4/3] w-full object-cover"
                   loading="lazy"
                 />

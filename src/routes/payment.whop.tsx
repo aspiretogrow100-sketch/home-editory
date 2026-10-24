@@ -22,9 +22,9 @@ export const Route = createFileRoute("/payment/whop")({
   }),
   head: () => ({
     meta: [
-      { title: "Confirming payment — Interior AI Designer" },
+      { title: "Confirming payment — Home Editory" },
       { name: "description", content: "Confirming your Whop payment and unlocking your shopping links." },
-      { property: "og:title", content: "Confirming payment — Interior AI Designer" },
+      { property: "og:title", content: "Confirming payment — Home Editory" },
       { property: "og:description", content: "Confirming your Whop payment and unlocking your shopping links." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

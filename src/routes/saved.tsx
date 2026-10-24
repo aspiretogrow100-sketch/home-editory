@@ -25,13 +25,13 @@ import { deleteSavedRoom, listSavedRooms, type SavedRoom } from "@/lib/saved.fun
 export const Route = createFileRoute("/saved")({
   head: () => ({
     meta: [
-      { title: "My Saved Designs — Interior AI Designer" },
+      { title: "My Saved Designs — Home Editory" },
       {
         name: "description",
         content:
-          "Revisit the Interior AI Designer room designs you bookmarked, with their shopping lists, totals and unlock status.",
+          "Revisit the Home Editory room designs you bookmarked, with their shopping lists, totals and unlock status.",
       },
-      { property: "og:title", content: "My Saved Designs — Interior AI Designer" },
+      { property: "og:title", content: "My Saved Designs — Home Editory" },
       {
         property: "og:description",
         content: "Your bookmarked AI room designs and their Amazon shopping lists.",
@@ -156,7 +156,7 @@ function SavedPage() {
                   {item.imageUrl ? (
                     <img
                       src={item.imageUrl}
-                      alt={`${item.style} ${item.roomType} saved in Interior AI Designer`}
+                      alt={`${item.style} ${item.roomType} saved in Home Editory`}
                       className="aspect-[4/3] w-full object-cover"
                       loading="lazy"
                     />

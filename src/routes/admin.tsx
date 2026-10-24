@@ -399,13 +399,13 @@ function WhopPanel() {
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Admin Dashboard — Interior AI Designer" },
+      { title: "Admin Dashboard — Home Editory" },
       {
         name: "description",
-        content: "Interior AI Designer admin dashboard: users, generations, revenue and unlock price control.",
+        content: "Home Editory admin dashboard: users, generations, revenue and unlock price control.",
       },
-      { property: "og:title", content: "Admin Dashboard — Interior AI Designer" },
-      { property: "og:description", content: "Internal Interior AI Designer analytics and settings." },
+      { property: "og:title", content: "Admin Dashboard — Home Editory" },
+      { property: "og:description", content: "Internal Home Editory analytics and settings." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -1250,7 +1250,7 @@ function SocialLinksPanel() {
             <Label htmlFor={`social-${key}`}>{SOCIAL_LABELS[key]}</Label>
             <Input
               id={`social-${key}`}
-              placeholder={`https://www.${key}.com/interioraidesigner`}
+              placeholder={`https://www.${key}.com/homeeditory`}
               value={form[key]}
               onChange={(event) => setForm({ ...form, [key]: event.target.value })}
             />

@@ -31,7 +31,7 @@ export function Header() {
         <Link to="/" className="flex items-center">
           <img
             src={logoFull}
-            alt="Interior AI Designer logo"
+            alt="Home Editory logo"
             width={1536}
             height={512}
             className="h-auto w-44 shrink-0 object-contain"

@@ -82,14 +82,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Interior AI Designer — AI Interior Design & Shoppable Amazon Picks" },
+      { title: "Home Editory — AI Interior Design & Shoppable Amazon Picks" },
       {
         name: "description",
         content:
           "Generate photoreal room designs in seconds and shop the matching discounted Amazon products.",
       },
-      { name: "author", content: "Interior AI Designer" },
+      { name: "author", content: "Home Editory" },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Home Editory" },
+      { property: "og:url", content: "https://homeeditory.top" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [

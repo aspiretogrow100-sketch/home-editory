@@ -7,13 +7,13 @@ import { getUnlockPrice } from "@/lib/decor.functions";
 export const Route = createFileRoute("/refund")({
   head: () => ({
     meta: [
-      { title: "Refund Policy — Interior AI Designer" },
+      { title: "Refund Policy — Home Editory" },
       {
         name: "description",
         content:
-          "Interior AI Designer refund policy for the one-time $2.00 room shopping list unlock: digital content is delivered instantly and unlocks are final.",
+          "Home Editory refund policy for the one-time $2.00 room shopping list unlock: digital content is delivered instantly and unlocks are final.",
       },
-      { property: "og:title", content: "Refund Policy — Interior AI Designer" },
+      { property: "og:title", content: "Refund Policy — Home Editory" },
       {
         property: "og:description",
         content: "Digital shopping list unlocks are delivered instantly and are non-refundable.",
@@ -37,7 +37,7 @@ function RefundPage() {
         <section>
           <h2 className="text-lg font-medium text-foreground">Digital content unlocks</h2>
           <p>
-            Interior AI Designer sells a one-time micro-payment (currently {price}) that unlocks the complete
+            Home Editory sells a one-time micro-payment (currently {price}) that unlocks the complete
             Amazon shopping list and itemized purchase links for a specific generated room design.
             This is digital content that is delivered to your account immediately after a
             successful payment.
@@ -69,8 +69,8 @@ function RefundPage() {
         <section>
           <h2 className="text-lg font-medium text-foreground">Amazon purchases</h2>
           <p>
-            Products linked from Interior AI Designer shopping lists are sold and shipped by Amazon or its
-            third-party sellers, not by Interior AI Designer. Returns, refunds, and warranty claims for those
+            Products linked from Home Editory shopping lists are sold and shipped by Amazon or its
+            third-party sellers, not by Home Editory. Returns, refunds, and warranty claims for those
             products are governed by Amazon's own returns policy and must be handled through your
             Amazon account.
           </p>

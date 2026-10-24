@@ -10,13 +10,13 @@ import { Textarea } from "@/components/ui/textarea";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact Interior AI Designer — Support & Partnerships" },
+      { title: "Contact Home Editory — Support & Partnerships" },
       {
         name: "description",
-        content: "Get in touch with the Interior AI Designer team about support, billing questions or partnerships.",
+        content: "Get in touch with the Home Editory team about support, billing questions or partnerships.",
       },
-      { property: "og:title", content: "Contact Interior AI Designer" },
-      { property: "og:description", content: "Questions about Interior AI Designer? Send us a message." },
+      { property: "og:title", content: "Contact Home Editory" },
+      { property: "og:description", content: "Questions about Home Editory? Send us a message." },
     ],
   }),
   component: ContactPage,
@@ -34,7 +34,7 @@ function ContactPage() {
         Support, billing or partnership questions — we usually reply within two business days.
       </p>
       <p className="mt-1 text-sm text-muted-foreground">
-        Interior AI Designer is operated by Nahidul, Dhaka, Bangladesh.
+        Home Editory is operated by Nahidul, Dhaka, Bangladesh.
       </p>
 
       <div className="surface-card mt-8 space-y-4 p-6">
@@ -74,7 +74,7 @@ function ContactPage() {
         className="surface-card mt-8 space-y-4 p-6"
         onSubmit={(event) => {
           event.preventDefault();
-          const subject = encodeURIComponent(`Interior AI Designer enquiry from ${name}`);
+          const subject = encodeURIComponent(`Home Editory enquiry from ${name}`);
           const body = encodeURIComponent(`${message}\n\n— ${name} (${email})`);
           window.location.href = `mailto:moumunira00@gmail.com?subject=${subject}&body=${body}`;
           toast.success("Opening your email app to send the message.");

@@ -7,13 +7,13 @@ import { getUnlockPrice } from "@/lib/decor.functions";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms & Conditions — Interior AI Designer" },
+      { title: "Terms & Conditions — Home Editory" },
       {
         name: "description",
-        content: "The terms that govern your use of Interior AI Designer, including unlock payments and content rights.",
+        content: "The terms that govern your use of Home Editory, including unlock payments and content rights.",
       },
-      { property: "og:title", content: "Terms & Conditions — Interior AI Designer" },
-      { property: "og:description", content: "Terms governing the use of Interior AI Designer." },
+      { property: "og:title", content: "Terms & Conditions — Home Editory" },
+      { property: "og:description", content: "Terms governing the use of Home Editory." },
     ],
   }),
   component: TermsPage,
@@ -30,7 +30,7 @@ function TermsPage() {
 
       <h2 className="pt-4 text-2xl text-foreground">Who we are</h2>
       <p>
-        Interior AI Designer is operated by Nahidul, Dhaka, Bangladesh. You can reach us at{" "}
+        Home Editory is operated by Nahidul, Dhaka, Bangladesh. You can reach us at{" "}
         <a href="mailto:moumunira00@gmail.com" className="text-primary underline underline-offset-2">
           moumunira00@gmail.com
         </a>{" "}
@@ -43,7 +43,7 @@ function TermsPage() {
 
       <h2 className="pt-4 text-2xl text-foreground">What we sell</h2>
       <p>
-        Interior AI Designer generates AI interior design concepts for a room you describe. A one-time payment of{" "}
+        Home Editory generates AI interior design concepts for a room you describe. A one-time payment of{" "}
         {price} USD unlocks the full itemized shopping list and product links for that design. There is
         no subscription and no recurring charge.
       </p>
@@ -58,7 +58,7 @@ function TermsPage() {
 
       <h2 className="pt-4 text-2xl text-foreground">Using the service</h2>
       <p>
-        Interior AI Designer generates illustrative interior design concepts. You must be able to form a binding
+        Home Editory generates illustrative interior design concepts. You must be able to form a binding
         contract to use paid features, and you agree not to misuse or attempt to disrupt the service.
       </p>
 
