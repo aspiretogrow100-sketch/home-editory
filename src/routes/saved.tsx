@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { AdSlot } from "@/components/site/AdSlot";
 import { CheckoutDialog } from "@/components/site/CheckoutDialog";
+import { FeaturedProducts } from "@/components/site/FeaturedProducts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +19,8 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
-import { currency } from "@/lib/decor";
+import { currency, type AmazonProduct } from "@/lib/decor";
+import { splitFeatured } from "@/lib/partners";
 import { getUnlockPrice, unlockGeneration } from "@/lib/decor.functions";
 import { deleteSavedRoom, listSavedRooms, type SavedRoom } from "@/lib/saved.functions";
 
@@ -50,7 +52,7 @@ function SavedPage() {
   const removeSaved = useServerFn(deleteSavedRoom);
   const fetchPrice = useServerFn(getUnlockPrice);
   const runUnlock = useServerFn(unlockGeneration);
-  const [active, setActive] = useState<SavedRoom | null>(null);
+  const [active, setActive] = useState<(SavedRoom & { featured: AmazonProduct[] }) | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   const query = useQuery({
@@ -108,7 +110,11 @@ function SavedPage() {
     );
   }
 
-  const items = query.data ?? [];
+  // Featured partner items show on their own card; counts and the list use the regular items.
+  const items = (query.data ?? []).map((item) => {
+    const { featured, regular } = splitFeatured(item.products);
+    return { ...item, products: regular, featured };
+  });
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-14">
@@ -223,6 +229,8 @@ function SavedPage() {
                   className="aspect-[4/3] w-full rounded-lg object-cover"
                 />
               ) : null}
+
+              <FeaturedProducts products={active.featured} />
 
               {active.isUnlocked ? (
                 <ul className="divide-y divide-border">

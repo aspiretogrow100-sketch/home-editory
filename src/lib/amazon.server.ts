@@ -659,3 +659,29 @@ export async function fetchAmazonProducts(
 
   return picks.map((p) => p.pool[p.index]!).filter(Boolean);
 }
+
+// ---------- Single product lookup (admin: partner products) ----------
+
+/**
+ * Look up one product by ASIN through the configured provider. The providers here
+ * are search APIs, so the ASIN is searched and the exact match is returned.
+ * Returns null when the provider finds no exact match.
+ */
+export async function lookupAmazonItem(cfg: AmazonConfig, asin: string): Promise<AmazonProduct | null> {
+  const wanted = asin.toUpperCase();
+  let candidates: AmazonProduct[] = [];
+  if (cfg.provider === "creators") {
+    const items = await creatorsSearch(cfg, wanted, null, null, null);
+    candidates = items.map((i) => paapiToProduct(i, "Partner", cfg)).filter(Boolean) as AmazonProduct[];
+  } else if (cfg.provider === "scraperapi") {
+    const items = await scraperapiSearch(cfg, wanted);
+    candidates = items.map((i) => scraperapiToProduct(i, "Partner", cfg)).filter(Boolean) as AmazonProduct[];
+  } else if (cfg.provider === "paapi") {
+    const items = await paapiSearch(cfg, wanted, null, null, null);
+    candidates = items.map((i) => paapiToProduct(i, "Partner", cfg)).filter(Boolean) as AmazonProduct[];
+  } else {
+    const items = await rainforestSearch(cfg, wanted, null, null);
+    candidates = items.map((i) => rainforestToProduct(i, "Partner", cfg)).filter(Boolean) as AmazonProduct[];
+  }
+  return candidates.find((c) => (c.asin ?? "").toUpperCase() === wanted) ?? null;
+}

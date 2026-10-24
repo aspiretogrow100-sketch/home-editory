@@ -10,7 +10,19 @@ import {
   DEFAULT_IMAGE_PROMPT,
   type AmazonProduct,
   type DesignSelection,
+  designTypeOf,
 } from "./decor";
+import {
+  isFeatured,
+  MAX_PARTNER_PRODUCTS,
+  PARTNER_SETTING_KEY,
+  parseAsin,
+  parsePartnerProducts,
+  partnerToFeaturedItem,
+  pickPartnerProduct,
+  sanitizePartnerProduct,
+  type PartnerProduct,
+} from "./partners";
 
 type AnyClient = SupabaseClient<Database>;
 
@@ -286,6 +298,24 @@ export const generateDesign = createServerFn({ method: "POST" })
       }
     }
     if (!products.length) products = buildProductList(data);
+
+    // 1b. Sponsored partner product (e.g. a CondoMounts / ZeboZap mount) for full-room
+    // designs of a room the admin linked it to. It goes first, so its real product
+    // photo is the first reference image and it renders clearly in the room.
+    if (designTypeOf(data) === "Full Room") {
+      try {
+        const partners = await loadPartnerProducts();
+        const partner = pickPartnerProduct(partners, data.roomType);
+        if (partner) {
+          const url = partner.asin
+            ? amazon.affiliateUrl(cfg.marketplace, partner.asin, cfg.trackingId)
+            : partner.url;
+          products = [partnerToFeaturedItem(partner, url), ...products];
+        }
+      } catch (error) {
+        console.error("[decorai] partner product skipped", error);
+      }
+    }
 
     // 2. Image prompt built from the exact products (admin-editable template).
     const { data: promptSetting } = await publicClient()
@@ -618,7 +648,10 @@ export type GalleryEntry = {
   savings: number;
   isUnlocked: boolean;
   unlockCount: number;
+  /** Regular shopping list — only filled once the design is unlocked. */
   products: AmazonProduct[];
+  /** Sponsored partner items — always visible, even while locked. */
+  featured: AmazonProduct[];
 };
 
 type PublicGalleryRow = {
@@ -630,54 +663,123 @@ type PublicGalleryRow = {
   image_url: string | null;
   amazon_products: unknown;
   is_unlocked: boolean;
-  item_count: number | string | null;
-  total: number | string | null;
-  list_total: number | string | null;
   unlock_count: number | string | null;
+  /** Counts over the regular items; given by the SQL function because locked rows omit the list. */
+  item_count?: number | string | null;
+  total?: number | string | null;
+  list_total?: number | string | null;
 };
 
+const round2 = (value: number) => Math.round(value * 100) / 100;
+
+/** Shape one gallery row: totals count only regular items; featured items always show. */
+function toGalleryEntry(row: PublicGalleryRow, imageUrl: string | null): GalleryEntry {
+  const all = (Array.isArray(row.amazon_products) ? row.amazon_products : []) as AmazonProduct[];
+  const featured = all.filter(isFeatured);
+  const regular = all.filter((p) => !isFeatured(p));
+  const total =
+    row.total != null ? Number(row.total) : regular.reduce((sum, p) => sum + Number(p.price ?? 0), 0);
+  const list =
+    row.list_total != null
+      ? Number(row.list_total)
+      : regular.reduce((sum, p) => sum + Number(p.listPrice ?? p.price ?? 0), 0);
+  return {
+    id: row.id,
+    roomType: row.room_type,
+    designStyle: row.design_style,
+    budgetRange: row.budget_range,
+    createdAt: row.created_at,
+    imageUrl,
+    itemCount: row.item_count != null ? Number(row.item_count) : regular.length,
+    total: round2(total),
+    savings: round2(Math.max(0, list - total)),
+    isUnlocked: Boolean(row.is_unlocked),
+    unlockCount: Number(row.unlock_count ?? 0),
+    products: row.is_unlocked ? regular : [],
+    featured,
+  };
+}
+
+/** Gallery through the publishable key: the list_public_gallery SQL function + public bucket. */
+async function galleryViaPublicKey(): Promise<GalleryEntry[]> {
+  const supabase = publicClient();
+  const { data, error } = await (
+    supabase.rpc as unknown as (
+      fn: string,
+      args: Record<string, unknown>,
+    ) => Promise<{ data: PublicGalleryRow[] | null; error: { message: string } | null }>
+  )("list_public_gallery", { max_rows: 60 });
+  if (error) throw new Error(error.message);
+  const storage = supabase.storage.from("designs");
+  return (data ?? []).map((row) =>
+    toGalleryEntry(row, row.image_url ? storage.getPublicUrl(row.image_url).data.publicUrl : null),
+  );
+}
+
 /**
- * Public gallery feed. Reads only through the publishable key: the
- * `list_public_gallery` SQL function (see supabase/migrations) returns gallery
- * rows with their unlock counts, and withholds the shopping list of designs
- * nobody has unlocked yet. Images come from the public "designs" bucket.
+ * Gallery through the server key (hosts like Lovable that have it). Used when the
+ * list_public_gallery function hasn't been added to the database yet.
+ */
+async function galleryViaServerKey(): Promise<GalleryEntry[]> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("generations")
+    .select("id, room_type, design_style, budget_range, created_at, image_url, amazon_products, is_unlocked")
+    .not("image_url", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(60);
+  const rows = data ?? [];
+
+  const paths = rows.map((r) => r.image_url).filter(Boolean) as string[];
+  const signedMap = new Map<string, string>();
+  if (paths.length) {
+    const { data: signed } = await supabaseAdmin.storage.from("designs").createSignedUrls(paths, 60 * 60);
+    for (const entry of signed ?? []) {
+      if (entry.path && entry.signedUrl) signedMap.set(entry.path, entry.signedUrl);
+    }
+  }
+
+  const unlockCounts = new Map<string, number>();
+  if (rows.length) {
+    const { data: txns } = await supabaseAdmin
+      .from("transactions")
+      .select("generation_id")
+      .eq("payment_status", "completed")
+      .in(
+        "generation_id",
+        rows.map((r) => r.id),
+      );
+    for (const t of txns ?? []) {
+      if (!t.generation_id) continue;
+      unlockCounts.set(t.generation_id, (unlockCounts.get(t.generation_id) ?? 0) + 1);
+    }
+  }
+
+  return rows.map((row) =>
+    toGalleryEntry(
+      { ...row, unlock_count: unlockCounts.get(row.id) ?? 0 },
+      row.image_url ? (signedMap.get(row.image_url) ?? null) : null,
+    ),
+  );
+}
+
+/**
+ * Public gallery feed. Uses only the publishable key when the database has the
+ * list_public_gallery function (see supabase/migrations); otherwise falls back to
+ * the server key, so it works both on Vercel and on Lovable.
  */
 export const listPublicGallery = createServerFn({ method: "GET" }).handler(
   async (): Promise<GalleryEntry[]> => {
-    const supabase = publicClient();
-    const { data, error } = await (
-      supabase.rpc as unknown as (
-        fn: string,
-        args: Record<string, unknown>,
-      ) => Promise<{ data: PublicGalleryRow[] | null; error: { message: string } | null }>
-    )("list_public_gallery", { max_rows: 60 });
-    if (error) {
-      console.error("[gallery] list_public_gallery failed:", error.message);
-      return [];
+    try {
+      return await galleryViaPublicKey();
+    } catch (publicError) {
+      try {
+        return await galleryViaServerKey();
+      } catch (serverError) {
+        console.error("[gallery] could not load", publicError, serverError);
+        return [];
+      }
     }
-
-    const storage = supabase.storage.from("designs");
-    return (data ?? []).map((row) => {
-      const products = (Array.isArray(row.amazon_products)
-        ? (row.amazon_products as AmazonProduct[])
-        : []) as AmazonProduct[];
-      const total = products.reduce((sum, p) => sum + Number(p.price ?? 0), 0);
-      const list = products.reduce((sum, p) => sum + Number(p.listPrice ?? p.price ?? 0), 0);
-      return {
-        id: row.id,
-        roomType: row.room_type,
-        designStyle: row.design_style,
-        budgetRange: row.budget_range,
-        createdAt: row.created_at,
-        imageUrl: row.image_url ? storage.getPublicUrl(row.image_url).data.publicUrl : null,
-        itemCount: Number(row.item_count ?? products.length),
-        total: Math.round(Number(row.total ?? total) * 100) / 100,
-        savings: Math.round(Math.max(0, Number(row.list_total ?? list) - Number(row.total ?? total)) * 100) / 100,
-        isUnlocked: Boolean(row.is_unlocked),
-        unlockCount: Number(row.unlock_count ?? 0),
-        products: row.is_unlocked ? products : [],
-      };
-    });
   },
 );
 
@@ -1012,4 +1114,119 @@ export const setSocialLinks = createServerFn({ method: "POST" })
     );
     if (error) throw new Error("Could not save the social links.");
     return data;
+  });
+
+
+// ---------- Partner (sponsored) products ----------
+
+/** Partner products saved by the admin (stored as JSON in app_settings). */
+async function loadPartnerProducts(): Promise<PartnerProduct[]> {
+  const read = async (client: AnyClient) => {
+    const { data, error } = await client
+      .from("app_settings")
+      .select("setting_value")
+      .eq("setting_key", PARTNER_SETTING_KEY)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return parsePartnerProducts(data?.setting_value ?? null);
+  };
+  // Prefer the server client (works whatever the app_settings read policy is);
+  // fall back to the publishable key on hosts without the service key.
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    return await read(supabaseAdmin as unknown as AnyClient);
+  } catch {
+    return read(publicClient());
+  }
+}
+
+/** Admin: list partner products. */
+export const listPartnerProducts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<PartnerProduct[]> => {
+    await assertAdmin(context);
+    return loadPartnerProducts();
+  });
+
+/** Admin: replace the whole partner product list. */
+export const savePartnerProducts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { products: unknown[] }) => {
+    const list = Array.isArray(input?.products) ? input.products : [];
+    if (list.length > MAX_PARTNER_PRODUCTS) {
+      throw new Error(`You can save up to ${MAX_PARTNER_PRODUCTS} partner products.`);
+    }
+    const products = list.map((item, index) => {
+      const clean = sanitizePartnerProduct(item);
+      if (!clean) throw new Error(`Product ${index + 1} needs an Amazon link starting with https://`);
+      if (!clean.rooms.length) throw new Error(`Pick at least one room for "${clean.name}".`);
+      return clean;
+    });
+    return { products };
+  })
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("app_settings").upsert(
+      {
+        setting_key: PARTNER_SETTING_KEY,
+        setting_value: JSON.stringify(data.products),
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "setting_key" },
+    );
+    if (error) throw new Error("Could not save the partner products.");
+    return data.products;
+  });
+
+export type PartnerLookup = {
+  asin: string;
+  name: string | null;
+  image: string | null;
+  /** Why name/image could not be filled in automatically, if they could not. */
+  note: string | null;
+};
+
+/** Admin: read the ASIN from an Amazon link and fetch its title and photo when possible. */
+export const lookupPartnerProduct = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { url: string }) => {
+    const asin = parseAsin(String(input?.url ?? ""));
+    if (!asin) {
+      throw new Error("That doesn't look like an Amazon product link. Open the product page and copy its link.");
+    }
+    return { asin };
+  })
+  .handler(async ({ data, context }): Promise<PartnerLookup> => {
+    await assertAdmin(context);
+    const amazon = await import("./amazon.server");
+    const cfg = await amazon.loadAmazonConfig();
+    if (!amazon.isAmazonConfigured(cfg)) {
+      return {
+        asin: data.asin,
+        name: null,
+        image: null,
+        note: "Amazon integration is not set up, so add the name and image link by hand.",
+      };
+    }
+    try {
+      const item = await amazon.lookupAmazonItem(cfg, data.asin);
+      if (!item) {
+        return {
+          asin: data.asin,
+          name: null,
+          image: null,
+          note: "Amazon didn't return this product, so add the name and image link by hand.",
+        };
+      }
+      return { asin: data.asin, name: item.name, image: item.image ?? null, note: null };
+    } catch (error) {
+      console.error("[partners] lookup failed", error);
+      return {
+        asin: data.asin,
+        name: null,
+        image: null,
+        note: "Amazon lookup failed, so add the name and image link by hand.",
+      };
+    }
   });

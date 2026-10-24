@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { PartnerProductsPanel } from "@/components/admin/PartnerProductsPanel";
 import { useAuth } from "@/hooks/useAuth";
 import { Textarea } from "@/components/ui/textarea";
 import { currency, DEFAULT_IMAGE_PROMPT, PROMPT_PLACEHOLDERS } from "@/lib/decor";
@@ -527,12 +528,13 @@ function AdminPage() {
       </div>
 
       <Tabs defaultValue="overview" className="mt-8">
-        <TabsList>
+        <TabsList className="h-auto flex-wrap justify-start">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="options">Wizard options</TabsTrigger>
           <TabsTrigger value="prompt">Image prompt</TabsTrigger>
           <TabsTrigger value="ai">AI generator</TabsTrigger>
           <TabsTrigger value="amazon">Amazon settings</TabsTrigger>
+          <TabsTrigger value="partners">Partner products</TabsTrigger>
           <TabsTrigger value="paddle">Payments</TabsTrigger>
           <TabsTrigger value="social">Social links</TabsTrigger>
 
@@ -618,6 +620,10 @@ function AdminPage() {
 
         <TabsContent value="amazon">
           <AmazonSettingsPanel />
+        </TabsContent>
+
+        <TabsContent value="partners">
+          <PartnerProductsPanel />
         </TabsContent>
 
         <TabsContent value="social">

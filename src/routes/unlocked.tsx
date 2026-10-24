@@ -4,7 +4,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { Unlock } from "lucide-react";
 
+import { FeaturedProducts } from "@/components/site/FeaturedProducts";
 import { ProductGrid } from "@/components/site/ProductGrid";
+import { splitFeatured } from "@/lib/partners";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -101,7 +103,7 @@ function UnlockedPage() {
             <>
               <DialogHeader className="shrink-0">
                 <DialogTitle>{active.style} {active.roomType}</DialogTitle>
-                <DialogDescription>{active.budget} · {active.products.length} items</DialogDescription>
+                <DialogDescription>{active.budget} · {splitFeatured(active.products).regular.length} items</DialogDescription>
               </DialogHeader>
               <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain">
                 {active.imageUrl ? (
@@ -109,7 +111,10 @@ function UnlockedPage() {
                     <img src={active.imageUrl} alt={`${active.style} ${active.roomType}`} className="h-full w-full object-contain" />
                   </div>
                 ) : null}
-                <ProductGrid products={active.products} />
+                <FeaturedProducts products={splitFeatured(active.products).featured} />
+                <div className="mt-4">
+                  <ProductGrid products={splitFeatured(active.products).regular} />
+                </div>
               </div>
             </>
           ) : null}

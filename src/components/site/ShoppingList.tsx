@@ -1,5 +1,7 @@
 import { Lock } from "lucide-react";
+import { FeaturedProducts } from "@/components/site/FeaturedProducts";
 import { ProductGrid } from "@/components/site/ProductGrid";
+import { splitFeatured } from "@/lib/partners";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,12 +15,18 @@ type Props = {
   onUnlock: () => void;
 };
 
-export function ShoppingList({ products, unlocked, price, busy, onUnlock }: Props) {
+export function ShoppingList({ products: allProducts, unlocked, price, busy, onUnlock }: Props) {
+  const { featured, regular: products } = splitFeatured(allProducts);
   const total = products.reduce((sum, p) => sum + p.price, 0);
   const saved = products.reduce((sum, p) => sum + (p.listPrice - p.price), 0);
 
   return (
     <div className="overflow-hidden">
+      {featured.length ? (
+        <div className="px-4 pb-4">
+          <FeaturedProducts products={featured} />
+        </div>
+      ) : null}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
         <div>
           <h3 className="text-xl">Amazon shopping list</h3>

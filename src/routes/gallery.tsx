@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { Lock } from "lucide-react";
 import { toast } from "sonner";
 
+import { FeaturedProducts } from "@/components/site/FeaturedProducts";
 import { ProductGrid } from "@/components/site/ProductGrid";
 import { AdSlot } from "@/components/site/AdSlot";
 import { CheckoutDialog } from "@/components/site/CheckoutDialog";
@@ -248,6 +249,12 @@ function GalleryPage() {
               {active.imageUrl ? (
                 <div className="mx-auto mb-7 flex h-[30dvh] min-h-36 max-h-72 w-full max-w-2xl items-center justify-center">
                   <img src={active.imageUrl} alt={`${active.designStyle} ${active.roomType}`} className="block h-full w-full object-contain" />
+                </div>
+              ) : null}
+
+              {active.featured.length ? (
+                <div className="mx-auto mb-6 max-w-2xl">
+                  <FeaturedProducts products={active.featured} />
                 </div>
               ) : null}
 

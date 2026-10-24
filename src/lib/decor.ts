@@ -99,6 +99,10 @@ export type AmazonProduct = {
   image?: string | null;
   description?: string | null;
   discountPercent?: number | null;
+  /** Sponsored partner item (e.g. a CondoMounts TV mount): always visible, never counted in totals. */
+  featured?: boolean | null;
+  /** Partner brand for a featured item. */
+  partner?: string | null;
 };
 
 /** Editable image prompt template. Admins can change this from the Admin page. */
@@ -160,7 +164,11 @@ export function buildPrompt(
     type === "Wall Decor" ? "wall" : type === "Single Item" ? "scene" : "room";
   const featured = products.length
     ? ` The ${subject} must feature these exact products, rendered faithfully to their real appearance, materials and colours: ${products
-        .map((p, i) => `(${i + 1}) ${p.category}: ${p.name}${p.description ? ` — ${p.description}` : ""}`)
+        .map((p, i) =>
+          p.featured
+            ? `(${i + 1}) ${p.name} — show it as ${p.description || "a clearly visible part of the room"}`
+            : `(${i + 1}) ${p.category}: ${p.name}${p.description ? ` — ${p.description}` : ""}`,
+        )
         .join("; ")}. Do not invent other major ${type === "Full Room" ? "furniture" : "decor"} pieces. Every listed product must appear complete and fully inside the frame — never cut off, cropped or sticking out of an edge. The image must contain no text of any kind: no product names, no labels, no captions, no annotations.`
     : "";
   const density = sel.itemDensity
