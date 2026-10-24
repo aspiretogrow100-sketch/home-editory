@@ -25,17 +25,42 @@ function makeFetch(key: string): typeof fetch {
   };
 }
 
+/**
+ * Public Supabase connection details: the project URL and the publishable (anon) key.
+ * Accepts either the server names or the VITE_ names, so a host that only sets
+ * VITE_SUPABASE_URL + VITE_SUPABASE_PUBLISHABLE_KEY (e.g. Vercel) still works.
+ * Never returns the service-role key.
+ */
+function publicSupabaseConfig(): { url: string; key: string } {
+  const url =
+    process.env["SUPABASE_URL"] ||
+    process.env["VITE_SUPABASE_URL"] ||
+    import.meta.env["VITE_SUPABASE_URL"];
+  const key =
+    process.env["SUPABASE_PUBLISHABLE_KEY"] ||
+    process.env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
+    import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
+  if (!url || !key) {
+    const missing = [
+      ...(!url ? ["VITE_SUPABASE_URL"] : []),
+      ...(!key ? ["VITE_SUPABASE_PUBLISHABLE_KEY"] : []),
+    ];
+    throw new Error(`Missing Supabase environment variable(s): ${missing.join(", ")}`);
+  }
+  return { url, key };
+}
+
 function publicClient(): AnyClient {
-  const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
-  return createClient<Database>(process.env["SUPABASE_URL"]!, key, {
+  const { url, key } = publicSupabaseConfig();
+  return createClient<Database>(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
     global: { fetch: makeFetch(key) },
   });
 }
 
 function tokenClient(token: string): AnyClient {
-  const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
-  return createClient<Database>(process.env["SUPABASE_URL"]!, key, {
+  const { url, key } = publicSupabaseConfig();
+  return createClient<Database>(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
     global: { fetch: makeFetch(key), headers: { Authorization: `Bearer ${token}` } },
   });
@@ -596,50 +621,45 @@ export type GalleryEntry = {
   products: AmazonProduct[];
 };
 
+type PublicGalleryRow = {
+  id: string;
+  room_type: string;
+  design_style: string;
+  budget_range: string;
+  created_at: string;
+  image_url: string | null;
+  amazon_products: unknown;
+  is_unlocked: boolean;
+  item_count: number | string | null;
+  total: number | string | null;
+  list_total: number | string | null;
+  unlock_count: number | string | null;
+};
+
+/**
+ * Public gallery feed. Reads only through the publishable key: the
+ * `list_public_gallery` SQL function (see supabase/migrations) returns gallery
+ * rows with their unlock counts, and withholds the shopping list of designs
+ * nobody has unlocked yet. Images come from the public "designs" bucket.
+ */
 export const listPublicGallery = createServerFn({ method: "GET" }).handler(
   async (): Promise<GalleryEntry[]> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    const { data } = await supabaseAdmin
-      .from("generations")
-      .select(
-        "id, room_type, design_style, budget_range, created_at, image_url, amazon_products, is_unlocked",
-      )
-      .not("image_url", "is", null)
-      .order("created_at", { ascending: false })
-      .limit(60);
-
-    const rows = data ?? [];
-    const paths = rows.map((r) => r.image_url).filter(Boolean) as string[];
-    const signedMap = new Map<string, string>();
-    if (paths.length) {
-      const { data: signed } = await supabaseAdmin.storage
-        .from("designs")
-        .createSignedUrls(paths, 60 * 60);
-      for (const entry of signed ?? []) {
-        if (entry.path && entry.signedUrl) signedMap.set(entry.path, entry.signedUrl);
-      }
+    const supabase = publicClient();
+    const { data, error } = await (
+      supabase.rpc as unknown as (
+        fn: string,
+        args: Record<string, unknown>,
+      ) => Promise<{ data: PublicGalleryRow[] | null; error: { message: string } | null }>
+    )("list_public_gallery", { max_rows: 60 });
+    if (error) {
+      console.error("[gallery] list_public_gallery failed:", error.message);
+      return [];
     }
 
-    const unlockCounts = new Map<string, number>();
-    if (rows.length) {
-      const { data: txns } = await supabaseAdmin
-        .from("transactions")
-        .select("generation_id")
-        .eq("payment_status", "completed")
-        .in(
-          "generation_id",
-          rows.map((r) => r.id),
-        );
-      for (const t of txns ?? []) {
-        if (!t.generation_id) continue;
-        unlockCounts.set(t.generation_id, (unlockCounts.get(t.generation_id) ?? 0) + 1);
-      }
-    }
-
-    return rows.map((row) => {
+    const storage = supabase.storage.from("designs");
+    return (data ?? []).map((row) => {
       const products = (Array.isArray(row.amazon_products)
-        ? (row.amazon_products as unknown as AmazonProduct[])
+        ? (row.amazon_products as AmazonProduct[])
         : []) as AmazonProduct[];
       const total = products.reduce((sum, p) => sum + Number(p.price ?? 0), 0);
       const list = products.reduce((sum, p) => sum + Number(p.listPrice ?? p.price ?? 0), 0);
@@ -649,12 +669,12 @@ export const listPublicGallery = createServerFn({ method: "GET" }).handler(
         designStyle: row.design_style,
         budgetRange: row.budget_range,
         createdAt: row.created_at,
-        imageUrl: row.image_url ? (signedMap.get(row.image_url) ?? null) : null,
-        itemCount: products.length,
-        total: Math.round(total * 100) / 100,
-        savings: Math.round(Math.max(0, list - total) * 100) / 100,
+        imageUrl: row.image_url ? storage.getPublicUrl(row.image_url).data.publicUrl : null,
+        itemCount: Number(row.item_count ?? products.length),
+        total: Math.round(Number(row.total ?? total) * 100) / 100,
+        savings: Math.round(Math.max(0, Number(row.list_total ?? list) - Number(row.total ?? total)) * 100) / 100,
         isUnlocked: Boolean(row.is_unlocked),
-        unlockCount: unlockCounts.get(row.id) ?? 0,
+        unlockCount: Number(row.unlock_count ?? 0),
         products: row.is_unlocked ? products : [],
       };
     });
